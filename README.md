@@ -15,7 +15,7 @@ The objective of this project is to provide a career services platform where stu
 <li>Admin - managing all user profiles and postings
 
 <h2>Additional Features:</h2>
-  <b>TBA</b>
+  <b>TBD</b>
 
 <h2>Technology Used:</h2>
 <li>Python Django (backend)</li>
@@ -28,7 +28,7 @@ The objective of this project is to provide a career services platform where stu
 The project will follow an adapted Agile development approach with 3 to 4 weeks long iterations (4 iterations in total). The first 2 weeks of the first sprint will be for training and setting up the development environment.
 
 <h2>Resources:</h2>
-<b>TBA</b>
+<b>TBD</b>
 
 <h2>Note:</h2>
 This project is intended to help you gain experience in software project management skills. You will be using GitHub for distributed version control and access control, bug tracking, software feature requests, task management, continuous integration, and wikis to support the project management process. The goal is to deliver a compelling middle-fidelity prototype that could serve as the basis for defining a real product, not a marketable product.
