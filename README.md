@@ -4,10 +4,10 @@
 The objective of this project is to provide a career services platform where students (job seekers) can post and update their portfolios and employers can post job openings. This platform will help both job seekers and employers to shortlist potential job and employee respectively. It will also help employers find specific candidates as per their requirements and job seekers to tailor their profile as per the market. All that is required is a PC or mobile device with internet access to use the website.
 
 <h2>Team Members:</h2>
-<li>Ismail Feham</li>
-<li>Abdul-Hakim Skaik</li>
-<li>Zakaria El Manar El Bouanani</li>
-<li>Abdelkader Habel</li>
+<li>Ismail Feham                   (FehamIsmail)</li>
+<li>Abdul-Hakim Skaik              (HakimSkaik)  </li>
+<li>Zakaria El Manar El Bouanani   (Trapdoge)</li>
+<li>Abdelkader Habel               (abdelh17) </li>
 
 <h2>Main Users:</h2>
 <li>Employers - create an account/register, login, browse candidates, add job offers, select candidates that have already applied to an offer for interview
@@ -20,6 +20,7 @@ The objective of this project is to provide a career services platform where stu
 <h2>Technology Used:</h2>
 <li>Python Django (backend)</li>
 <li>ReactJS (frontend)</li>
+<li>Figma (Frontend)
 
 <h2>Project Duration:</h2>
 10 to 12 weeks
