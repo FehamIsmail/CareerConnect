@@ -3,6 +3,8 @@
 <h2>Description:</h2>
 The objective of this project is to provide a career services platform where students (job seekers) can post and update their portfolios and employers can post job openings. This platform will help both job seekers and employers to shortlist potential job and employee respectively. It will also help employers find specific candidates as per their requirements and job seekers to tailor their profile as per the market. All that is required is a PC or mobile device with internet access to use the website.
 
+<h2>Team Members</h2>
+
 | Name | GitHub username | Specialty |
 | ---- | --------------- | -------- |
 | Ismail Feham | FehamIsmail | Frontend |
