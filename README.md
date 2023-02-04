@@ -25,7 +25,7 @@ The objective of this project is to work in teams using GitHub as a version cont
 
 <h2>Team Members</h2>
 
-| Name | GitHub username | Specialty |
+| Name | GitHub username | Speciality |
 | ---- | --------------- | -------- |
 | Ismail Feham | FehamIsmail | Frontend |
 | Abdul-Hakim Skaik | HakimSkaik | Frontend |
