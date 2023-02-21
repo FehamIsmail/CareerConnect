@@ -1,15 +1,12 @@
-import styled from 'styled-components'
-import React, {FC} from 'react';
+import React from 'react';
+import Header from '../Header/Header';
 
-
-const App:FC = () => {
+const App = () => {
     return(
-      <StyledDiv></StyledDiv>
+        <>
+          <Header isStudent={true} loggedIn={false} />
+        </>
     )
 }
-
-const StyledDiv = styled.div`
-  width: 200px;
-`
 
 export default App;

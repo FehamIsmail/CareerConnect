@@ -21,7 +21,8 @@ module.exports = {
       spacing: {
         '8xl': '96rem',
         '9xl': '128rem',
-        '8': '1.75rem'
+        '8': '1.75rem',
+        '2.5': '0.625rem'
       },
     },
     screens: {
