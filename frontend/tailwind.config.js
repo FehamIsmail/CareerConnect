@@ -24,6 +24,9 @@ module.exports = {
         '8': '1.75rem',
         '2.5': '0.625rem'
       },
+      backgroundImage: {
+        'banner-bg': "url('/src/assets/banner_bg.png')"
+      }
     },
     screens: {
       'xs': "480px",
