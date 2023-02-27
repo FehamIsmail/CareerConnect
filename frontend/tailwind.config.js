@@ -5,9 +5,9 @@ const defaultColors = require('tailwindcss/colors');
 
 module.exports = {
   content: [
-      './src/**/*.{html,js,ts,tsx}',
-      './src/components/**/*.{html,js,ts,tsx}',
-      './public/index.html',
+    './src/**/*.{html,js,ts,tsx}',
+    './src/components/**/*.{html,js,ts,tsx}',
+    './public/index.html',
   ],
   theme: {
     colors: {
@@ -24,18 +24,40 @@ module.exports = {
         '8': '1.75rem',
         '2.5': '0.625rem'
       },
-      backgroundImage: {
-        'banner-bg': "url('/src/assets/banner_bg.png')"
+      animation: {
+        'type': 'typing 3s steps(40, end) infinite alternate forwards, blink 0.7s step-end infinite'
+      },
+      keyframes: {
+        'typing': {
+          'from': {
+            width: 0
+          },
+          'to': {
+            width: '100%'
+          }
+        },
+        'blink': {
+          'from, to': {
+            'border-color': 'transparent'
+          },
+          '50%': {
+            'border-color': 'white'
+          }
+        }
       }
     },
-    screens: {
-      'xs': "480px",
-      'ss': "620px",
-      'sm': "768px",
-      'md': "1060px",
-      'lg': "1200px",
-      'xl': "1700px",
-    },
+    backgroundImage: {
+      'banner-bg': "url('/src/assets/banner_bg.png')"
+    }
   },
+  screens: {
+    'xs': "480px",
+    'ss': "620px",
+    'sm': "768px",
+    'md': "1060px",
+    'lg': "1200px",
+    'xl': "1700px",
+  },
+
   plugins: [],
 }
