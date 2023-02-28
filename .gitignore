@@ -2,3 +2,4 @@
 # PyCharm folder
 .idea
 venv
+CareerConnect_API/db.sqlite3
