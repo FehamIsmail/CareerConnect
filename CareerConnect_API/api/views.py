@@ -13,13 +13,6 @@ class StudentProfileView(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
 
-# class createUser(APIView):
-#     def post(self,request):
-#         serializer=UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegistrationView(APIView):
     authentication_classes = []  # disable authentication
@@ -27,18 +20,19 @@ class RegistrationView(APIView):
     #
     # # permission_classes = [DjangoModelPermissions]
     queryset = User.objects.all()
-    def post(self,request):
+
+    def post(self, request):
         print(request.data)
-        serializer=RegistrationSerializer(data=request.data)
-        data={}
+        serializer = RegistrationSerializer(data=request.data)
+        data = {}
         if serializer.is_valid():
-            user=serializer.save()
-            data['response']="Successfully registered a new user"
+            user = serializer.save()
+            data['response'] = "Successfully registered a new user"
             data['email'] = user.email
-            data['first_name']=user.first_name
+            data['first_name'] = user.first_name
             data['last_name'] = user.last_name
             data['role'] = user.role
 
         else:
-            data=serializer.errors
+            data = serializer.errors
         return Response(data)

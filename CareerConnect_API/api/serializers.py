@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User
+from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User, Student, Employer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,12 +16,20 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ['email', 'first_name', 'last_name', 'role', "password"]
 
     def create(self, validated_data):
-        user = User.objects.create_user(email=validated_data["email"],
-                                        first_name= validated_data["first_name"],
-                                        last_name=validated_data["last_name"],
-                                        role=validated_data["role"],
-                                        password= validated_data["password"]
-                                        )
+        if validated_data['role']=='STUDENT' or validated_data['role']=="Student":
+            user = Student.objects.create_user(email=validated_data["email"],
+                                            first_name= validated_data["first_name"],
+                                            last_name=validated_data["last_name"],
+                                            role=validated_data["role"],
+                                            password= validated_data["password"]
+                                            )
+        elif validated_data['role'] == 'EMPLOYER' or validated_data['role'] == "Employer":
+            user = Employer.objects.create_user(email=validated_data["email"],
+                                               first_name=validated_data["first_name"],
+                                               last_name=validated_data["last_name"],
+                                               role=validated_data["role"],
+                                               password=validated_data["password"]
+                                               )
         return user
 
 
