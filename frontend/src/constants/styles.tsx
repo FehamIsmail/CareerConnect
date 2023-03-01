@@ -1,0 +1,1 @@
+export const thinScrollBarStyle = "scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-gray-200"

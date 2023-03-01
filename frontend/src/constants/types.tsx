@@ -85,3 +85,13 @@ export const JOB_TYPE_METADATA: Record<JobType, JobTypeMetadata> = {
         color: "#ffe2dd",
     },
 };
+
+export type Option = {
+    id: number,
+    name: string,
+}
+
+export type FilterProps = {
+    placeholder: string,
+    options: Option[],
+}

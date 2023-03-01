@@ -15,7 +15,7 @@ import logo from '../../assets/logo_nobg.svg'
 const jobActions = [
     {
         name: 'Job Postings',
-        description: 'Browser job postings',
+        description: 'Browse job postings',
         href: '#',
         icon: ClipboardDocumentIcon,
     },
@@ -51,7 +51,6 @@ const Header = (props: HeaderProps) => {
     const {loggedIn, isStudent} = props;
 
     return (
-
         <Popover className="relative bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
                 <div className="flex items-center justify-between border-gray-100 py-3 md:justify-start md:space-x-10">
