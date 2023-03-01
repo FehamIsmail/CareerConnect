@@ -88,7 +88,7 @@ class Student(User):
 
 @receiver(post_save, sender=Student)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created and instance.role == "STUDENT":
+    if created and instance.role == User.Role.STUDENT:
         StudentProfile.objects.create(user=instance)
 
 
@@ -99,22 +99,19 @@ class StudentProfile(models.Model):
 
 
 class CoverLetter(models.Model):
-    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-
+    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cl', null=True, blank=True)
     title = models.CharField(max_length=100, null=True, blank=True)
 
 
 class CurriculumVitae(models.Model):
-    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-
+    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cv', null=True, blank=True)
     title = models.CharField(max_length=100, null=True, blank=True)
-    skills = models.CharField(max_length=100, null=True, blank=True)
 
 
 class Application(models.Model):
-    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-    cover_letter = models.ManyToManyField(CoverLetter)
-    curriculum_vitae = models.ManyToManyField(CurriculumVitae)
+    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='application', null=True, blank=True)
+    cover_letter = models.ForeignKey(CoverLetter, on_delete=models.CASCADE)
+    curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE)
 
     package_name = models.CharField(max_length=100, null=True, blank=True)
 
@@ -152,7 +149,7 @@ class Job(models.Model):
 
 @receiver(post_save, sender=Employer)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created and instance.role == "EMPLOYER":
+    if created and instance.role == User.Role.EMPLOYER:
         EmployerProfile.objects.create(user=instance)
 
 # class BaseUser(AbstractBaseUser, PermissionsMixin):

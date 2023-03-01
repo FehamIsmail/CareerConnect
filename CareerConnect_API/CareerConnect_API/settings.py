@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
+    'rest_framework',
       # TODO: Probably don't need it, remove if so.
 ]
 
