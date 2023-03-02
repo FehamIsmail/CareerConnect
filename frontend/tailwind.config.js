@@ -8,6 +8,7 @@ module.exports = {
   content: [
       './src/**/*.{html,js,ts,tsx}',
       './src/components/**/*.{html,js,ts,tsx}',
+      './src/pages/*.{html,js,ts,tsx}',
       './public/index.html',
   ],
   theme: {

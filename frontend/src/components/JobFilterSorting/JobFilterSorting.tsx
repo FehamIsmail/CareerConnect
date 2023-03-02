@@ -3,7 +3,7 @@ import {JobType, Option} from "../../constants/types";
 import RadioButtonGroup from "./RadioButtonGroup";
 import FilteredComboBox from "./FilteredComboBox";
 import ListBox from "./ListBox";
-import {filterRadioOptions, sortByOptions, industryOptions} from "../../constants/jobFilterConstants";
+import {filterRadioOptions, sortByOptions, industryOptions} from "../../constants/filter_constants";
 import {useWindowDimensions} from "../../scripts/utils";
 import {ToggleButton} from "./ToggleButton";
 
