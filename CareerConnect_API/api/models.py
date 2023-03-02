@@ -62,11 +62,6 @@ class User(AbstractUser):
     base_role = Role.ADMIN
     role = models.CharField(max_length=50, choices=Role.choices)
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
-            return super().save(self, *args, **kwargs)
-
 
 # ============= STUDENT ============= #
 class StudentManager(BaseUserManager):
@@ -96,6 +91,7 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_id = models.BigIntegerField(null=True, blank=True)
     education = models.CharField(max_length=100, null=True, blank=True)
+
 
 
 class CoverLetter(models.Model):
