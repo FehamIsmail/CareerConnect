@@ -26,7 +26,7 @@ class RegistrationView(APIView):
         serializer = RegistrationSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.create(request.data)
             data['response'] = "Successfully registered a new user"
             data['email'] = user.email
             data['first_name'] = user.first_name

@@ -10,42 +10,33 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    password=serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'role', "password","confirm_password"]
+        fields = ['email', 'first_name', 'last_name', 'role', "password", "confirm_password"]
 
-    def save(self):
-        user=User(
-            email=self.validated_data["email"],
-            first_name=self.validated_data["first_name"],
-            last_name=self.validated_data["last_name"],
-            role=self.validated_data["role"],
-        )
-        password = self.validated_data["password"]
-        confirm_password=self.validated_data["confirm_password"]
-
-        if password!= confirm_password:
-            raise serializers.ValidationError({"password":"Passwords must match."})
-        user.set_password(password)
-        user.save()
     def create(self, validated_data):
-        if validated_data['role']=='STUDENT' or validated_data['role']=="Student":
-            user = Student.objects.create_user(email=validated_data["email"],
-                                            first_name= validated_data["first_name"],
-                                            last_name=validated_data["last_name"],
-                                            role=validated_data["role"],
-                                            password= validated_data["password"]
-                                            )
-        elif validated_data['role'] == 'EMPLOYER' or validated_data['role'] == "Employer":
-            user = Employer.objects.create_user(email=validated_data["email"],
-                                               first_name=validated_data["first_name"],
-                                               last_name=validated_data["last_name"],
-                                               role=validated_data["role"],
-                                               password=validated_data["password"]
-                                               )
-        return user
+        user = None
+        if validated_data['password'] == validated_data['confirm_password']:
+            if validated_data['role'] == User.Role.STUDENT:
+                user = Student.objects.create_user(email=validated_data["email"],
+                                                   first_name=validated_data["first_name"],
+                                                   last_name=validated_data["last_name"],
+                                                   role=validated_data["role"],
+                                                   password=validated_data["password"]
+                                                   )
+            elif validated_data['role'] == User.Role.EMPLOYER:
+                user = Employer.objects.create_user(email=validated_data["email"],
+                                                    first_name=validated_data["first_name"],
+                                                    last_name=validated_data["last_name"],
+                                                    role=validated_data["role"],
+                                                    password=validated_data["password"]
+                                                    )
+            return user
+        else:
+            raise serializers.ValidationError({"password": "Passwords must match."})
 
 
 class CVSerializer(serializers.ModelSerializer):
