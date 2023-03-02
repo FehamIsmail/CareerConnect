@@ -44,6 +44,14 @@ export const getDarkerColor = (color: string): string => {
     return `#${darkerR.toString(16)}${darkerG.toString(16)}${darkerB.toString(16)}`;
 }
 
+export const getAccessToken = (): string|null => {
+    return localStorage.getItem('access-token');
+}
+
+export const setAccessToken = (token:string) => {
+    localStorage.setItem('access-token', token);
+}
+
 export const getJobTypesString = (types: JobType[]): string => {
     let result = "";
     types.forEach(type => {
