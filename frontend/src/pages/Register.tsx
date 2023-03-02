@@ -1,32 +1,50 @@
-import React from "react";
+import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
 import {Link} from "react-router-dom";
 import axios from "axios/index";
 
 export function Register() {
+    const [isStudent, setIsStudent] = useState<boolean>(true)
 
-    const handleRegister = (e:any) => {
+    const handleRegister = (e: any) => {
         e.preventDefault();
         const email = e.target['email'].value
         const password1 = e.target['password'].value
         const password2 = e.target['repeat-password'].value
-        if(password1 == password2){
-            axios.post('http://localhost:8080/api/register', {email: email, password: password1})
-                .then(res => console.log(res))
+        const first_name = e.target['first_name'].value
+        const last_name = e.target['last_name'].value
+        const role = isStudent ? 'STUDENT' : 'EMPLOYER'
+        if (password1 == password2) {
+            axios.post('http://localhost:8000/api/register/', {
+                email,
+                first_name,
+                last_name,
+                password: password1,
+                confirm_password: password2,
+                role
+            }).then(res => console.log(res)).catch(err => console.log(err))
+        } else {
+            alert('Passwords do not match!')
         }
+    }
+
+    const handleStudentChange = (e:any) => {
+        setIsStudent(e.target.checked)
     }
 
     return (
         <>
             <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 ">
                 <div className="sm:mx-auto sm:w-full sm:max-w-md flex justify-center items-center flex-col mt-20">
-                    <div className="px-2.5 py-3 rounded-lg bg-indigo-600 w-20 ">
-                        <img
-                            className="mx-auto h-12 w-auto svg-white"
-                            src={logo}
-                            alt="Your Company"
-                        />
-                    </div>
+                    <Link to="../">
+                        <div className="px-2.5 py-3 rounded-lg bg-indigo-600 w-20 ">
+                            <img
+                                className="mx-auto h-12 w-auto svg-white"
+                                src={logo}
+                                alt="Your Company"
+                            />
+                        </div>
+                    </Link>
                     <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
                         Register your account
                     </h2>
@@ -36,6 +54,45 @@ export function Register() {
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                     <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                         <form onSubmit={handleRegister} className="space-y-6" action="/api/register" method="POST">
+                            <div className="flex flex-row gap-3">
+                                <div className="w-full">
+                                    <label
+                                        htmlFor="first_name"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        First Name
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            id="first_name"
+                                            name="first_name"
+                                            type="text"
+                                            autoComplete="given-name"
+                                            required
+                                            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="w-full">
+                                    <label
+                                        htmlFor="last_name"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Last Name
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            id="last_name"
+                                            name="last_name"
+                                            type="text"
+                                            autoComplete="family-name"
+                                            required
+                                            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             <div>
                                 <label
                                     htmlFor="email"
@@ -93,29 +150,22 @@ export function Register() {
                                 </div>
                             </div>
 
-                            <div className="hidden flex items-center justify-between">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center">
                                     <input
                                         id="remember-me"
                                         name="remember-me"
                                         type="checkbox"
+                                        checked={isStudent}
+                                        onChange={handleStudentChange}
                                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                     />
                                     <label
                                         htmlFor="remember-me"
                                         className="ml-2 block text-sm text-gray-900"
                                     >
-                                        Remember me
+                                        I am a Student
                                     </label>
-                                </div>
-
-                                <div className=" text-sm">
-                                    <a
-                                        href="#"
-                                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                                    >
-                                        Forgot your password?
-                                    </a>
                                 </div>
                             </div>
 
@@ -124,7 +174,7 @@ export function Register() {
                                     type="submit"
                                     className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
-                                    Sign in
+                                    Register
                                 </button>
                             </div>
                         </form>

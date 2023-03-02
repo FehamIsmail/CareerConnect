@@ -11,6 +11,7 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import {classNames} from "../../scripts/utils";
 import logo from '../../assets/logo_nobg.svg'
+import {Link} from "react-router-dom";
 
 const jobActions = [
     {
@@ -181,16 +182,20 @@ const Header = (props: HeaderProps) => {
                     <div className="hidden items-center justify-end md:flex md:flex-1 lg:w-0">
                         {!loggedIn &&
                             <>
-                                <a href="src/components/Header/Header#"
-                                   className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
-                                    Sign in
-                                </a>
-                                <a
-                                    href="src/components/Header/Header#"
-                                    className="ml-8 mr-4 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                                >
-                                    Sign up
-                                </a>
+                                <Link to="/login">
+                                    <a href="src/components/Header/Header#"
+                                       className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
+                                        Sign in
+                                    </a>
+                                </Link>
+                                <Link to="/register">
+                                    <a
+                                        href="src/components/Header/Header#"
+                                        className="ml-8 mr-4 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                    >
+                                        Sign up
+                                    </a>
+                                </Link>
                             </>
                         }
                         {loggedIn &&

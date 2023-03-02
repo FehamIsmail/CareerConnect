@@ -52,6 +52,14 @@ export const setAccessToken = (token:string) => {
     localStorage.setItem('access-token', token);
 }
 
+export const getRefreshToken = (): string|null => {
+    return localStorage.getItem('refresh-token');
+}
+
+export const setRefreshToken = (token:string) => {
+    localStorage.setItem('refresh-token', token);
+}
+
 export const getJobTypesString = (types: JobType[]): string => {
     let result = "";
     types.forEach(type => {

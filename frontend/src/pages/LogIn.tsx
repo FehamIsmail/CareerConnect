@@ -2,6 +2,7 @@ import React from "react";
 import logo from "../assets/logo_nobg.svg";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import {setAccessToken, setRefreshToken} from "../scripts/utils";
 
 export function LogIn() {
 
@@ -9,21 +10,29 @@ export function LogIn() {
         e.preventDefault();
         const email = e.target['email'].value
         const password = e.target['password'].value
-        axios.post('http://localhost:8080/api/login', {email: email, password: password})
-            .then(res => console.log(res))
+        axios.post('http://localhost:8000/api/login/', {email: email, password: password})
+            .then(res => {
+                console.log(res)
+                if(res.status == 200){
+                    setAccessToken(res.data.access_token)
+                    setRefreshToken(res.data.refresh_token)
+                }
+            }).catch(err => console.log(err))
     }
 
     return (
         <>
             <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 ">
                 <div className="sm:mx-auto sm:w-full sm:max-w-md flex justify-center items-center flex-col mt-20">
-                    <div className="px-2.5 py-3 rounded-lg bg-indigo-600 w-20 ">
-                        <img
-                            className="mx-auto h-12 w-auto svg-white"
-                            src={logo}
-                            alt="Your Company"
-                        />
-                    </div>
+                    <Link to="../">
+                        <div className="px-2.5 py-3 rounded-lg bg-indigo-600 w-20 ">
+                            <img
+                                className="mx-auto h-12 w-auto svg-white"
+                                src={logo}
+                                alt="Your Company"
+                            />
+                        </div>
+                    </Link>
                     <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
                         Sign in to your account
                     </h2>

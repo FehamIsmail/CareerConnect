@@ -18,10 +18,10 @@ type UserInfo = {
 }
 
 const emptyUserInfo:UserInfo = {
-    first_name: '',
-    last_name: '',
-    email: '',
-    education: '',
+    first_name: ' ',
+    last_name: ' ',
+    email: ' ',
+    education: ' ',
 }
 
 export default function UserForm() {
@@ -32,7 +32,7 @@ export default function UserForm() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        axios.post('http://localhost:8000/api/profile', userInfo).then(res => console.log(res))
+        axios.post('http://localhost:8000/api/profile/', userInfo).then(res => console.log(res))
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -71,14 +71,14 @@ export default function UserForm() {
     }
 
     const getUserInfo = () => {
-        axios.get('https://localhost:8000/api/token', {
+        axios.get('http://localhost:8000/api/profile/', {
             headers: {
                 Authorization: `Bearer ${getAccessToken()}`,
             },
         })
             .then((response: any) => {
                 // handle success
-                const education = response.data.profile.education
+                const education = response.data.profile.education || 'Concordia'
                 const {email, first_name, last_name} = response.data.profile.user
                 const profile: UserInfo = {
                     education,
