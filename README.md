@@ -8,6 +8,9 @@ This project will provide a career services platform where students (job seekers
 <li>Employers - create an account/register, login, browse candidates, add job offers, select candidates that have already applied to an offer for interview
 <li>Students/Candidates - create an account/register, login, create a profile, and upload their resume; browse for job offers; apply for those postings
 <li>Admin - managing all user profiles and postings
+<h2>Issues tracking</h2>
+
+<a href="https://docs.google.com/spreadsheets/d/1OpqNBRHSaydjWkSW3TTRSmgD_jWX_LWbxrSmAXZ2onI/edit?usp=sharing">Access Sheet Here</a> to have access to everything about the issues and user stories worked on
 
 <h3>Below are the core abilities of the project</h3>
 <ul>
@@ -40,7 +43,7 @@ The objective of this project is to work in teams using GitHub as a version cont
 <h2>Technology Used:</h2>
 <li>Python Django (backend)</li>
 <li>ReactJS (frontend)</li>
-<li>Figma (Frontend)
+<li>Figma (Frontend)</li>
 
 <h2>Project Duration:</h2>
 10 to 12 weeks
