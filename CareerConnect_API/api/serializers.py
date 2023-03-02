@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User, Student, Employer
+from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User, Student, Employer, EmployerProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,3 +69,11 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
         fields = ['id', 'student_id', 'education', 'user', 'cv', 'cl', 'application']
+
+
+class EmployerProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = EmployerProfile
+        fields = ['id', 'user', 'organization']
