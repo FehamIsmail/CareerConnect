@@ -11,10 +11,25 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'role', "password"]
+        fields = ['email', 'first_name', 'last_name', 'role', "password","confirm_password"]
 
+    def save(self):
+        user=User(
+            email=self.validated_data["email"],
+            first_name=self.validated_data["first_name"],
+            last_name=self.validated_data["last_name"],
+            role=self.validated_data["role"],
+        )
+        password = self.validated_data["password"]
+        confirm_password=self.validated_data["confirm_password"]
+
+        if password!= confirm_password:
+            raise serializers.ValidationError({"password":"Passwords must match."})
+        user.set_password(password)
+        user.save()
     def create(self, validated_data):
         if validated_data['role']=='STUDENT' or validated_data['role']=="Student":
             user = Student.objects.create_user(email=validated_data["email"],
