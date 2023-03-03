@@ -66,7 +66,12 @@ A tab with the url `localhost:3000` will automatically open after `npm run start
 
 ### Backend:
 
-<--- ADD HOW TO RUN THE BACKEND HERE --->
+```
+cd .\CareerConnect_API\
+pip install requirements.txt
+python manage.py runserver
+```
+A tab with the url `localhost:8000` will automatically open after python manage.py runserver
 
 <h2>Project Duration:</h2>
 10 to 12 weeks
