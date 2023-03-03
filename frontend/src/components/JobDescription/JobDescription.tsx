@@ -26,7 +26,6 @@ const JobDescription = (props: JobDescriptionProps) => {
     useEffect(() => {
         if (job) {
             setPreviewed(jobOnPreviewId == job.id);
-            if (jobOnPreviewId == job.id) console.log(job)
         } else
             setPreviewed(false);
     }, [jobOnPreviewId]);

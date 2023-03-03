@@ -25,11 +25,6 @@ SECRET_KEY = 'django-insecure-r)h)-xlvcj=byc-f1q@y)!@gu!k+fb6rk$!mntot7$fz$qvb9v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-# CORS_ALLOW_ALL_ORIGINS = True
-
-
-
 # Application definition
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
@@ -108,29 +103,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ['http://localhost:3000',]
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000',]
 ALLOWED_HOSTS = ['*']
-# CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOW_METHODS = [
-#     'DELETE',
-#     'GET',
-#     'OPTIONS',
-#     'PATCH',
-#     'POST',
-#     'PUT',
-# ]
-# CORS_ALLOW_HEADERS = [
-#     'accept',
-#     'accept-encoding',
-#     'authorization',
-#     'content-type',
-#     'dnt',
-#     'origin',
-#     'user-agent',
-#     'x-csrftoken',
-#     'x-requested-with',
-# ]
-
-
-
 
 ROOT_URLCONF = 'CareerConnect_API.urls'
 

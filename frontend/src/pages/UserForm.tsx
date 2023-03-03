@@ -24,15 +24,34 @@ const emptyUserInfo:UserInfo = {
     education: ' ',
 }
 
+type status = {
+    type: 'success' | 'error' | 'nothing',
+    message: string,
+}
+
 export default function UserForm() {
     const [file, setFile] = useState<File | null>(null);
     const [dragging, setDragging] = useState<boolean>(false);
-    const [userInfo, setUserInfo] = useState<UserInfo>(emptyUserInfo)
+    const [userInfo, setUserInfo] = useState<UserInfo>(emptyUserInfo);
+    const [status, setStatus] = useState<status>({type: 'nothing', message: ' '})
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        axios.post('http://localhost:8000/api/profile/', userInfo).then(res => console.log(res))
+        console.log(userInfo)
+        axios.put('http://localhost:8000/api/profile/', userInfo,{
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+            },
+        }
+        ).then(res => {
+            console.log(res)
+            if(res.status == 200)
+                setStatus({type: 'success', message: 'Changes successfully saved'})
+            else{
+                setStatus({type: 'error', message: 'An unexpected error has occurred'})
+            }
+        })
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -49,7 +68,6 @@ export default function UserForm() {
         e.preventDefault();
         setDragging(false);
         const file = e.dataTransfer.files[0];
-        console.log(file)
         setFile(file);
     };
 
@@ -77,9 +95,9 @@ export default function UserForm() {
             },
         })
             .then((response: any) => {
-                // handle success
                 const education = response.data.profile.education || 'Concordia'
                 const {email, first_name, last_name} = response.data.profile.user
+                console.log(getAccessToken())
                 const profile: UserInfo = {
                     education,
                     email,
@@ -87,10 +105,8 @@ export default function UserForm() {
                     last_name
                 }
                 setUserInfo(profile);
-                console.log(response);
             })
             .catch(error => {
-                // handle error
                 console.error(error);
             });
     }
@@ -212,13 +228,13 @@ export default function UserForm() {
                             </div>
                             <div className="grid grid-cols-6 gap-6">
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
                                         First name
                                     </label>
                                     <input
                                         type="text"
-                                        name="first-name"
-                                        id="first-name"
+                                        name="first_name"
+                                        id="first_name"
                                         value={userInfo.first_name}
                                         onChange={handleInputChange}
                                         autoComplete="given-name"
@@ -226,13 +242,13 @@ export default function UserForm() {
                                     />
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
                                         Last name
                                     </label>
                                     <input
                                         type="text"
-                                        name="last-name"
-                                        id="last-name"
+                                        name="last_name"
+                                        id="last_name"
                                         value={userInfo.last_name}
                                         onChange={handleInputChange}
                                         autoComplete="family-name"
@@ -241,7 +257,7 @@ export default function UserForm() {
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                        Email address (Contact only)
+                                        Email address
                                     </label>
                                     <input
                                         type="text"
@@ -452,6 +468,23 @@ export default function UserForm() {
                     </div>
                 </fieldset>
             </form>
+            {status.type != 'nothing' && (
+                <div
+                    className="mb-3 inline-flex w-full items-center rounded-lg bg-green-100 py-5 px-6 text-base text-green-700"
+                    role="alert">
+                          <span className="mr-2">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="h-5 w-5">
+                                  <path
+                                      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"/>
+                                </svg>
+                          </span>
+                    {status.message}
+                </div>
+            )}
         </div>
     )
 }

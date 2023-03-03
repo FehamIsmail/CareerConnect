@@ -66,7 +66,6 @@ export const industryOptions: Option[] = [
     { id: 44, name: "Travel" },
     { id: 45, name: "Utilities" },
     { id: 46, name: "Venture Capital" },
-    { id: 46, name: "Venture Capital" },
     { id: 47, name: "Veterinary" },
     { id: 48, name: "Warehousing" },
     { id: 49, name: "Wholesale" },

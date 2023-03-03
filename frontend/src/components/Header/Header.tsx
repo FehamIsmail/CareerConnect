@@ -9,9 +9,11 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import {classNames} from "../../scripts/utils";
+import {classNames, handleLogout} from "../../scripts/utils";
 import logo from '../../assets/logo_nobg.svg'
 import {Link} from "react-router-dom";
+import {useRecoilValue} from "recoil";
+import {authAtom} from "../../constants/atoms";
 
 const jobActions = [
     {
@@ -31,7 +33,7 @@ const jobActions = [
 const accountActions = [
     {
         name: 'My Profile',
-        href: '#',
+        href: '/user/edit',
         description: 'Edit your profile details',
         icon: UserIcon,
     },
@@ -43,27 +45,23 @@ const accountActions = [
     },
 ]
 
-type HeaderProps = {
-    loggedIn: boolean;
-    isStudent: boolean;
-}
+const Header = () => {
+    const { isAuthenticated } = useRecoilValue(authAtom);
 
-const Header = (props: HeaderProps) => {
-    const {loggedIn, isStudent} = props;
 
     return (
         <Popover className="relative bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
                 <div className="flex items-center justify-between border-gray-100 py-3 md:justify-start md:space-x-10">
                     <div className="flex justify-start md:w-0 md:flex-1">
-                        <a href="#" className="flex cursor-pointer px-2.5 py-3 rounded-lg bg-indigo-600">
+                        <Link to="/" className="flex cursor-pointer px-2.5 py-3 rounded-lg bg-indigo-600">
                             <span className="sr-only">CareerConnect</span>
                             <img color="black"
                                 className="h-4 w-auto sm:h-5 svg-white"
                                 src={logo}
                                 alt="Logo"
                             />
-                        </a>
+                        </Link>
                     </div>
                     <div className="-my-2 -mr-2 md:hidden">
                         <Popover.Button className="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
@@ -104,9 +102,9 @@ const Header = (props: HeaderProps) => {
                                             <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                     {jobActions.map((item) => (
-                                                        <a
+                                                        <Link
                                                             key={item.name}
-                                                            href={item.href}
+                                                            to={item.href}
                                                             className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50"
                                                         >
                                                             <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
@@ -114,7 +112,7 @@ const Header = (props: HeaderProps) => {
                                                                 <p className="text-base font-medium text-gray-900">{item.name}</p>
                                                                 <p className="mt-1 text-sm text-gray-500">{item.description}</p>
                                                             </div>
-                                                        </a>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                             </div>
@@ -124,7 +122,7 @@ const Header = (props: HeaderProps) => {
                             )}
                         </Popover>
                     </Popover.Group>
-                    {loggedIn &&
+                    {isAuthenticated &&
                         <Popover.Group as="nav" className="hidden space-x-10 md:flex">
                         <Popover className="relative">
                             {({ open }) => (
@@ -158,9 +156,9 @@ const Header = (props: HeaderProps) => {
                                             <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                     {accountActions.map((item) => (
-                                                        <a
+                                                        <Link
                                                             key={item.name}
-                                                            href={item.href}
+                                                            to={item.href}
                                                             className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50"
                                                         >
                                                             <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
@@ -168,7 +166,7 @@ const Header = (props: HeaderProps) => {
                                                                 <p className="text-base font-medium text-gray-900">{item.name}</p>
                                                                 <p className="mt-1 text-sm text-gray-500">{item.description}</p>
                                                             </div>
-                                                        </a>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                             </div>
@@ -180,32 +178,32 @@ const Header = (props: HeaderProps) => {
                     </Popover.Group>
                     }
                     <div className="hidden items-center justify-end md:flex md:flex-1 lg:w-0">
-                        {!loggedIn &&
+                        {!isAuthenticated &&
                             <>
                                 <Link to="/login">
-                                    <a href="src/components/Header/Header#"
+                                    <div
                                        className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
                                         Sign in
-                                    </a>
+                                    </div>
                                 </Link>
                                 <Link to="/register">
-                                    <a
-                                        href="src/components/Header/Header#"
+                                    <div
+
                                         className="ml-8 mr-4 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                                     >
                                         Sign up
-                                    </a>
+                                    </div>
                                 </Link>
                             </>
                         }
-                        {loggedIn &&
+                        {isAuthenticated &&
                             <Menu as="div" className="relative ml-3 mr-4">
                             <div>
-                                <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-500">
+                                <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
                                     <span className="sr-only">Open user menu</span>
                                     <img
                                         className="h-8 w-8 rounded-full"
-                                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                        src="https://startupheretoronto.com/wp-content/uploads/2018/04/default-user-image-2.png/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E"
                                         alt="User image"
                                     />
                                 </Menu.Button>
@@ -222,32 +220,33 @@ const Header = (props: HeaderProps) => {
                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <a
-                                                href="#"
+                                            <Link
+                                                to="/user/edit"
                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                             >
                                                 Your Profile
-                                            </a>
+                                            </Link>
                                         )}
                                     </Menu.Item>
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <a
-                                                href="#"
+                                            <Link
+                                                to="/"
                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                             >
                                                 Settings
-                                            </a>
+                                            </Link>
                                         )}
                                     </Menu.Item>
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <a
-                                                href="#"
+                                            <Link
+                                                to="/"
+                                                onClick={handleLogout}
                                                 className={classNames(active ? 'bg-gray-100' : '', 'hover:text-red-700 block px-4 py-2 text-sm text-gray-700')}
                                             >
                                                 Sign out
-                                            </a>
+                                            </Link>
                                         )}
                                     </Menu.Item>
                                 </Menu.Items>
@@ -255,12 +254,12 @@ const Header = (props: HeaderProps) => {
                         </Menu>
                         }
                         <div className="w-[1px] h-9 bg-gray-300"></div>
-                        <a
-                            href="src/components/Header/Header#"
+                        <Link
+                            to="/"
                             className="ml-4 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-lightBlue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-lightBlue-700"
                         >
                             Post job
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -294,57 +293,58 @@ const Header = (props: HeaderProps) => {
                             <div className="mt-6">
                                 <nav className="grid gap-y-8">
                                     {jobActions.map((item) => (
-                                        <a
+                                        <Link
                                             key={item.name}
-                                            href={item.href}
+                                            to={item.href}
                                             className="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50"
                                         >
                                             <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
                                             <span className="ml-3 text-base font-medium text-gray-900">{item.name}</span>
-                                        </a>
+                                        </Link>
                                     ))}
                                 </nav>
                             </div>
                         </div>
-                        {loggedIn &&
+                        {isAuthenticated &&
                             <div className="space-y-6 py-6 px-5">
                                 <div className="mt-1">
                                     <nav className="grid gap-y-8">
                                         {accountActions.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.name}
-                                                href={item.href}
+                                                to={item.href}
                                                 className="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50"
                                             >
                                                 <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
                                                 <span className="ml-3 text-base font-medium text-gray-900">{item.name}</span>
-                                            </a>
+                                            </Link>
                                         ))}
                                     </nav>
                                 </div>
                             </div>
                         }
                         <div className="space-y-6 py-6 px-5">
-                            {!loggedIn &&
+                            {!isAuthenticated &&
                                 <div>
-                                    <a
-                                        href="src/components/Header/Header#"
+                                    <Link
+                                        to="/register"
                                         className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                                     >
                                         Sign up
-                                    </a>
+                                    </Link>
                                     <p className="mt-6 text-center text-base font-medium text-gray-500">
                                         Existing user?{' '}
-                                        <a href="src/components/Header/Header#"
+                                        <Link to="/login"
                                            className="text-indigo-600 hover:text-indigo-500">
                                             Sign in
-                                        </a>
+                                        </Link>
                                     </p>
                                 </div>
                             }
-                            {loggedIn &&
+                            {isAuthenticated &&
                                 <a
-                                    href="src/components/Header/Header#"
+                                    href=""
+                                    onClick={handleLogout}
                                     className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700"
                                 >
                                     Sign out

@@ -9,7 +9,7 @@ import React from "react";
 export const LandingPage = () => {
     return (
         <>
-            <Header isStudent={true} loggedIn={false}/>
+            <Header/>
             <Banner/>
             <Search/>
             <div className="flex flex-row gap-6 px-6 md:px-[2.7%] pb-4 overflow-x-clip ">

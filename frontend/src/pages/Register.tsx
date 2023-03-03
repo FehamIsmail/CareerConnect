@@ -1,10 +1,19 @@
 import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios/index";
 
+enum ErrorType {
+    PASSWORD_MISMATCH = "Mismatched Password",
+    DUPLICATE_EMAIL = "Duplicate Email"
+}
+
 export function Register() {
+    const [error, setError] = useState<string>(' ')
+    const [message, setMessage] = useState<string>(' ')
+    const [showAlert, setShowAlert] = useState<boolean>(false)
     const [isStudent, setIsStudent] = useState<boolean>(true)
+    const navigate = useNavigate();
 
     const handleRegister = (e: any) => {
         e.preventDefault();
@@ -22,9 +31,25 @@ export function Register() {
                 password: password1,
                 confirm_password: password2,
                 role
-            }).then(res => console.log(res)).catch(err => console.log(err))
+            }).then(res => {
+                console.log(res)
+                if(res.data.email == 'user with this email address already exists.'){
+                    setError(ErrorType.DUPLICATE_EMAIL)
+                    setMessage(res.data.email)
+                }
+                else if(res.data.password){
+                    setError(ErrorType.PASSWORD_MISMATCH)
+                    setMessage(res.data.password)
+                }
+                else{
+                    navigate('/');
+                }
+                setShowAlert(true)
+            }).catch(err => console.log(err))
         } else {
-            alert('Passwords do not match!')
+            setError('Mismatched Password')
+            setMessage('Make sure the passwords are the same')
+            setShowAlert(true)
         }
     }
 
@@ -52,13 +77,30 @@ export function Register() {
                 </div>
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    { showAlert && (
+                        <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-default"
+                             role="alert">
+                            <div className="flex">
+                                <div className="py-1">
+                                    <svg className="fill-current h-6 w-6 text-red-500 mr-4"
+                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path
+                                            d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="font-bold">{error}</p>
+                                    <p className="text-sm">{message}</p>
+                                </div>
+                            </div>
+                        </div>)}
+                    <div className="mt-4 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                         <form onSubmit={handleRegister} className="space-y-6" action="/api/register" method="POST">
                             <div className="flex flex-row gap-3">
                                 <div className="w-full">
                                     <label
                                         htmlFor="first_name"
-                                        className="block text-sm font-medium text-gray-700"
+                                        className={`block text-sm font-medium text-gray-700`}
                                     >
                                         First Name
                                     </label>
@@ -96,7 +138,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="email"
-                                    className="block text-sm font-medium text-gray-700"
+                                    className={` ${(showAlert && error == ErrorType.DUPLICATE_EMAIL) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Email address
                                 </label>
@@ -107,7 +149,7 @@ export function Register() {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        className={`${(showAlert && error == ErrorType.DUPLICATE_EMAIL) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -115,7 +157,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="password"
-                                    className="block text-sm font-medium text-gray-700"
+                                    className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Password
                                 </label>
@@ -124,9 +166,9 @@ export function Register() {
                                         id="password"
                                         name="password"
                                         type="password"
-                                        autoComplete="current-password"
+                                        autoComplete="password"
                                         required
-                                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -134,7 +176,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="repeat-password"
-                                    className="block text-sm font-medium text-gray-700"
+                                    className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Confirm Password
                                 </label>
@@ -143,9 +185,9 @@ export function Register() {
                                         id="repeat-password"
                                         name="repeat-password"
                                         type="password"
-                                        autoComplete="current-password"
+                                        autoComplete=""
                                         required
-                                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>

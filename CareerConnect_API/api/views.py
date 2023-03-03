@@ -88,12 +88,8 @@ class UserProfileView(APIView):
 
     def put(self, request):
         user = request.user
+        print(request.data)
 
-        # if 'email' in request.data:
-        #     old_email = get_object_or_404(User, email=user.email)
-        #     user.email = request.data['email']
-        #     user.save()
-        #     print(user.email)
         user_serializer = UserSerializer(user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
