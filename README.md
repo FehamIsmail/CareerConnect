@@ -41,9 +41,32 @@ The objective of this project is to work in teams using GitHub as a version cont
   <b>TBD</b>
 
 <h2>Technology Used:</h2>
-<li>Python Django (backend)</li>
-<li>ReactJS (frontend)</li>
-<li>Figma (Frontend)</li>
+
+- Python Django (Backend)
+- React TypeScript (Frontend)
+  * TailwindCSS 
+    - HeroIcons
+    - HeadlessUI
+  * React Router Dom 
+  * Axios
+- Figma (Frontend)
+
+
+## How to run:
+
+### Frontend:
+
+*We are using npm version 8.11.0
+```
+cd ./frontend/
+npm install
+npm run start
+```
+A tab with the url `localhost:3000` will automatically open after `npm run start`
+
+### Backend:
+
+<--- ADD HOW TO RUN THE BACKEND HERE --->
 
 <h2>Project Duration:</h2>
 10 to 12 weeks
