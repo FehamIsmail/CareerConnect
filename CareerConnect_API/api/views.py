@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, viewsets, permissions, status
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import DjangoModelPermissions, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,7 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User, Student, StudentProfile
-from .serializers import StudentProfileSerializer, UserSerializer, RegistrationSerializer, EmployerProfileSerializer
+from .serializers import StudentProfileSerializer, UserSerializer, RegistrationSerializer, EmployerProfileSerializer, \
+    RegistrationSerializer
 
 
 # Create your views here.
@@ -19,27 +21,21 @@ class StudentProfileView(viewsets.ModelViewSet):
     serializer_class = StudentProfileSerializer
 
 
-class RegistrationView(APIView):
+class RegistrationView(CreateAPIView):
     authentication_classes = []  # disable authentication
     permission_classes = [AllowAny]  # allow any user to access the view
+    serializer_class = RegistrationSerializer
 
-    #
-    # # permission_classes = [DjangoModelPermissions]
     def post(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = RegistrationSerializer(data=request.data)
-        data = {}
-        if serializer.is_valid():
-            user = serializer.create(request.data)
-            data['response'] = f"Successfully registered a new {user.role.lower()}"
-            data['email'] = user.email
-            data['first_name'] = user.first_name
-            data['last_name'] = user.last_name
-            data['role'] = user.role
-
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            data = serializer.errors
-        return Response(data)
+            error = serializer.errors
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class LoginView(TokenObtainPairView):
@@ -88,12 +84,8 @@ class UserProfileView(APIView):
 
     def put(self, request):
         user = request.user
+        print(request.data)
 
-        # if 'email' in request.data:
-        #     old_email = get_object_or_404(User, email=user.email)
-        #     user.email = request.data['email']
-        #     user.save()
-        #     print(user.email)
         user_serializer = UserSerializer(user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()

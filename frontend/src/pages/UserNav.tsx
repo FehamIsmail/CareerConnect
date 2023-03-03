@@ -2,6 +2,7 @@ import React from 'react'
 import {Outlet} from 'react-router-dom'
 import {classNames} from "../scripts/utils";
 import {CreditCardIcon, KeyIcon, SquaresPlusIcon, UserCircleIcon, UserGroupIcon} from "@heroicons/react/24/outline";
+import Header from "../components/Header/Header";
 
 const navigation = [
     {name: 'Account', href: '#', icon: UserCircleIcon, current: true},
@@ -13,6 +14,8 @@ const navigation = [
 
 export function UserNav() {
     return (
+        <>
+        <Header/>
         <div className="md:grid md:grid-cols-12 md:gap-x-5">
             <aside className="ml-0 sm:mr-10 sm:ml-6 md:mt-4 md:mr-2 md:h-[96vh] py-6 px-2 shadow-default rounded-md sm:px-6 md:col-span-3 md:py-0 md:px-0">
                 <nav className="space-y-1">
@@ -44,5 +47,6 @@ export function UserNav() {
             </aside>
             <Outlet/>
         </div>
+        </>
     )
 }

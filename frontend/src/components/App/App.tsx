@@ -11,8 +11,8 @@ const App = () => {
         <div>
             <Routes>
                 <Route path="" element={<LandingPage/>}/>
-                <Route path="job" element={<UserNav />}>
-                    <Route path="create" element={<UserForm />}/>
+                <Route path="user" element={<UserNav />}>
+                    <Route path="edit" element={<UserForm />}/>
                 </Route>
                 <Route path="login" element={<LogIn/>}/>
                 <Route path="register" element={<Register/>}/>

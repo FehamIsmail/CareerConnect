@@ -24,10 +24,6 @@ SECRET_KEY = 'django-insecure-r)h)-xlvcj=byc-f1q@y)!@gu!k+fb6rk$!mntot7$fz$qvb9v
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-CORS_ORIGIN_ALLOW_ALL = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 SIMPLE_JWT = {
@@ -88,7 +84,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
-      # TODO: Probably don't need it, remove if so.
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -99,8 +95,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # TODO: Probably don't need it, remove if so.
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = ['http://localhost:3000',]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',]
+ALLOWED_HOSTS = ['*']
 
 ROOT_URLCONF = 'CareerConnect_API.urls'
 
@@ -158,7 +160,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 

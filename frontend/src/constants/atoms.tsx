@@ -1,6 +1,8 @@
 import {atom, selector} from 'recoil'
 import {IJob} from "./types";
 
+const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+
 export const jobOnPreviewIDAtom = atom<number>({
     key: 'jobOnPreviewID',
     default: -1,
@@ -21,3 +23,14 @@ export const jobOnPreview = selector<IJob | null>({
         return jobs.filter((item) => item.id == jobID)[0];
     },
 })
+
+export const authAtom = atom({
+    key: 'auth',
+    default: { isAuthenticated: isAuthenticated },
+});
+
+export const userTypeAtom = atom<'STUDENT' | 'EMPLOYER'>({
+    key: 'userType',
+    default: 'STUDENT',
+});
+

@@ -1,5 +1,7 @@
 import {useEffect, useState} from 'react';
 import {JobType} from "../constants/types";
+import {useSetRecoilState} from "recoil";
+import {authAtom} from "../constants/atoms";
 
 export const classNames = (...classes: (string)[]) => {
     return classes.filter(Boolean).join(' ')
@@ -45,11 +47,19 @@ export const getDarkerColor = (color: string): string => {
 }
 
 export const getAccessToken = (): string|null => {
-    return localStorage.getItem('access-token');
+    return localStorage.getItem('accessToken');
 }
 
 export const setAccessToken = (token:string) => {
-    localStorage.setItem('access-token', token);
+    localStorage.setItem('accessToken', token);
+}
+
+export const getRefreshToken = (): string|null => {
+    return sessionStorage.getItem('refreshToken');
+}
+
+export const setRefreshToken = (token:string) => {
+    sessionStorage.setItem('refreshToken', token);
 }
 
 export const getJobTypesString = (types: JobType[]): string => {
@@ -58,4 +68,18 @@ export const getJobTypesString = (types: JobType[]): string => {
         result += type + ', '
     })
     return result.substring(0, result.length-2);
+}
+
+export const handleLogout = () => {
+    sessionStorage.removeItem('refreshToken')
+    localStorage.removeItem('accessToken')
+    setAuthenticated(false)
+    // it is important to setAuth after to refresh components
+    // only when the code above is executed
+    const setAuth = useSetRecoilState(authAtom);
+    setAuth({ isAuthenticated: false });
+};
+
+export const setAuthenticated = (value:boolean) => {
+    localStorage.setItem('isAuthenticated', String(value).toLowerCase());
 }
