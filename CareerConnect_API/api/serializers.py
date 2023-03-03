@@ -4,9 +4,13 @@ from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, U
 
 
 class UserSerializer(serializers.ModelSerializer):
+    first_name = serializers.ReadOnlyField()
+    last_name = serializers.ReadOnlyField()
+
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'role']
+        read_only_fields = ['first_name', 'last_name']
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
