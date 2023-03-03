@@ -1,10 +1,18 @@
-import React from "react";
+import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
-import {setAccessToken, setRefreshToken} from "../scripts/utils";
+import {setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
+import {useSetRecoilState} from "recoil";
+import {authAtom, userTypeAtom} from "../constants/atoms";
 
 export function LogIn() {
+    const [error, setError] = useState<string>(' ')
+    const [message, setMessage] = useState<string>(' ')
+    const [showAlert, setShowAlert] = useState<boolean>(false)
+    const setAuth = useSetRecoilState(authAtom);
+    const setUserType = useSetRecoilState(userTypeAtom);
+    const navigate = useNavigate();
 
     const handleLogin = (e:any) => {
         e.preventDefault();
@@ -12,12 +20,20 @@ export function LogIn() {
         const password = e.target['password'].value
         axios.post('http://localhost:8000/api/login/', {email: email, password: password})
             .then(res => {
-                console.log(res)
                 if(res.status == 200){
                     setAccessToken(res.data.access_token)
                     setRefreshToken(res.data.refresh_token)
+                    setAuth({ isAuthenticated: true });
+                    setUserType('STUDENT')
+                    setAuthenticated(true)
+                    navigate('/')
                 }
-            }).catch(err => console.log(err))
+            }).catch(err => {
+                console.log(err)
+                setError('Invalid Credentials')
+                setMessage('Make sure the email and password are valid')
+                setShowAlert(true)
+        })
     }
 
     return (
@@ -40,12 +56,29 @@ export function LogIn() {
                 </div>
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    { showAlert && (
+                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-default"
+                         role="alert">
+                        <div className="flex">
+                            <div className="py-1">
+                                <svg className="fill-current h-6 w-6 text-red-500 mr-4"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path
+                                        d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="font-bold">{error}</p>
+                                <p className="text-sm">{message}</p>
+                            </div>
+                        </div>
+                    </div>)}
+                    <div className="mt-4 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                         <form onSubmit={handleLogin} className="space-y-6" action="#" method="POST">
                             <div>
                                 <label
                                     htmlFor="email"
-                                    className="block text-sm font-medium text-gray-700"
+                                    className={`${showAlert ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Email address
                                 </label>
@@ -56,7 +89,7 @@ export function LogIn() {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        className={`${showAlert ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -64,7 +97,7 @@ export function LogIn() {
                             <div>
                                 <label
                                     htmlFor="password"
-                                    className="block text-sm font-medium text-gray-700"
+                                    className={`${showAlert ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Password
                                 </label>
@@ -75,7 +108,7 @@ export function LogIn() {
                                         type="password"
                                         autoComplete="current-password"
                                         required
-                                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                        className={`${showAlert ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
