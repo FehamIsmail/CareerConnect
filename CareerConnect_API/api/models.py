@@ -66,7 +66,6 @@ class User(AbstractUser):
         STUDENT = "STUDENT", 'Student'
         EMPLOYER = "EMPLOYER", 'Employer'
 
-    profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
     role = models.CharField(max_length=50, choices=Role.choices)
 
 
@@ -88,6 +87,7 @@ class Employer(User):
 
 class EmployerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     # Profile Info
     # user.first_name
@@ -97,12 +97,13 @@ class EmployerProfile(models.Model):
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     # Profile Info
     # user.first_name
     # user.last_name
-    headline = models.TextField(null=True, blank=True)  # 1 sentence under name
-    bio = models.TextField(null=True, blank=True)  # describing text
+    # headline = models.TextField(null=True, blank=True)  # 1 sentence under name
+    #bio = models.TextField(null=True, blank=True)  # describing text
 
     # Academic Info
     institution = models.CharField(max_length=100, null=True, blank=True)
@@ -133,15 +134,17 @@ class StudentProfile(models.Model):
 # ============= STUDENT's Objects ============= #
 class CoverLetter(models.Model):
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cl', null=True, blank=True)
-    title = models.CharField(max_length=100, null=True, blank=True)
     cover_letter = models.FileField(null=True, blank=True)
+
+    title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
 
 class CurriculumVitae(models.Model):
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cv', null=True, blank=True)
-    title = models.CharField(max_length=100, null=True, blank=True)
     curriculum_vitae = models.FileField(null=True, blank=True)
+
+    title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
 
@@ -178,6 +181,7 @@ class Job(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     types = models.CharField(max_length=200, choices=JOB_TYPE_CHOICES, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    short_description = models.TextField(null=True, blank=True)
     num_positions = models.IntegerField(default=1)
     duration = models.DurationField(null=True, blank=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
