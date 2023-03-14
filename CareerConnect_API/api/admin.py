@@ -9,11 +9,47 @@ class UserAdmin(DjangoUserAdmin):
     """Define admin model for custom User model with no email field."""
 
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'role')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (
+            _('Authentication info'),
+            {
+                'fields': (
+                    'email',
+                    'password'
+                )
+            }
+        ),
+        (
+            _('Personal info'),
+            {
+                'fields': (
+                    'first_name',
+                    'last_name',
+                    'role',
+                    'profile_picture'
+                )
+            }
+        ),
+        (
+            _('Permissions'),
+            {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions'
+                )
+            }
+        ),
+        (
+            _('Important dates'),
+            {
+                'fields': (
+                    'last_login',
+                    'date_joined'
+                )
+            }
+        ),
     )
     add_fieldsets = (
         (None, {
@@ -26,7 +62,18 @@ class UserAdmin(DjangoUserAdmin):
     ordering = ('email',)
 
 
-admin.site.register(Student)
-admin.site.register(Employer)
+class CustomStudentAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return Student.objects.students()
+
+
+class CustomEmployerAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return Employer.objects.employers()
+
+
+# admin.site.register(User)
+admin.site.register(Student, CustomStudentAdmin)
 admin.site.register(StudentProfile)
+admin.site.register(Employer, CustomEmployerAdmin)
 admin.site.register(EmployerProfile)
