@@ -38,7 +38,14 @@ class RegistrationView(CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            new_user = serializer.save()
+            if new_user.role == User.Role.STUDENT:
+                new_user.studentprofile.institution = request.data['institution']
+                new_user.studentprofile.save()
+            elif new_user.role == User.Role.EMPLOYER:
+                new_user.employerprofile.company = request.data['company_name']
+                new_user.employerprofile.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             error = serializer.errors

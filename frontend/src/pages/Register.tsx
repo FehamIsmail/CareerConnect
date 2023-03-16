@@ -4,13 +4,31 @@ import {Link, useNavigate} from "react-router-dom";
 import axios from "axios/index";
 
 enum ErrorType {
-    PASSWORD_MISMATCH = "Mismatched Password",
-    DUPLICATE_EMAIL = "Duplicate Email"
+    PASSWORD = "Please review your password",
+    EMAIL = "Please review your email",
+    BOTH = "Please resolve the remaining errors",
+    UNKNOWN = "Unknown error has occurred"
 }
 
+interface ErrorProp {
+    messages: string[]
+}
+
+const ErrorList = (props:ErrorProp) => {
+    const {messages} = props
+    return (
+        <ul>
+            {messages.map((message, index) => (
+                <li className="mt-2" key={index}>• {message}</li>
+            ))}
+        </ul>
+    );
+};
+
+
 export function Register() {
-    const [error, setError] = useState<string>(' ')
-    const [message, setMessage] = useState<string>(' ')
+    const [error, setError] = useState<string>('')
+    const [messages, setMessages] = useState<string[]>([])
     const [showAlert, setShowAlert] = useState<boolean>(false)
     const [isStudent, setIsStudent] = useState<boolean>(true)
     const navigate = useNavigate();
@@ -22,33 +40,53 @@ export function Register() {
         const password2 = e.target['repeat-password'].value
         const first_name = e.target['first_name'].value
         const last_name = e.target['last_name'].value
+        const organization = e.target['organization'].value
         const role = isStudent ? 'STUDENT' : 'EMPLOYER'
+        let user_data: {[k: string]: any} = {
+            email,
+            first_name,
+            last_name,
+            password: password1,
+            confirm_password: password2,
+            role
+        }
+        if(isStudent)
+            user_data.institution = organization
+        else
+            user_data.company_name = organization
+
         if (password1 == password2) {
-            axios.post('http://localhost:8000/api/register/', {
-                email,
-                first_name,
-                last_name,
-                password: password1,
-                confirm_password: password2,
-                role
-            }).then(res => {
+            axios.post('http://localhost:8000/api/register/', user_data).then(res => {
                 console.log(res)
-                if(res.data.email == 'user with this email address already exists.'){
-                    setError(ErrorType.DUPLICATE_EMAIL)
-                    setMessage(res.data.email)
+                navigate('/');
+                setShowAlert(true)
+            }).catch(err => {
+                const res = err.response.data
+                let messages:string[] = [];
+                if(res.email && res.password){
+                    messages = messages.concat(res.email)
+                    messages = messages.concat(res.password)
+                    setError(ErrorType.BOTH)
                 }
-                else if(res.data.password){
-                    setError(ErrorType.PASSWORD_MISMATCH)
-                    setMessage(res.data.password)
+                else if(res.email){
+                    messages = messages.concat(res.email)
+                    setError(ErrorType.EMAIL)
+                }
+                else if(res.password){
+                    messages = messages.concat(res.password)
+                    setError(ErrorType.PASSWORD)
                 }
                 else{
-                    navigate('/');
+                    messages = messages.concat(err.statusText)
+                    setError(ErrorType.UNKNOWN)
                 }
-                setShowAlert(true)
-            }).catch(err => console.log(err))
+                console.log(messages)
+                setMessages(messages);
+                setShowAlert(true);
+            })
         } else {
             setError('Mismatched Password')
-            setMessage('Make sure the passwords are the same')
+            setMessages(['Make sure the passwords are the same'])
             setShowAlert(true)
         }
     }
@@ -77,7 +115,7 @@ export function Register() {
                 </div>
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    { showAlert && (
+                    {showAlert && (
                         <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-default"
                              role="alert">
                             <div className="flex">
@@ -90,7 +128,7 @@ export function Register() {
                                 </div>
                                 <div>
                                     <p className="font-bold">{error}</p>
-                                    <p className="text-sm">{message}</p>
+                                    <ErrorList messages={messages}/>
                                 </div>
                             </div>
                         </div>)}
@@ -138,7 +176,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="email"
-                                    className={` ${(showAlert && error == ErrorType.DUPLICATE_EMAIL) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={` ${(showAlert && (error == ErrorType.EMAIL || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Email address
                                 </label>
@@ -149,7 +187,7 @@ export function Register() {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        className={`${(showAlert && error == ErrorType.DUPLICATE_EMAIL) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error == ErrorType.EMAIL || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -157,7 +195,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="password"
-                                    className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Password
                                 </label>
@@ -168,7 +206,7 @@ export function Register() {
                                         type="password"
                                         autoComplete="password"
                                         required
-                                        className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -176,7 +214,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="repeat-password"
-                                    className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Confirm Password
                                 </label>
@@ -187,7 +225,7 @@ export function Register() {
                                         type="password"
                                         autoComplete=""
                                         required
-                                        className={`${(showAlert && error == ErrorType.PASSWORD_MISMATCH) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -206,8 +244,27 @@ export function Register() {
                                         htmlFor="remember-me"
                                         className="ml-2 block text-sm text-gray-900"
                                     >
-                                        I am a Student
+                                        <span>I am a <b className="font-[500]">Student</b></span>
                                     </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="organization"
+                                    className={`block text-sm font-medium text-gray-700`}
+                                >
+                                    {isStudent ? "Institution Name" : "Company Name"}
+                                </label>
+                                <div className="mt-1">
+                                    <input
+                                        id="organization"
+                                        name="organization"
+                                        type="text"
+                                        autoComplete=""
+                                        required
+                                        className={`block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                    />
                                 </div>
                             </div>
 
