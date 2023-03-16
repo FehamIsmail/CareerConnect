@@ -55,7 +55,7 @@ const JobItem = (props: JobItemProps) => {
                         </div>
                         <div
                             className="relative top-[1px] job-location font-normal text-[#A1A1AA] text-xs whitespace-nowrap overflow-hidden overflow-ellipsis">
-                            {job.location}
+                            {job.street_address}
                         </div>
                     </div>
                     <div

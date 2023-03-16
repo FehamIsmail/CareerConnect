@@ -5,14 +5,18 @@ export interface IJob {
     company: string,
     short_description: string;
     description: string;
-    location: string;
+    street_address: string;
+    city?: string,
+    province_territory?: string,
+    postal_code?: string,
+    relocation?: boolean,
     salary: number | null;
-    postedDate: Date;
-    applyByDate: Date | null;
-    contactEmail: string;
-    contactPhone: string | null;
-    website: string | null;
-    companyLogoUrl: string | null;
+    posted_date: Date;
+    apply_by_date: Date | null;
+    contact_email: string;
+    contact_phone: string | null;
+    website_url: string | null;
+    company_logo: string | null;
 }
 
 export enum JobType {
@@ -25,6 +29,7 @@ export enum JobType {
     VOLUNTEER = "Volunteer",
     SEASONAL = "Seasonal",
     REMOTE = "Remote",
+    ON_SITE = "On-site",
     CONSULTANT = "Consultant",
     EXECUTIVE = "Executive",
     PERMANENT = "Permanent"
@@ -72,6 +77,10 @@ export const JOB_TYPE_METADATA: Record<JobType, JobTypeMetadata> = {
         name: "Remote",
         color: "#dff7ce",
     },
+    [JobType.ON_SITE]: {
+        name: "On-site",
+        color: "#d7f7ef",
+    },
     [JobType.CONSULTANT]: {
         name: "Consultant",
         color: "#fff0dd",
@@ -85,6 +94,70 @@ export const JOB_TYPE_METADATA: Record<JobType, JobTypeMetadata> = {
         color: "#ffe2dd",
     },
 };
+
+export enum EducationLevel {
+    PRIMARY_SCHOOL = 'PS',
+    SECONDARY_SCHOOL = 'SS',
+    HIGH_SCHOOL = 'HS',
+    BACHELOR = 'BA',
+    MASTER = 'MA',
+    DOCTORATE = 'PHD',
+}
+
+type EducationLevelDetails = {
+    [key in EducationLevel]: string;
+};
+
+export const educationLevelDetails: EducationLevelDetails = {
+    [EducationLevel.PRIMARY_SCHOOL]: 'Primary School',
+    [EducationLevel.SECONDARY_SCHOOL]: 'Secondary School',
+    [EducationLevel.HIGH_SCHOOL]: 'High School',
+    [EducationLevel.BACHELOR]: 'Bachelor',
+    [EducationLevel.MASTER]: 'Master',
+    [EducationLevel.DOCTORATE]: 'Doctorate',
+};
+
+export type UserInfo = {
+    first_name: string,
+    last_name: string,
+    email: string,
+}
+
+export type StudentProfile = {
+    institution: string,
+    education_level: EducationLevel | '',
+    phone_number: number,
+    show_number: boolean,
+    country: string,
+    province_territory: string,
+    street_address: string,
+    postal_code: string,
+    city: string,
+    relocation: boolean,
+}
+
+export type EmployerProfile = {
+    company_name: string
+}
+
+export type CurriculumVitae = {
+    curriculum_vitae: File,
+    title: string,
+    default: boolean
+}
+
+export type CoverLetter = {
+    cover_letter: File,
+    title: string,
+    default: boolean
+}
+
+export type Application = {
+    package_name: string,
+    cover_letter: CoverLetter,
+    curriculum_vitae: CurriculumVitae,
+    default: boolean,
+}
 
 export type Option = {
     id: number,

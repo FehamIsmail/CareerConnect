@@ -171,7 +171,6 @@ class Job(models.Model):
         ('REMOTE', 'Remote'),
         ('CONSULTANT', 'Consultant'),
         ('EXECUTIVE', 'Executive'),
-        ('REMOTE', 'Remotely'),
         ('ON_SITE', 'On-site'),
     )
     employer = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)

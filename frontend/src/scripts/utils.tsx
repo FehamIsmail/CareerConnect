@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {JobType} from "../constants/types";
 import {useSetRecoilState} from "recoil";
 import {authAtom} from "../constants/atoms";
@@ -83,3 +83,18 @@ export const handleLogout = () => {
 export const setAuthenticated = (value:boolean) => {
     localStorage.setItem('isAuthenticated', String(value).toLowerCase());
 }
+
+interface ErrorProp {
+    messages: string[]
+}
+
+export const ErrorList = (props:ErrorProp) => {
+    const {messages} = props
+    return (
+        <ul>
+            {messages.map((message, index) => (
+                <li className="mt-2" key={index}>• {message}</li>
+            ))}
+        </ul>
+    );
+};

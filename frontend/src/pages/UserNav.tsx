@@ -17,8 +17,8 @@ export function UserNav() {
         <>
         <Header/>
         <div className="md:grid md:grid-cols-12 md:gap-x-5">
-            <aside className="ml-0 sm:mr-10 sm:ml-6 md:mt-4 md:mr-2 md:h-[96vh] py-6 px-2 shadow-default rounded-md sm:px-6 md:col-span-3 md:py-0 md:px-0">
-                <nav className="space-y-1">
+            <aside className="ml-0 sm:mr-6 sm:ml-6 sm:mt-4 md:mr-0 md:ml-4 md:h-[96vh] py-6 px-2 shadow-default rounded-md sm:px-6 md:col-span-3 md:py-0 md:px-0">
+                <nav className="space-y-1 mt-4 px-3">
                     {navigation.map((item) => (
                         <a
                             key={item.name}
@@ -26,7 +26,7 @@ export function UserNav() {
                             className={classNames(
                                 item.current
                                     ? 'bg-gray-50 text-indigo-700 hover:bg-white hover:text-indigo-700'
-                                    : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
+                                    : 'text-gray-900 hover:bg-gray-100 hover:text-gray-900',
                                 'group flex items-center rounded-md px-3 py-2 text-sm font-medium'
                             )}
                             aria-current={item.current ? 'page' : undefined}
