@@ -7,8 +7,12 @@ from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, U
     Job
 
 
+class UniqueEmailValidator(UniqueValidator):
+    message = 'A user with this email already exists.'
+
+
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.EmailField(required=True, validators=[UniqueEmailValidator(queryset=User.objects.all())])
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True, required=True)
 
@@ -28,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             if key in self.initial_data:
                 raise PermissionDenied()
         if 'confirm_password' in attrs and attrs['password'] != attrs['confirm_password']:
-            raise serializers.ValidationError({"password": "Passwords fields didn't match."})
+            raise serializers.ValidationError({"password": "Passwords fields do not match."})
 
         if self.instance:
             old_password = self.context['request'].data.get('old_password')
@@ -68,7 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if 'password' in validated_data:
             instance.set_password(validated_data['password'])
-            print("password changed successfuly")
+            print("Password changed successfuly")
 
         instance.save()
 
