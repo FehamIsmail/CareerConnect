@@ -24,7 +24,8 @@ export function LogIn() {
                     setAccessToken(res.data.access_token)
                     setRefreshToken(res.data.refresh_token)
                     setAuth({ isAuthenticated: true });
-                    setUserType('STUDENT')
+                    setUserType(res.data.role)
+                    localStorage.setItem('role', res.data.role)
                     setAuthenticated(true)
                     navigate('/')
                 }

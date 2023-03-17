@@ -78,7 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return instance
 
-
+n
 class CVSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurriculumVitae
@@ -127,4 +127,4 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployerProfile
-        fields = ['id', 'company', 'job_set']
+        fields = '__all__'

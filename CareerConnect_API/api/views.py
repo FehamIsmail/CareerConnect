@@ -74,6 +74,7 @@ class LoginView(TokenObtainPairView):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'role': user.role
         })
 
 
@@ -109,7 +110,6 @@ class UserProfileView(RetrieveUpdateAPIView):
     def put(self, request, *args, **kwargs):
         user = request.user
         user_serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
-
         if user_serializer.is_valid(raise_exception=True):
             user_serializer.save()
 
@@ -118,6 +118,7 @@ class UserProfileView(RetrieveUpdateAPIView):
             elif user.role == User.Role.EMPLOYER:
                 profile_serializer = EmployerProfileSerializer(user.employerprofile, data=request.data, partial=True)
             else:
+
                 return server_error(request)
 
             if profile_serializer.is_valid():

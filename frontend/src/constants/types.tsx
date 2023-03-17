@@ -137,7 +137,7 @@ export type StudentProfile = {
 }
 
 export type EmployerProfile = {
-    company_name: string
+    company: string
 }
 
 export type CurriculumVitae = {

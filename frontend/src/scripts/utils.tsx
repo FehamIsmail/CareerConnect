@@ -73,6 +73,7 @@ export const getJobTypesString = (types: JobType[]): string => {
 export const handleLogout = () => {
     sessionStorage.removeItem('refreshToken')
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('role')
     setAuthenticated(false)
     // it is important to setAuth after to refresh components
     // only when the code above is executed
@@ -98,3 +99,15 @@ export const ErrorList = (props:ErrorProp) => {
         </ul>
     );
 };
+
+export function createArrayFromStrings(object: any):string[]{
+    return Object.keys(object).reduce((acc: string[], key: string) => {
+        const value = object[key];
+        if (typeof value === 'string') {
+            return [...acc, value];
+        } else if (Array.isArray(value)) {
+            return [...acc, ...value];
+        }
+        return acc;
+    }, []);
+}
