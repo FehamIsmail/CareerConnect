@@ -127,7 +127,7 @@ export default function UserForm() {
                                     <label className="block text-sm font-medium text-gray-700">Photo</label>
                                     <div className="mt-1 flex items-center">
                                     <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                                        <img id="profile-picture-img" alt="profile picture" className="h-full w-full text-gray-300"
+                                        <img id="profile-picture-img" alt="profile picture" className="h-full w-full text-gray-300 object-cover"
                                              src={studentInfo.profile_picture ? `data:image/jpeg;base64,${studentInfo.profile_picture}` : DefaultProfilePic}/>
                                     </span>
                                         <label

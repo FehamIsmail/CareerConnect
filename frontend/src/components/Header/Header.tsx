@@ -220,10 +220,10 @@ const Header = () => {
                         {isAuthenticated &&
                             <Menu as="div" className="relative ml-3 mr-4">
                             <div>
-                                <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
+                                <Menu.Button className="flex border border-gray-400 rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
                                     <span className="sr-only">Open user menu</span>
                                     <img
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-8 w-8 rounded-full object-cover bg-white"
                                         src={profile_picture ? `data:image/jpeg;base64,${profile_picture}` : DefaultProfilePic}
                                         alt="User image"
                                     />
