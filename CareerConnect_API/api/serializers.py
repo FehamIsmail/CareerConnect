@@ -1,3 +1,4 @@
+import base64
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
@@ -78,7 +79,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return instance
 
-n
+
 class CVSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurriculumVitae
@@ -105,11 +106,20 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     # cv = CVSerializer(read_only=True, many=True)
     # cl = CLSerializer(read_only=True, many=True)
     # application = ApplicationSerializer(read_only=True, many=True)
-    profile_picture = serializers.ImageField(required=False)
+    profile_picture = serializers.ImageField(required=False, use_url=False)
 
     class Meta:
         model = StudentProfile
         fields = '__all__'
+
+    # Returns a base64-encoded string of the image
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get('profile_picture'):
+            with open('media/'+data['profile_picture'], 'rb') as f:
+                encoded_image = base64.b64encode(f.read()).decode('utf-8')
+            data['profile_picture'] = encoded_image
+        return data
 
 
 class ProfileSerializer(serializers.ModelSerializer):

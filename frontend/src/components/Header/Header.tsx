@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, useEffect, useState} from 'react'
 import {Menu, Popover, Transition} from '@headlessui/react'
 import {
     BriefcaseIcon,
@@ -9,11 +9,13 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import {classNames, handleLogout} from "../../scripts/utils";
+import {classNames, getAccessToken, handleLogout} from "../../scripts/utils";
+import DefaultProfilePic from "../../assets/default_profile_pic.png"
 import logo from '../../assets/logo_nobg.svg'
 import {Link} from "react-router-dom";
 import {useRecoilValue} from "recoil";
 import {authAtom} from "../../constants/atoms";
+import axios from "axios";
 
 const jobActions = [
     {
@@ -47,8 +49,27 @@ const accountActions = [
 
 const Header = () => {
     const { isAuthenticated } = useRecoilValue(authAtom);
+    const [profile_picture, setProfile_picture] = useState<string | null>(null)
 
 
+    const getUserInfo = () => {
+        axios.get('http://localhost:8000/api/profile/', {
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+            },
+        })
+            .then((response: any) => {
+                setProfile_picture(response.data.profile.profile_picture)
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+
+    useEffect(() => {
+        getUserInfo()
+    }, []);
     return (
         <Popover className="relative bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
@@ -203,7 +224,7 @@ const Header = () => {
                                     <span className="sr-only">Open user menu</span>
                                     <img
                                         className="h-8 w-8 rounded-full"
-                                        src="https://startupheretoronto.com/wp-content/uploads/2018/04/default-user-image-2.png/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E"
+                                        src={profile_picture ? `data:image/jpeg;base64,${profile_picture}` : DefaultProfilePic}
                                         alt="User image"
                                     />
                                 </Menu.Button>

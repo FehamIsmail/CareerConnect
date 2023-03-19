@@ -1,18 +1,16 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render, get_object_or_404
-from rest_framework import generics, viewsets, permissions, status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.exceptions import ValidationError, Throttled, server_error
+from rest_framework import viewsets, status
+from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
-from rest_framework.permissions import DjangoModelPermissions, AllowAny, IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User, Student, StudentProfile, Job
-from .serializers import StudentProfileSerializer, UserSerializer, UserSerializer, EmployerProfileSerializer, \
+from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer
 
 
@@ -91,6 +89,7 @@ class LoginView(TokenObtainPairView):
 class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -118,7 +117,6 @@ class UserProfileView(RetrieveUpdateAPIView):
             elif user.role == User.Role.EMPLOYER:
                 profile_serializer = EmployerProfileSerializer(user.employerprofile, data=request.data, partial=True)
             else:
-
                 return server_error(request)
 
             if profile_serializer.is_valid():

@@ -96,12 +96,17 @@ export const JOB_TYPE_METADATA: Record<JobType, JobTypeMetadata> = {
 };
 
 export enum EducationLevel {
-    PRIMARY_SCHOOL = 'PS',
     SECONDARY_SCHOOL = 'SS',
     HIGH_SCHOOL = 'HS',
     BACHELOR = 'BA',
     MASTER = 'MA',
     DOCTORATE = 'PHD',
+    CERTIFICATE = 'CERT',
+    DIPLOMA = 'DIP',
+    ASSOCIATE = 'AA',
+    POSTGRADUATE = 'PG',
+    PROFESSIONAL = 'PROF',
+    SPECIALIZATION = 'SPEC'
 }
 
 type EducationLevelDetails = {
@@ -109,12 +114,17 @@ type EducationLevelDetails = {
 };
 
 export const educationLevelDetails: EducationLevelDetails = {
-    [EducationLevel.PRIMARY_SCHOOL]: 'Primary School',
     [EducationLevel.SECONDARY_SCHOOL]: 'Secondary School',
     [EducationLevel.HIGH_SCHOOL]: 'High School',
     [EducationLevel.BACHELOR]: 'Bachelor',
     [EducationLevel.MASTER]: 'Master',
     [EducationLevel.DOCTORATE]: 'Doctorate',
+    [EducationLevel.CERTIFICATE]: 'Certificate',
+    [EducationLevel.DIPLOMA]: 'Diploma',
+    [EducationLevel.ASSOCIATE]: 'Associate',
+    [EducationLevel.POSTGRADUATE]: 'Postgraduate',
+    [EducationLevel.PROFESSIONAL]: 'Professional',
+    [EducationLevel.SPECIALIZATION]: 'Specialization',
 };
 
 export type UserInfo = {
@@ -127,9 +137,9 @@ export type StudentProfile = {
     institution: string,
     education_level: EducationLevel | '',
     phone_number: number,
-    show_number: boolean,
     country: string,
     province_territory: string,
+    profile_picture: string | null,
     street_address: string,
     postal_code: string,
     city: string,

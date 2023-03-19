@@ -111,3 +111,20 @@ export function createArrayFromStrings(object: any):string[]{
         return acc;
     }, []);
 }
+
+export function appendObjectToFormData(formData: FormData, object: any, prefix?: string) {
+    for (const property in object) {
+        if (object.hasOwnProperty(property)) {
+            const key = prefix ? `${prefix}[${property}]` : property;
+            const value = object[property];
+
+            if (value instanceof File) {
+                formData.append(key, value);
+            } else if (typeof value === 'object') {
+                appendObjectToFormData(formData, value, key);
+            } else {
+                formData.append(key, value.toString());
+            }
+        }
+    }
+}

@@ -6,7 +6,7 @@ import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/util
 import {useRecoilValue} from "recoil";
 import {userTypeAtom} from "../constants/atoms";
 import DefaultProfilePic from "../assets/default_profile_pic.png"
-import {EducationLevel, EmployerProfile, StudentProfile, UserInfo} from "../constants/types";
+import {EducationLevel, educationLevelDetails, EmployerProfile, StudentProfile, UserInfo} from "../constants/types";
 import { useNavigate } from 'react-router-dom';
 import * as utils from "../scripts/UserFormUtils";
 
@@ -20,14 +20,14 @@ const emptyUserInfo:UserInfo = {
 const emptyStudentProfile:StudentProfile = {
     institution: '',
     education_level: '',
-    phone_number: -1,
+    phone_number: NaN,
     street_address: '',
+    profile_picture: null,
     postal_code: '',
     province_territory: '',
     city: '',
     country: '',
     relocation: false,
-    show_number: false
 }
 
 const emptyEmployerProfile:EmployerProfile = {
@@ -46,16 +46,18 @@ export default function UserForm() {
     const [studentInfo, setStudentInfo] = useState<StudentProfile>(emptyStudentProfile);
     const [employerInfo, setEmployerInfo] = useState<EmployerProfile>(emptyEmployerProfile);
     const [status, setStatus] = useState<status>({type: 'nothing', message: ' '})
-    const educationLevels = Object.values(EducationLevel);
     const navigate = useNavigate();
     const role = useRecoilValue(userTypeAtom);
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        const data = role === "STUDENT" ? {...userInfo, ...studentInfo} : {...userInfo, ...employerInfo}
+        const data = role === "STUDENT" ? {...userInfo, ...studentInfo, profile_picture} : {...userInfo, ...employerInfo}
         axios.put('http://localhost:8000/api/profile/', data,{
-            headers: { Authorization: `Bearer ${getAccessToken()}`,},
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+                "Content-Type": 'multipart/form-data'
+            },
         }
         ).then(res => {
             if(res.status == 200)
@@ -75,11 +77,11 @@ export default function UserForm() {
             },
         })
             .then((response: any) => {
+                console.log(response)
                 const profile = response.data.profile
                 const userInfo = response.data.user
-                if(profile.id)
+                if('id' in profile)
                     delete profile.id
-                console.log(response)
                 if(userInfo.role === "STUDENT")
                     setStudentInfo(prevState => ({...prevState, ...profile}))
                 if(userInfo.role === "EMPLOYER")
@@ -96,7 +98,16 @@ export default function UserForm() {
     }, []);
 
     useEffect(() => {
-        console.log(profile_picture)
+        if(profile_picture){
+            const reader = new FileReader();
+            reader.readAsDataURL(profile_picture);
+            reader.onload = () => {
+                const imageUrl = reader.result as string; // The data URL
+                // Set the source of your <img> element to the data URL
+                const img = document.getElementById('profile-picture-img') as HTMLImageElement;
+                img.src = imageUrl;
+            }
+        }
     }, [profile_picture]);
 
     return (
@@ -116,7 +127,8 @@ export default function UserForm() {
                                     <label className="block text-sm font-medium text-gray-700">Photo</label>
                                     <div className="mt-1 flex items-center">
                                     <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                                        <img alt="profile picture" className="h-full w-full text-gray-300" src={DefaultProfilePic}/>
+                                        <img id="profile-picture-img" alt="profile picture" className="h-full w-full text-gray-300"
+                                             src={studentInfo.profile_picture ? `data:image/jpeg;base64,${studentInfo.profile_picture}` : DefaultProfilePic}/>
                                     </span>
                                         <label
                                             htmlFor="photo-upload"
@@ -124,7 +136,7 @@ export default function UserForm() {
                                         >
                                             <span className="cursor-pointer transition-shadow rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-100 rounded-md bg-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:drop-shadow-sm">Change</span>
                                             <input id="photo-upload" name="photo-upload" type="file"
-                                                   onChange={e => utils.handleFileChange(e, setProfile_picture, 'IMAGE', 2)}
+                                                   onChange={e => utils.handleFileChange(e, setProfile_picture, 'IMAGE', 3)}
                                                    className={`sr-only`}/>
                                         </label>
                                     </div>
@@ -155,13 +167,13 @@ export default function UserForm() {
                                                 id="education_level"
                                                 onChange={e => utils.handleOptionChange(e, setStudentInfo)}
                                                 value={studentInfo.education_level || ''}
-                                                autoComplete="organization"
                                                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                             >
-                                                <option></option>
-                                                {educationLevels.map((level) => (
-                                                    <option key={level} value={level}>
-                                                        {level}
+                                                {Object.entries(
+                                                    educationLevelDetails
+                                                ).map(([value, label]) => ({ value: value as EducationLevel, label })).map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
                                                     </option>
                                                 ))}
                                             </select>
@@ -243,8 +255,8 @@ export default function UserForm() {
                                         id="country"
                                         name="country"
                                         value={studentInfo.country || ''}
-                                        autoComplete="country-name"
                                         onChange={e => utils.handleOptionChange(e, setStudentInfo)}
+                                        autoComplete="country-name"
                                         className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     >
                                         {countryList.map(country =>
@@ -253,25 +265,29 @@ export default function UserForm() {
                                     </select>
                                 </div>}
                                 {role == "STUDENT" && <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="street-address" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="street_address" className="block text-sm font-medium text-gray-700">
                                         Street address
                                     </label>
                                     <input
                                         type="text"
-                                        name="street-address"
-                                        id="street-address"
-                                        autoComplete="street-address"
+                                        name="street_address"
+                                        id="street_address"
+                                        value={studentInfo.street_address || ''}
+                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
+                                        autoComplete="address-line1"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />
                                 </div>}
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
                                         Phone Number
                                     </label>
                                     <input
                                         type="tel"
-                                        name="phone-number"
-                                        id="phone-number"
+                                        name="phone_number"
+                                        id="phone_number"
+                                        value={studentInfo.phone_number || ''}
+                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
                                         autoComplete="tel"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />
@@ -284,30 +300,36 @@ export default function UserForm() {
                                         type="text"
                                         name="city"
                                         id="city"
+                                        value={studentInfo.city || ''}
+                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
                                         autoComplete="address-level2"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />
                                 </div>}
                                 {role == "STUDENT" && <div className="col-span-6 sm:col-span-3 md:col-span-2">
-                                    <label htmlFor="region" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="province_territory" className="block text-sm font-medium text-gray-700">
                                         State / Province
                                     </label>
                                     <input
                                         type="text"
-                                        name="region"
-                                        id="region"
+                                        name="province_territory"
+                                        id="province_territory"
+                                        value={studentInfo.province_territory || ''}
+                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
                                         autoComplete="address-level1"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />
                                 </div>}
                                 {role == "STUDENT" && <div className="col-span-6 sm:col-span-3 md:col-span-2">
-                                    <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="postal_code" className="block text-sm font-medium text-gray-700">
                                         ZIP / Postal code
                                     </label>
                                     <input
                                         type="text"
-                                        name="postal-code"
-                                        id="postal-code"
+                                        name="postal_code"
+                                        id="postal_code"
+                                        value={studentInfo.postal_code || ''}
+                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
                                         autoComplete="postal-code"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />

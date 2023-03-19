@@ -23,15 +23,17 @@ export const handleDrop = (
 
 export const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>,
                                  setFile: React.Dispatch<React.SetStateAction<File|null>>,
-                                 file_type: 'IMAGE' | 'DOCUMENT' | null,
-                                 size_limit: number | undefined
+                                 file_type?: 'IMAGE' | 'DOCUMENT' | null,
+                                 size_limit?: number | undefined
 ) => {
 
     const file = e.target.files && e.target.files[0]
-    if(file_type && file){
-        if(!(file.type.startsWith("image/jpeg") || file.type.startsWith("image/jpg") || file.type.startsWith("image/png")))
+    if(file_type && file) {
+        if (!(file.type.startsWith("image/jpeg") || file.type.startsWith("image/jpg") || file.type.startsWith("image/png"))){
             alert("Please select a valid image type. (PNG, JPEG, JPG)")
         return
+        }
+
     }
     // Size limit is in MB
     if(size_limit && file && file.size > size_limit * 1024 * 1024 ){

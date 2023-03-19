@@ -109,25 +109,30 @@ class StudentProfile(models.Model):
     institution = models.CharField(max_length=100, null=True, blank=True)
 
     class EducationLevel(models.TextChoices):
-        PRIMARY_SCHOOL = 'PS', 'Primary School'
         SECONDARY_SCHOOL = 'SS', 'Secondary School'
         HIGH_SCHOOL = 'HS', 'High School'
         BACHELOR = 'BA', 'Bachelor'
         MASTER = 'MA', 'Master'
         DOCTORATE = 'PHD', 'Doctorate'
-    education_level = models.CharField(max_length=3, choices=EducationLevel.choices)
+        CERTIFICATE = 'CERT', 'Certificate'
+        DIPLOMA = 'DIP', 'Diploma'
+        ASSOCIATE = 'AA', 'Associate'
+        POSTGRADUATE = 'PG', 'Postgraduate'
+        PROFESSIONAL = 'PROF', 'Professional'
+        SPECIALIZATION = 'SPEC', 'Specialization'
+    education_level = models.CharField(max_length=4, choices=EducationLevel.choices)
 
     # Contact Information
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    show_number = models.BooleanField(default=False)
-    contact_email = models.EmailField(null=True, blank=True)
+    # show_number = models.BooleanField(default=False)
+    # contact_email = models.EmailField(null=True, blank=True)
 
     # Location
     country = models.CharField(max_length=50, null=True, blank=True)
     province_territory = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)
-    # postal_code = models.CharField(max_length=50, null=True, blank=True)
-    # street_address = models.CharField(max_length=50, null=True, blank=True)
+    postal_code = models.CharField(max_length=50, null=True, blank=True)
+    street_address = models.CharField(max_length=50, null=True, blank=True)
     relocation = models.BooleanField(default=False)
 
 
