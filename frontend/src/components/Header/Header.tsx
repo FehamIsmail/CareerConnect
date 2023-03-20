@@ -3,6 +3,7 @@ import {Menu, Popover, Transition} from '@headlessui/react'
 import {
     BriefcaseIcon,
     ClipboardDocumentIcon,
+    DocumentDuplicateIcon,
     UserIcon,
     CubeIcon,
     Bars3Icon,
@@ -14,43 +15,54 @@ import DefaultProfilePic from "../../assets/default_profile_pic.png"
 import logo from '../../assets/logo_nobg.svg'
 import {Link} from "react-router-dom";
 import {useRecoilValue} from "recoil";
-import {authAtom} from "../../constants/atoms";
+import {authAtom, userTypeAtom} from "../../constants/atoms";
 import axios from "axios";
 
-const jobActions = [
-    {
-        name: 'Job Postings',
-        description: 'Browse job postings',
-        href: '#',
-        icon: ClipboardDocumentIcon,
-    },
-    {
-        name: 'Employers / Post Job',
-        description: 'Post a job as an employer',
-        href: '#',
-        icon: BriefcaseIcon,
-    },
-]
 
-const accountActions = [
-    {
-        name: 'My Profile',
-        href: '/user/edit',
-        description: 'Edit your profile details',
-        icon: UserIcon,
-    },
-    {
-        name: 'My Application Packages',
-        href: '#',
-        description: 'Manage your application packages',
-        icon: CubeIcon,
-    },
-]
 
 const Header = () => {
     const { isAuthenticated } = useRecoilValue(authAtom);
+    const role = useRecoilValue(userTypeAtom)
     const [profile_picture, setProfile_picture] = useState<string | null>(null)
 
+
+    const jobActions = [
+        {
+            name: 'Job Postings',
+            description: 'Browse job postings',
+            href: '#',
+            icon: ClipboardDocumentIcon,
+        },
+        (role == "STUDENT" ?
+         { name: 'Job Applications',
+            description: 'View your job applications',
+            href: '#',
+            icon: DocumentDuplicateIcon,
+         } : {
+            name: 'Employers / Post Job',
+            description: 'Post a job as an employer',
+            href: '#',
+            icon: BriefcaseIcon,
+        })
+    ]
+
+    const accountActions = [
+        {
+            name: 'My Profile',
+            href: '/user/edit',
+            description: 'Edit your profile details',
+            icon: UserIcon,
+        }
+    ]
+    if(role == "STUDENT"){
+        accountActions.push({
+            name: 'My Application Packages',
+            href: '#',
+            description: 'Manage your application packages',
+            icon: CubeIcon,
+        })
+    }
+    console.log(accountActions)
 
     const getUserInfo = () => {
         axios.get('http://localhost:8000/api/profile/', {
@@ -66,9 +78,8 @@ const Header = () => {
             });
     }
 
-
     useEffect(() => {
-        getUserInfo()
+        if(isAuthenticated) getUserInfo()
     }, []);
     return (
         <Popover className="relative bg-white drop-shadow-md">
@@ -179,10 +190,10 @@ const Header = () => {
                                                     {accountActions.map((item) => (
                                                         <Link
                                                             key={item.name}
-                                                            to={item.href}
+                                                            to={item.href as string}
                                                             className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50"
                                                         >
-                                                            <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
+                                                            {item.icon && <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />}
                                                             <div className="ml-4">
                                                                 <p className="text-base font-medium text-gray-900">{item.name}</p>
                                                                 <p className="mt-1 text-sm text-gray-500">{item.description}</p>
@@ -333,10 +344,10 @@ const Header = () => {
                                         {accountActions.map((item) => (
                                             <Link
                                                 key={item.name}
-                                                to={item.href}
+                                                to={item.href as string}
                                                 className="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50"
                                             >
-                                                <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
+                                                {item.icon && <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />}
                                                 <span className="ml-3 text-base font-medium text-gray-900">{item.name}</span>
                                             </Link>
                                         ))}

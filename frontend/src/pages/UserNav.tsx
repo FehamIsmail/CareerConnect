@@ -17,8 +17,8 @@ export function UserNav() {
         <>
         <Header/>
         <div className="md:grid md:grid-cols-12 md:gap-x-5">
-            <aside className="ml-0 bg-white sm:mr-6 sm:ml-6 sm:mt-4 md:mr-0 md:ml-4 md:h-[96vh] py-6 px-2 shadow-default rounded-md sm:px-6 md:col-span-3 md:py-0 md:px-0">
-                <nav className="space-y-1 mt-4 px-3">
+            <aside className="ml-0 bg-white sm:mr-6 sm:ml-6 sm:mt-4 md:mr-0 md:ml-4 md:h-[96vh] p-2 shadow-default rounded-md md:col-span-3 md:py-0 md:px-0">
+                <nav className="space-y-1 p-3">
                     {navigation.map((item) => (
                         <a
                             key={item.name}
