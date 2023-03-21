@@ -110,6 +110,7 @@ class StudentProfile(models.Model):
 
     # Academic Info
     institution = models.CharField(max_length=100, null=True, blank=True)
+    field_of_study = models.CharField(max_length=100, null=True, blank=True)
 
     class EducationLevel(models.TextChoices):
         SECONDARY_SCHOOL = 'SS', 'Secondary School'

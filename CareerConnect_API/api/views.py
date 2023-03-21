@@ -194,7 +194,7 @@ class JobApplicationView(UpdateAPIView):
 
     def post(self, request, *args, **kwargs):
         job = self.get_object()
-        application = get_object_or_404(Application, pk=request.POST['id'])
+        application = get_object_or_404(Application, pk=request.GET['pk'])
         job.applications.add(application)
         job.save()
         serializer = self.get_serializer(application)

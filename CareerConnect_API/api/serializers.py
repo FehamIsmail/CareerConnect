@@ -116,13 +116,13 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)
     # cv = CVSerializer(read_only=True, many=True)
     # cl = CLSerializer(read_only=True, many=True)
-    # application = ApplicationSerializer(read_only=True, many=True)
+    application = ApplicationSerializer(read_only=True, many=True)
     profile_picture = serializers.ImageField(required=False, use_url=False)
 
     class Meta:
         model = StudentProfile
         fields = ['id', 'profile_picture', 'institution', 'education_level', 'phone_number', 'country',
-                  'province_territory', 'city', 'postal_code', 'street_address', 'relocation']
+                  'province_territory', 'city', 'postal_code', 'street_address', 'relocation', 'application']
 
     # Returns a base64-encoded string of the image
     def to_representation(self, instance):
