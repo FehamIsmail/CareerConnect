@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'role', 'password', 'confirm_password']
+        fields = ['email', 'first_name', 'last_name', 'role', 'password', 'confirm_password']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -121,7 +121,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'profile_picture', 'institution', 'education_level', 'phone_number', 'country',
+        fields = ['profile_picture', 'institution', 'education_level', 'field_of_study', 'phone_number', 'country',
                   'province_territory', 'city', 'postal_code', 'street_address', 'relocation', 'application']
 
     # Returns a base64-encoded string of the image
@@ -146,7 +146,17 @@ class JobSerializer(serializers.ModelSerializer):
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     job_set = JobSerializer(many=True, read_only=True)
+    profile_picture = serializers.ImageField(required=False, use_url=False)
 
     class Meta:
         model = EmployerProfile
-        fields = ['id', 'profile_picture', 'phone_number', 'company', 'job_set']
+        fields = ['profile_picture', 'phone_number', 'company', 'job_set']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get('profile_picture'):
+            with open('media/' + data['profile_picture'], 'rb') as f:
+                encoded_image = base64.b64encode(f.read()).decode('utf-8')
+            data['profile_picture'] = encoded_image
+        return data
+

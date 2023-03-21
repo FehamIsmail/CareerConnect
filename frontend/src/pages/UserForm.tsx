@@ -20,6 +20,7 @@ const emptyUserInfo:UserInfo = {
 const emptyStudentProfile:StudentProfile = {
     institution: '',
     education_level: '',
+    field_of_study: '',
     phone_number: NaN,
     street_address: '',
     profile_picture: null,
@@ -31,7 +32,9 @@ const emptyStudentProfile:StudentProfile = {
 }
 
 const emptyEmployerProfile:EmployerProfile = {
-    company: ''
+    company: '',
+    phone_number: NaN,
+    profile_picture: null
 }
 
 type status = {
@@ -52,7 +55,7 @@ export default function UserForm() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        const data = role === "STUDENT" ? {...userInfo, ...studentInfo, profile_picture} : {...userInfo, ...employerInfo}
+        const data = role === "STUDENT" ? {...userInfo, ...studentInfo, profile_picture} : {...userInfo, ...employerInfo, profile_picture}
         axios.put('http://localhost:8000/api/profile/', data,{
             headers: {
                 Authorization: `Bearer ${getAccessToken()}`,
@@ -77,7 +80,6 @@ export default function UserForm() {
             },
         })
             .then((response: any) => {
-                console.log(response)
                 const profile = response.data.profile
                 const userInfo = response.data.user
                 if('id' in profile)
@@ -128,7 +130,7 @@ export default function UserForm() {
                                     <div className="mt-1 flex items-center">
                                     <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
                                         <img id="profile-picture-img" alt="profile picture" className="h-full w-full text-gray-300 object-cover"
-                                             src={studentInfo.profile_picture ? `data:image/jpeg;base64,${studentInfo.profile_picture}` : DefaultProfilePic}/>
+                                             src={(studentInfo.profile_picture || employerInfo.profile_picture) ? `data:image/jpeg;base64,${studentInfo.profile_picture || employerInfo.profile_picture}` : DefaultProfilePic}/>
                                     </span>
                                         <label
                                             htmlFor="photo-upload"
@@ -177,6 +179,21 @@ export default function UserForm() {
                                                     </option>
                                                 ))}
                                             </select>
+                                        </div>
+                                    )}
+                                    {role == "STUDENT" && (
+                                        <div className="flex-1">
+                                            <label htmlFor="field_of_study" className="block text-sm font-medium text-gray-700">
+                                                Field of Study
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="field_of_study"
+                                                id="field_of_study"
+                                                value={studentInfo.field_of_study || ''}
+                                                onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
+                                                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                            />
                                         </div>
                                     )}
                                 </div>
@@ -286,8 +303,8 @@ export default function UserForm() {
                                         type="tel"
                                         name="phone_number"
                                         id="phone_number"
-                                        value={studentInfo.phone_number || ''}
-                                        onChange={e => utils.handleStudentInputChange(e, setStudentInfo)}
+                                        value={role == "STUDENT" ? studentInfo.phone_number || '' : employerInfo.phone_number || ''}
+                                        onChange={role == "STUDENT" ? e => utils.handleStudentInputChange(e, setStudentInfo) : e => utils.handleEmployerInputChange(e, setEmployerInfo)}
                                         autoComplete="tel"
                                         className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     />

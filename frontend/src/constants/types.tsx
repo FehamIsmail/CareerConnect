@@ -136,6 +136,7 @@ export type UserInfo = {
 export type StudentProfile = {
     institution: string,
     education_level: EducationLevel | '',
+    field_of_study: string,
     phone_number: number,
     country: string,
     province_territory: string,
@@ -147,7 +148,9 @@ export type StudentProfile = {
 }
 
 export type EmployerProfile = {
-    company: string
+    company: string,
+    phone_number: number
+    profile_picture: string | null,
 }
 
 export type CurriculumVitae = {
