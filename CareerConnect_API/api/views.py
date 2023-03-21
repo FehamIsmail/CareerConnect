@@ -2,17 +2,19 @@ from django.contrib.auth import authenticate
 from rest_framework import viewsets, status
 from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
-    RetrieveUpdateDestroyAPIView
+    RetrieveUpdateDestroyAPIView, UpdateAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User, StudentProfile, Job
+from .models import User, StudentProfile, Job, Application
+from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer
+    UserSerializer, JobSerializer, ApplicationSerializer
 
 
 # Create your views here.
@@ -39,11 +41,11 @@ class RegistrationView(CreateAPIView):
         if serializer.is_valid(raise_exception=True):
             new_user = serializer.save()
             if new_user.role == User.Role.STUDENT:
-                new_user.studentprofile.institution = request.data['institution']
-                new_user.studentprofile.save()
+                new_user.student_profile.institution = request.data['institution']
+                new_user.student_profile.save()
             elif new_user.role == User.Role.EMPLOYER:
-                new_user.employerprofile.company = request.data['company_name']
-                new_user.employerprofile.save()
+                new_user.employer_profile.company = request.data['company_name']
+                new_user.employer_profile.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -97,10 +99,10 @@ class UserProfileView(RetrieveUpdateAPIView):
         user_serializer = UserSerializer(user)
 
         if user.role == User.Role.STUDENT:
-            profile = user.studentprofile
+            profile = user.student_profile
             profile_serializer = StudentProfileSerializer(profile)
         elif user.role == User.Role.EMPLOYER:
-            profile = user.employerprofile
+            profile = user.employer_profile
             profile_serializer = EmployerProfileSerializer(profile)
         else:
             return server_error(request)
@@ -115,9 +117,9 @@ class UserProfileView(RetrieveUpdateAPIView):
             user_serializer.save()
 
             if user.role == User.Role.STUDENT:
-                profile_serializer = StudentProfileSerializer(user.studentprofile, data=request.data, partial=True)
+                profile_serializer = StudentProfileSerializer(user.student_profile, data=request.data, partial=True)
             elif user.role == User.Role.EMPLOYER:
-                profile_serializer = EmployerProfileSerializer(user.employerprofile, data=request.data, partial=True)
+                profile_serializer = EmployerProfileSerializer(user.employer_profile, data=request.data, partial=True)
             else:
                 return server_error(request)
 
@@ -139,26 +141,71 @@ class UserProfileView(RetrieveUpdateAPIView):
     """
 
 
+class ApplicationListView(ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+
+    def perform_create(self, serializer):
+        # Set the employer to the current authenticated user
+        serializer.validated_data['student'] = self.request.user.student_profile
+        serializer.save()
+        print(f'{self.request.user.email} created application package!')
+
+
+class ApplicationDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    The permission "IsOwnerOrReadOnly" is self-explanatory:
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+
+
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
     def perform_create(self, serializer):
         # Set the employer to the current authenticated user
-        serializer.validated_data['employer'] = self.request.user.employerprofile
+        serializer.validated_data['employer'] = self.request.user.employer_profile
         serializer.save()
         print(f'{self.request.user.email} created job!')
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    The permission "IsOwnerOrReadOnly" is self-explanatory:
+    """
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    """
-    IsOwnerOrReadOnly needed here:
-    https://www.django-rest-framework.org/api-guide/permissions/
-    """
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
 
 
+class JobApplicationView(UpdateAPIView):
+    queryset = Job.objects.all()
+    serializer_class = ApplicationSerializer
+    permission_classes = [CanCreateOrRemoveApplication]
+
+    def post(self, request, *args, **kwargs):
+        job = self.get_object()
+        application = get_object_or_404(Application, pk=request.POST['id'])
+        job.applications.add(application)
+        job.save()
+        serializer = self.get_serializer(application)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, *args, **kwargs):
+        job = self.get_object()
+        application = get_object_or_404(Application, pk=request.POST['id'])
+        if application.student_profile == request.user.student_profile:
+            job.applications.remove(application)
+            job.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)

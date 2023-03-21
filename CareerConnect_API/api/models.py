@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -53,6 +54,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     objects = UserManager()
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -84,7 +86,8 @@ class Employer(User):
 
 
 class EmployerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer_profile')
     profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
 
@@ -95,7 +98,8 @@ class EmployerProfile(models.Model):
 
 
 class StudentProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     # Profile Info
@@ -137,6 +141,7 @@ class StudentProfile(models.Model):
 
 # ============= STUDENT's Objects ============= #
 class CoverLetter(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cl', null=True, blank=True)
     cover_letter = models.FileField(null=True, blank=True)
 
@@ -145,6 +150,7 @@ class CoverLetter(models.Model):
 
 
 class CurriculumVitae(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cv', null=True, blank=True)
     curriculum_vitae = models.FileField(null=True, blank=True)
 
@@ -153,6 +159,7 @@ class CurriculumVitae(models.Model):
 
 
 class Application(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='application')
     cover_letter = models.ForeignKey(CoverLetter, on_delete=models.CASCADE, null=True, blank=True)
     curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE)
@@ -163,6 +170,7 @@ class Application(models.Model):
 # ============= EMPLOYER's Objects ============= #
 
 class Job(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     JOB_TYPE_CHOICES = (
         ('FULL_TIME', 'Full-time'),
         ('PART_TIME', 'Part-time'),
