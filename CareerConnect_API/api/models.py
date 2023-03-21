@@ -88,6 +88,7 @@ class Employer(User):
 class EmployerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     # Profile Info
     # user.first_name
@@ -103,7 +104,7 @@ class StudentProfile(models.Model):
     # user.first_name
     # user.last_name
     # headline = models.TextField(null=True, blank=True)  # 1 sentence under name
-    #bio = models.TextField(null=True, blank=True)  # describing text
+    # bio = models.TextField(null=True, blank=True)  # describing text
 
     # Academic Info
     institution = models.CharField(max_length=100, null=True, blank=True)
