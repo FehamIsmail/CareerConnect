@@ -1,18 +1,16 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render, get_object_or_404
-from rest_framework import generics, viewsets, permissions, status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.exceptions import ValidationError, Throttled, server_error
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
-from rest_framework.permissions import DjangoModelPermissions, AllowAny, IsAuthenticated
+from rest_framework import viewsets, status
+from rest_framework.exceptions import server_error
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
+    RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User, Student, StudentProfile, Job
-from .serializers import StudentProfileSerializer, UserSerializer, UserSerializer, EmployerProfileSerializer, \
+from .models import User, StudentProfile, Job
+from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer
 
 
@@ -142,3 +140,15 @@ class JobListView(ListCreateAPIView):
         serializer.validated_data['employer'] = self.request.user.employerprofile
         serializer.save()
         print(f'{self.request.user.email} created job!')
+
+
+class JobDetailView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    """
+    IsOwnerOrReadOnly needed here:
+    https://www.django-rest-framework.org/api-guide/permissions/
+    """
+
+
