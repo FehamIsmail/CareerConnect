@@ -149,7 +149,7 @@ class ApplicationListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Set the employer to the current authenticated user
-        serializer.validated_data['student'] = self.request.user.student_profile
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
         serializer.save()
         print(f'{self.request.user.email} created application package!')
 
