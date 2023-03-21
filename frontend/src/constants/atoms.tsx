@@ -2,6 +2,7 @@ import {atom, selector} from 'recoil'
 import {IJob} from "./types";
 
 const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+let role: 'STUDENT' | 'EMPLOYER' | null = localStorage.getItem('role') as 'STUDENT' | 'EMPLOYER' | null
 
 export const jobOnPreviewIDAtom = atom<number>({
     key: 'jobOnPreviewID',
@@ -29,8 +30,8 @@ export const authAtom = atom({
     default: { isAuthenticated: isAuthenticated },
 });
 
-export const userTypeAtom = atom<'STUDENT' | 'EMPLOYER'>({
+export const userTypeAtom = atom<'STUDENT' | 'EMPLOYER' | null>({
     key: 'userType',
-    default: 'STUDENT',
+    default: role,
 });
 

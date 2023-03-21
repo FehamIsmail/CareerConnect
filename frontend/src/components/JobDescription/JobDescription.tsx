@@ -68,9 +68,9 @@ const JobDescription = (props: JobDescriptionProps) => {
                             <HeartIcon className="relative h-6 top-[2px]"/>
                         </div>
                         <div className={`flex flex-col gap-[2px] text-top h-fit mt-2`}>
-                            {jobOnFocus.website && (<p className="text-[#085FF7] font-medium text-sm"><a
-                                href={jobOnFocus.website}>{jobOnFocus.company}</a></p>)}
-                            <p className="text-black font-[500] text-xs">{jobOnFocus.location}</p>
+                            {jobOnFocus.website_url && (<p className="text-[#085FF7] font-medium text-sm"><a
+                                href={jobOnFocus.website_url}>{jobOnFocus.company}</a></p>)}
+                            <p className="text-black font-[500] text-xs">{jobOnFocus.street_address}</p>
                             <p className="text-black font-[500] text-xs">{getJobTypesString(jobOnFocus.types)}</p>
                         </div>
                         <button

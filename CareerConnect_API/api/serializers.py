@@ -1,3 +1,5 @@
+import base64
+
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
@@ -72,7 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if 'password' in validated_data:
             instance.set_password(validated_data['password'])
-            print("Password changed successfuly")
+            print("Password changed successfully")
 
         instance.save()
 
@@ -80,15 +82,25 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CVSerializer(serializers.ModelSerializer):
+    # curriculum_vitae = serializers.FileField(required=True)
+    # title = serializers.CharField(required=True)
+    # default = serializers.BooleanField(default=False)
+    #
+    # def create(self, validated_data):
+    #     return CurriculumVitae.objects.create(**validated_data)
+    #
+    # def update(self, instance, validated_data):
+    #     instance.curriculum_vitae = validated_data.__get('')
+
     class Meta:
         model = CurriculumVitae
-        fields = ['id', 'title']
+        fields = ['id', 'curriculum_vitae', 'title', 'default']
 
 
 class CLSerializer(serializers.ModelSerializer):
     class Meta:
         model = CoverLetter
-        fields = ['id', 'title']
+        fields = ['id', 'cover_letter', 'title', 'default']
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
@@ -97,19 +109,29 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['id', 'package_name', 'cv', 'cl']
+        fields = ['id', 'package_name', 'cv', 'cl', 'default']
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)
     # cv = CVSerializer(read_only=True, many=True)
     # cl = CLSerializer(read_only=True, many=True)
-    # application = ApplicationSerializer(read_only=True, many=True)
-    profile_picture = serializers.ImageField(required=False)
+    application = ApplicationSerializer(read_only=True, many=True)
+    profile_picture = serializers.ImageField(required=False, use_url=False)
 
     class Meta:
         model = StudentProfile
-        fields = '__all__'
+        fields = ['profile_picture', 'institution', 'education_level', 'field_of_study', 'phone_number', 'country',
+                  'province_territory', 'city', 'postal_code', 'street_address', 'relocation', 'application']
+
+    # Returns a base64-encoded string of the image
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get('profile_picture'):
+            with open('media/' + data['profile_picture'], 'rb') as f:
+                encoded_image = base64.b64encode(f.read()).decode('utf-8')
+            data['profile_picture'] = encoded_image
+        return data
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -124,7 +146,17 @@ class JobSerializer(serializers.ModelSerializer):
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     job_set = JobSerializer(many=True, read_only=True)
+    profile_picture = serializers.ImageField(required=False, use_url=False)
 
     class Meta:
         model = EmployerProfile
-        fields = ['id', 'company', 'job_set']
+        fields = ['profile_picture', 'phone_number', 'company', 'job_set']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get('profile_picture'):
+            with open('media/' + data['profile_picture'], 'rb') as f:
+                encoded_image = base64.b64encode(f.read()).decode('utf-8')
+            data['profile_picture'] = encoded_image
+        return data
+

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {JobType} from "../constants/types";
 import {useSetRecoilState} from "recoil";
 import {authAtom} from "../constants/atoms";
@@ -73,6 +73,7 @@ export const getJobTypesString = (types: JobType[]): string => {
 export const handleLogout = () => {
     sessionStorage.removeItem('refreshToken')
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('role')
     setAuthenticated(false)
     // it is important to setAuth after to refresh components
     // only when the code above is executed
@@ -82,4 +83,48 @@ export const handleLogout = () => {
 
 export const setAuthenticated = (value:boolean) => {
     localStorage.setItem('isAuthenticated', String(value).toLowerCase());
+}
+
+interface ErrorProp {
+    messages: string[]
+}
+
+export const ErrorList = (props:ErrorProp) => {
+    const {messages} = props
+    return (
+        <ul>
+            {messages.map((message, index) => (
+                <li className="mt-2" key={index}>• {message}</li>
+            ))}
+        </ul>
+    );
+};
+
+export function createArrayFromStrings(object: any):string[]{
+    return Object.keys(object).reduce((acc: string[], key: string) => {
+        const value = object[key];
+        if (typeof value === 'string') {
+            return [...acc, value];
+        } else if (Array.isArray(value)) {
+            return [...acc, ...value];
+        }
+        return acc;
+    }, []);
+}
+
+export function appendObjectToFormData(formData: FormData, object: any, prefix?: string) {
+    for (const property in object) {
+        if (object.hasOwnProperty(property)) {
+            const key = prefix ? `${prefix}[${property}]` : property;
+            const value = object[property];
+
+            if (value instanceof File) {
+                formData.append(key, value);
+            } else if (typeof value === 'object') {
+                appendObjectToFormData(formData, value, key);
+            } else {
+                formData.append(key, value.toString());
+            }
+        }
+    }
 }

@@ -1,54 +1,86 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, useEffect, useState} from 'react'
 import {Menu, Popover, Transition} from '@headlessui/react'
 import {
     BriefcaseIcon,
     ClipboardDocumentIcon,
+    DocumentDuplicateIcon,
     UserIcon,
     CubeIcon,
     Bars3Icon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import {classNames, handleLogout} from "../../scripts/utils";
+import {classNames, getAccessToken, handleLogout} from "../../scripts/utils";
+import DefaultProfilePic from "../../assets/default_profile_pic.png"
 import logo from '../../assets/logo_nobg.svg'
 import {Link} from "react-router-dom";
 import {useRecoilValue} from "recoil";
-import {authAtom} from "../../constants/atoms";
+import {authAtom, userTypeAtom} from "../../constants/atoms";
+import axios from "axios";
 
-const jobActions = [
-    {
-        name: 'Job Postings',
-        description: 'Browse job postings',
-        href: '#',
-        icon: ClipboardDocumentIcon,
-    },
-    {
-        name: 'Employers / Post Job',
-        description: 'Post a job as an employer',
-        href: '#',
-        icon: BriefcaseIcon,
-    },
-]
 
-const accountActions = [
-    {
-        name: 'My Profile',
-        href: '/user/edit',
-        description: 'Edit your profile details',
-        icon: UserIcon,
-    },
-    {
-        name: 'My Application Packages',
-        href: '#',
-        description: 'Manage your application packages',
-        icon: CubeIcon,
-    },
-]
 
 const Header = () => {
     const { isAuthenticated } = useRecoilValue(authAtom);
+    const role = useRecoilValue(userTypeAtom)
+    const [profile_picture, setProfile_picture] = useState<string | null>(null)
 
 
+    const jobActions = [
+        {
+            name: 'Job Postings',
+            description: 'Browse job postings',
+            href: '#',
+            icon: ClipboardDocumentIcon,
+        },
+        (role == "STUDENT" ?
+         { name: 'Job Applications',
+            description: 'View your job applications',
+            href: '#',
+            icon: DocumentDuplicateIcon,
+         } : {
+            name: 'Employers / Post Job',
+            description: 'Post a job as an employer',
+            href: '#',
+            icon: BriefcaseIcon,
+        })
+    ]
+
+    const accountActions = [
+        {
+            name: 'My Profile',
+            href: '/user/edit',
+            description: 'Edit your profile details',
+            icon: UserIcon,
+        }
+    ]
+    if(role == "STUDENT"){
+        accountActions.push({
+            name: 'My Application Packages',
+            href: '#',
+            description: 'Manage your application packages',
+            icon: CubeIcon,
+        })
+    }
+    console.log(accountActions)
+
+    const getUserInfo = () => {
+        axios.get('http://localhost:8000/api/profile/', {
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+            },
+        })
+            .then((response: any) => {
+                setProfile_picture(response.data.profile.profile_picture)
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    useEffect(() => {
+        if(isAuthenticated) getUserInfo()
+    }, []);
     return (
         <Popover className="relative bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
@@ -158,10 +190,10 @@ const Header = () => {
                                                     {accountActions.map((item) => (
                                                         <Link
                                                             key={item.name}
-                                                            to={item.href}
+                                                            to={item.href as string}
                                                             className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50"
                                                         >
-                                                            <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
+                                                            {item.icon && <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />}
                                                             <div className="ml-4">
                                                                 <p className="text-base font-medium text-gray-900">{item.name}</p>
                                                                 <p className="mt-1 text-sm text-gray-500">{item.description}</p>
@@ -199,11 +231,11 @@ const Header = () => {
                         {isAuthenticated &&
                             <Menu as="div" className="relative ml-3 mr-4">
                             <div>
-                                <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
+                                <Menu.Button className="flex border border-gray-400 rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
                                     <span className="sr-only">Open user menu</span>
                                     <img
-                                        className="h-8 w-8 rounded-full"
-                                        src="https://startupheretoronto.com/wp-content/uploads/2018/04/default-user-image-2.png/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E"
+                                        className="h-8 w-8 rounded-full object-cover bg-white"
+                                        src={profile_picture ? `data:image/jpeg;base64,${profile_picture}` : DefaultProfilePic}
                                         alt="User image"
                                     />
                                 </Menu.Button>
@@ -312,10 +344,10 @@ const Header = () => {
                                         {accountActions.map((item) => (
                                             <Link
                                                 key={item.name}
-                                                to={item.href}
+                                                to={item.href as string}
                                                 className="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50"
                                             >
-                                                <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
+                                                {item.icon && <item.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />}
                                                 <span className="ml-3 text-base font-medium text-gray-900">{item.name}</span>
                                             </Link>
                                         ))}
