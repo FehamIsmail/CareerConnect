@@ -4,12 +4,19 @@ from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import viewsets, status
+from rest_framework.exceptions import server_error
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
+    RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User, Student, StudentProfile, Job
+from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
+from .models import User, StudentProfile, Job
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer
 
@@ -109,6 +116,7 @@ class UserProfileView(RetrieveUpdateAPIView):
     def put(self, request, *args, **kwargs):
         user = request.user
         user_serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
+
         if user_serializer.is_valid(raise_exception=True):
             user_serializer.save()
 
@@ -148,3 +156,15 @@ class JobListView(ListCreateAPIView):
         serializer.validated_data['employer'] = self.request.user.employerprofile
         serializer.save()
         print(f'{self.request.user.email} created job!')
+
+
+class JobDetailView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    """
+    IsOwnerOrReadOnly needed here:
+    https://www.django-rest-framework.org/api-guide/permissions/
+    """
+
+
