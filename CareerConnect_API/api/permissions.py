@@ -14,7 +14,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         # Instance must have an attribute named `employer`.
-        return obj.employer == request.user.employer_profile
+        if hasattr(obj, 'employer'):
+            return obj.employer == request.user.employer_profile
+        elif hasattr(obj, 'student_profile'):
+            return obj.student_profile == request.user.student_profile
 
 
 class CanCreateOrRemoveApplication(permissions.BasePermission):

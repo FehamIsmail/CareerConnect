@@ -141,7 +141,7 @@ class UserProfileView(RetrieveUpdateAPIView):
     """
 
 
-class ApplicationListView(ListCreateAPIView):
+class ApplicationPackageListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = Application.objects.all()

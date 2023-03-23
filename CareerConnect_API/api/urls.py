@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegistrationView, LoginView, UserProfileView, JobListView, JobDetailView, JobApplicationView, \
-    ApplicationListView, ApplicationDetailView
+    ApplicationPackageListView, ApplicationDetailView
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -15,7 +15,7 @@ urlpatterns = [
     path('jobs/', JobListView.as_view(), name='jobs-list'),
     path('jobs/<uuid:pk>/', JobDetailView.as_view(), name='job-detail'),
     path('jobs/<uuid:pk>/apply/<uuid:package>/', JobApplicationView.as_view(), name='job-apply'),
-    path('applications/', ApplicationListView.as_view(), name='application-list'),
+    path('applications/', ApplicationPackageListView.as_view(), name='application-list'),
     path('applications/<uuid:pk>/', ApplicationDetailView.as_view(), name='application-detail'),
 
 
