@@ -14,7 +14,7 @@ urlpatterns = [
     path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('jobs/', JobListView.as_view(), name='jobs-list'),
     path('jobs/<uuid:pk>/', JobDetailView.as_view(), name='job-detail'),
-    path('jobs/<uuid:pk>/apply', JobApplicationView.as_view(), name='job-apply'),
+    path('jobs/<uuid:pk>/apply/<uuid:package>/', JobApplicationView.as_view(), name='job-apply'),
     path('applications/', ApplicationListView.as_view(), name='application-list'),
     path('applications/<uuid:pk>/', ApplicationDetailView.as_view(), name='application-detail'),
 

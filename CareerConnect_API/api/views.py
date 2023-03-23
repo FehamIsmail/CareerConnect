@@ -188,13 +188,14 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
 
 class JobApplicationView(UpdateAPIView):
+    authentication_classes = [JWTAuthentication]
     queryset = Job.objects.all()
     serializer_class = ApplicationSerializer
-    permission_classes = [CanCreateOrRemoveApplication]
+    permission_classes = [IsAuthenticated, CanCreateOrRemoveApplication]
 
     def post(self, request, *args, **kwargs):
         job = self.get_object()
-        application = get_object_or_404(Application, pk=request.GET['pk'])
+        application = get_object_or_404(Application, pk=kwargs['package'])
         job.applications.add(application)
         job.save()
         serializer = self.get_serializer(application)
@@ -202,7 +203,7 @@ class JobApplicationView(UpdateAPIView):
 
     def delete(self, request, *args, **kwargs):
         job = self.get_object()
-        application = get_object_or_404(Application, pk=request.POST['id'])
+        application = get_object_or_404(Application, pk=kwargs['package'])
         if application.student_profile == request.user.student_profile:
             job.applications.remove(application)
             job.save()

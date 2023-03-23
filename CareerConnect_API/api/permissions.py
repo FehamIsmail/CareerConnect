@@ -22,7 +22,7 @@ class CanCreateOrRemoveApplication(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.method in ['POST', 'DELETE'] and request.user.is_authenticated and hasattr(request.user, 'student'):
+        if request.method in ['POST', 'DELETE'] and request.user.is_authenticated and hasattr(request.user, 'student_profile'):
             return True
 
         return False

@@ -163,7 +163,7 @@ class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='application')
     cover_letter = models.ForeignKey(CoverLetter, on_delete=models.CASCADE, null=True, blank=True)
-    curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE)
+    curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE, null=True, blank=True)
     package_name = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
