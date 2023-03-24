@@ -4,7 +4,11 @@ import {classNames} from "../scripts/utils";
 import {CreditCardIcon, KeyIcon, SquaresPlusIcon, UserCircleIcon, UserGroupIcon} from "@heroicons/react/24/outline";
 import Header from "../components/Header/Header";
 
-const navigation = [
+type UserNavOpt ={
+    isUser: boolean
+}
+
+const userNavigation = [
     {name: 'Account', href: '#', icon: UserCircleIcon, current: true},
     {name: 'Password', href: '#', icon: KeyIcon, current: false},
     {name: 'Plan & Billing', href: '#', icon: CreditCardIcon, current: false},
@@ -12,7 +16,13 @@ const navigation = [
     {name: 'Integrations', href: '#', icon: SquaresPlusIcon, current: false},
 ]
 
-export function UserNav() {
+const jobNavigation = [
+    { name: "Create Job", href: "/job/create", icon: UserCircleIcon, current: true },
+]
+
+export function UserNav(props:UserNavOpt) {
+    const navigation = props.isUser ? userNavigation : jobNavigation;
+
     return (
         <>
         <Header/>

@@ -41,7 +41,7 @@ const Header = () => {
          } : {
             name: 'Employers / Post Job',
             description: 'Post a job as an employer',
-            href: '#',
+            href: '/job',
             icon: BriefcaseIcon,
         })
     ]

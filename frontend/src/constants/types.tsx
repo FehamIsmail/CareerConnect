@@ -181,3 +181,13 @@ export type FilterProps = {
     placeholder: string,
     options: Option[],
 }
+
+export type status = {
+    type: "success" | "error" | "nothing";
+    message: string;
+    messages?: string[];
+  };
+
+export type dict = {
+    [key: string]: any;
+  };
