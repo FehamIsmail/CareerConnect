@@ -83,6 +83,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CVSerializer(serializers.ModelSerializer):
     curriculum_vitae = serializers.FileField(required=False)
+
     # title = serializers.CharField(required=True)
     # default = serializers.BooleanField(default=False)
     #
@@ -99,6 +100,7 @@ class CVSerializer(serializers.ModelSerializer):
 
 class CLSerializer(serializers.ModelSerializer):
     cover_letter = serializers.FileField(required=False)
+
     class Meta:
         model = CoverLetter
         fields = ['id', 'cover_letter', 'title', 'default']
@@ -141,10 +143,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     applications = ApplicationSerializer(many=True, read_only=True)
+
     class Meta:
         model = Job
-        fields = ['id', 'title', 'description', 'applications']
-        fields = ['title', 'types', 'description']
+        fields = '__all__'
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
@@ -162,4 +164,3 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
     #             encoded_image = base64.b64encode(f.read()).decode('utf-8')
     #         data['profile_picture'] = encoded_image
     #     return data
-
