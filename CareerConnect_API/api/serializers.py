@@ -98,7 +98,7 @@ class CVSerializer(serializers.ModelSerializer):
 
 
 class CLSerializer(serializers.ModelSerializer):
-    cover_letter = serializers.FileField(required=True)
+    cover_letter = serializers.FileField(required=False)
     class Meta:
         model = CoverLetter
         fields = ['id', 'cover_letter', 'title', 'default']
