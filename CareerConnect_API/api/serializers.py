@@ -94,7 +94,7 @@ class CVSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CurriculumVitae
-        fields = ['id', 'curriculum_vitae', 'title', 'default']
+        fields = '__all__'
 
 
 class CLSerializer(serializers.ModelSerializer):
@@ -144,6 +144,7 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = ['id', 'title', 'description', 'applications']
+        fields = ['title', 'types', 'description']
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):

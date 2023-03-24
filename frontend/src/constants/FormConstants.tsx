@@ -144,7 +144,7 @@ export const jobFormOptions = [
             {
                 'label': 'Apply By Date',
                 'element': 'input',
-                'type': 'text',
+                'type': 'date',
                 'name': 'apply_by_date',
                 'id': 'apply_by_date',
                 'autoComplete': 'apply_by_date',
@@ -152,8 +152,7 @@ export const jobFormOptions = [
             },
             {
                 'label': 'Description',
-                'element': 'input',
-                'type': 'text',
+                'element': 'textarea',
                 'name': 'description',
                 'id': 'description',
                 'autoComplete': 'description',
