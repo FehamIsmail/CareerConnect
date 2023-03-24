@@ -1,5 +1,5 @@
 import React from "react";
-import {EmployerProfile, StudentProfile, UserInfo} from "../constants/types";
+import {EmployerProfile, IJob, StudentProfile, UserInfo} from "../constants/types";
 
 export const handleDragOver = (e: React.DragEvent<HTMLDivElement>, setDragging: React.Dispatch<React.SetStateAction<boolean>>) => {
     e.preventDefault();
@@ -73,6 +73,14 @@ export const handleEmployerInputChange = (event: React.ChangeEvent<HTMLInputElem
 
 
 export function handleOptionChange(event: React.ChangeEvent<HTMLSelectElement>, setStudentInfo: React.Dispatch<React.SetStateAction<StudentProfile>>) {
+    const {name, value} = event.target;
+    setStudentInfo(prevState => ({
+        ...prevState,
+        [name]: value,
+    }));
+}
+
+export function handleJobChange(event: React.ChangeEvent<HTMLSelectElement>, setStudentInfo: React.Dispatch<React.SetStateAction<IJob>>) {
     const {name, value} = event.target;
     setStudentInfo(prevState => ({
         ...prevState,
