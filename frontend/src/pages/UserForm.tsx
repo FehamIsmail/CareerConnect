@@ -15,7 +15,6 @@ import {
   EducationLevel,
   educationLevelDetails,
   EmployerProfile,
-  JobType,
   StudentProfile,
   UserInfo,
   status,

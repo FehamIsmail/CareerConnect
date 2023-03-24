@@ -6,6 +6,7 @@ import { thinScrollBarStyle } from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import DefaultProfilePic from "../assets/default_profile_pic.png";
 
 const defaultJobInfo: IJob = {
     id: 0,
@@ -29,6 +30,7 @@ const defaultJobInfo: IJob = {
 }
 
 export default function JobForms(){
+    const [profile_picture, setProfile_picture] = useState<File | null>(null);
     const [jobInfo, setJobInfo] = useState<IJob>(defaultJobInfo)
     const [status, setStatus] = useState<status>({
         type: "nothing",
@@ -49,7 +51,7 @@ export default function JobForms(){
           types: {
             value: jobInfo.types,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
-            selectOptions: Object.keys(JobType)
+            selectOptions: Object.values(JobType)
           },
           salary: {
             value: jobInfo.salary,
@@ -102,20 +104,37 @@ export default function JobForms(){
 
     }
 
+    useEffect(() => {
+        if (profile_picture) {
+          const reader = new FileReader();
+          reader.readAsDataURL(profile_picture);
+          reader.onload = () => {
+            const imageUrl = reader.result as string; // The data URL
+            // Set the source of your <img> element to the data URL
+            setJobInfo({...jobInfo, company_logo: imageUrl});
+            const img = document.getElementById(
+              "profile-picture-img"
+            ) as HTMLImageElement;
+            img.src = imageUrl;
+          };
+        }
+      }, [profile_picture]);
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
 
         axios
-            .put("http://localhost:8000/api/job/", jobInfo, {
+            .post("http://localhost:8000/api/jobs/", jobInfo, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                     "Content-Type": "multipart/form-data",
                 },
             })
             .then((res) => {
-                if (res.status == 200)
-                    setStatus({ type: "success", message: "Changes successfully saved" });
+                if (res.status == 201)
+                    setStatus({ type: "success", message: "Job created successfully" });
+                setJobInfo(defaultJobInfo);
                 navigate(".", { replace: true });
             })
             .catch((err) => {
@@ -133,6 +152,63 @@ export default function JobForms(){
 
     return (
         <div className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
+            <fieldset className="mt-4">
+            <div className="shadow sm:overflow-hidden sm:rounded-md">
+              <div className="space-y-6 bg-white py-6 px-4 sm:p-6">
+                <div>
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    Company logo
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Edit your company logo
+                  </p>
+                </div>
+                <div className="flex flex-col gap-6">
+                  <div className="col-span-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Photo
+                    </label>
+                    <div className="mt-1 flex items-center">
+                      <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                        <img
+                          id="profile-picture-img"
+                          alt="profile picture"
+                          className="h-full w-full text-gray-300 object-cover"
+                          src={
+                            jobInfo.company_logo 
+                            ? jobInfo.company_logo
+                            : DefaultProfilePic 
+                          }
+                        />
+                      </span>
+                      <label
+                        htmlFor="photo-upload"
+                        className="ml-5 h-fit w-fit relative "
+                      >
+                        <span className="cursor-pointer transition-shadow rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-100 rounded-md bg-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:drop-shadow-sm">
+                          Change
+                        </span>
+                        <input
+                          id="photo-upload"
+                          name="photo-upload"
+                          type="file"
+                          onChange={(e) =>
+                            utils.handleFileChange(
+                              e,
+                              setProfile_picture,
+                              "IMAGE",
+                              3
+                            )
+                          }
+                          className={`sr-only`}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
           <form onSubmit={handleSubmit} action="#" method="POST">
             {jobFormOptions.map((opt, index) => {
               return (
@@ -167,7 +243,7 @@ export default function JobForms(){
                                   autoComplete={i.autoComplete}
                                   className={i.className}
                                 />
-                              ) : (
+                              ) : i.element == 'select'? (
                                 <select
                                   id={i.id}
                                   name={i.name}
@@ -181,6 +257,15 @@ export default function JobForms(){
                                         <option key={value} className={thinScrollBarStyle}>{value}</option>
                                   )}
                                 </select>
+                              ) : (
+                                <textarea
+                                  id={i.id}
+                                  name={i.name}
+                                  value={inputValue[i.name].value}
+                                  onChange={inputValue[i.name].onChange}
+                                  autoComplete={i.autoComplete}
+                                  className={i.className}
+                                  />
                               )}
                             </div>
                           );
