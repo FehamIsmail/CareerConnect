@@ -82,7 +82,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CVSerializer(serializers.ModelSerializer):
-    # curriculum_vitae = serializers.FileField(required=True)
+    curriculum_vitae = serializers.FileField(required=False)
     # title = serializers.CharField(required=True)
     # default = serializers.BooleanField(default=False)
     #
@@ -98,6 +98,7 @@ class CVSerializer(serializers.ModelSerializer):
 
 
 class CLSerializer(serializers.ModelSerializer):
+    cover_letter = serializers.FileField(required=True)
     class Meta:
         model = CoverLetter
         fields = ['id', 'cover_letter', 'title', 'default']
