@@ -242,6 +242,7 @@ class ApplicationStatus(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     APPLICATION_STATUS = (
+        ('OPEN', 'Open'),
         ('APPLIED', 'Applied'),
         ('INTERVIEW', 'Interview'),
         ('REJECTED', 'Rejected'),

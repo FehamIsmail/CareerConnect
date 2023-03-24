@@ -252,6 +252,9 @@ class JobApplicationView(UpdateAPIView):
         job = self.get_object()
         application = get_object_or_404(Application, pk=kwargs['package'])
         job.applications.add(application)
+        """
+            change status from null to applied (through table) @Abdel
+        """
         job.save()
         serializer = self.get_serializer(application)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -261,6 +264,9 @@ class JobApplicationView(UpdateAPIView):
         application = get_object_or_404(Application, pk=kwargs['package'])
         if application.student_profile == request.user.student_profile:
             job.applications.remove(application)
+            """
+                change status from applied to not applied (through table) @Abdel
+            """
             job.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
