@@ -142,7 +142,7 @@ class JobSerializer(serializers.ModelSerializer):
     applications = ApplicationSerializer(many=True, read_only=True)
     class Meta:
         model = Job
-        fields = '__all__'
+        fields = ['id', 'title', 'description', 'applications']
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):

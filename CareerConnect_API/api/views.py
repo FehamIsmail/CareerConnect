@@ -11,10 +11,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User, StudentProfile, Job, Application
+from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter
 from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationSerializer
+    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer
 
 
 # Create your views here.
@@ -141,6 +141,58 @@ class UserProfileView(RetrieveUpdateAPIView):
     """
 
 
+class CurriculumVitaeListView(ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    serializer_class = CVSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return CurriculumVitae.objects.filter(student_profile=user.student_profile)
+
+    def perform_create(self, serializer):
+        # Set the student to the current authenticated user
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
+        serializer.save()
+        print(f'{self.request.user.email} created cv!')
+
+
+class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    The permission "IsOwnerOrReadOnly" is self-explanatory:
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    serializer_class = CVSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return CurriculumVitae.objects.filter(student_profile=user.student_profile)
+
+
+class CoverLetterListView(ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = CoverLetter.objects.all()
+    serializer_class = CLSerializer
+
+    def perform_create(self, serializer):
+        # Set the student to the current authenticated user
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
+        serializer.save()
+        print(f'{self.request.user.email} created cl!')
+
+
+class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    The permission "IsOwnerOrReadOnly" is self-explanatory:
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = CoverLetter.objects.all()
+    serializer_class = CLSerializer
+
+
 class ApplicationPackageListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
@@ -154,7 +206,7 @@ class ApplicationPackageListView(ListCreateAPIView):
         print(f'{self.request.user.email} created application package!')
 
 
-class ApplicationDetailView(RetrieveUpdateDestroyAPIView):
+class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
     """
     The permission "IsOwnerOrReadOnly" is self-explanatory:
     """
@@ -167,8 +219,11 @@ class ApplicationDetailView(RetrieveUpdateDestroyAPIView):
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    queryset = Job.objects.all()
     serializer_class = JobSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Job.objects.filter(employer=user.employer_profile)
 
     def perform_create(self, serializer):
         # Set the employer to the current authenticated user

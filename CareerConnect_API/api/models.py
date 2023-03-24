@@ -124,6 +124,7 @@ class StudentProfile(models.Model):
         POSTGRADUATE = 'PG', 'Postgraduate'
         PROFESSIONAL = 'PROF', 'Professional'
         SPECIALIZATION = 'SPEC', 'Specialization'
+
     education_level = models.CharField(max_length=4, choices=EducationLevel.choices)
 
     # Contact Information
@@ -143,7 +144,8 @@ class StudentProfile(models.Model):
 # ============= STUDENT's Objects ============= #
 class CoverLetter(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cl', null=True, blank=True)
+    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cl', null=True,
+                                        blank=True)
     cover_letter = models.FileField(null=True, blank=True)
 
     title = models.CharField(max_length=100, null=True, blank=True)
@@ -152,7 +154,8 @@ class CoverLetter(models.Model):
 
 class CurriculumVitae(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cv', null=True, blank=True)
+    student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='cv', null=True,
+                                        blank=True)
     curriculum_vitae = models.FileField(null=True, blank=True)
 
     title = models.CharField(max_length=100, null=True, blank=True)
@@ -187,7 +190,7 @@ class Job(models.Model):
         ('ON_SITE', 'On-site'),
     )
     employer = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)
-    applications = models.ManyToManyField(Application)
+    applications = models.ManyToManyField(Application, through='ApplicationStatus')
 
     # Basic Info
     title = models.CharField(max_length=100, null=True, blank=True)
@@ -235,3 +238,16 @@ class Job(models.Model):
         return self.types.split(',') if self.types else []
 
 
+class ApplicationStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    APPLICATION_STATUS = (
+        ('APPLIED', 'Applied'),
+        ('INTERVIEW', 'Interview'),
+        ('REJECTED', 'Rejected'),
+    )
+    status = models.CharField(max_length=200, choices=APPLICATION_STATUS, null=True, blank=True)
+    updated_at = models.DateField(auto_now=True)
+
+    application_package = models.ForeignKey(Application, on_delete=models.CASCADE)
+    Job = models.ForeignKey(Job, on_delete=models.CASCADE)
