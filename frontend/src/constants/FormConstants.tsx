@@ -125,6 +125,14 @@ export const jobFormOptions = [
                 'id': 'salary',
                 'autoComplete': 'salary',
                 'className':'mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
+            },
+            {
+                'label': 'Industry',
+                'element': 'select',
+                'name': 'industry',
+                'id': 'industry',
+                'autoComplete': '',
+                'className':'mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
             }
         ]
     },
@@ -144,16 +152,15 @@ export const jobFormOptions = [
             {
                 'label': 'Apply By Date',
                 'element': 'input',
-                'type': 'text',
-                'name': 'apply_by_date',
-                'id': 'apply_by_date',
-                'autoComplete': 'apply_by_date',
+                'type': 'date',
+                'name': 'deadline',
+                'id': 'deadline',
+                'autoComplete': 'deadline',
                 'className': 'mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
             },
             {
                 'label': 'Description',
-                'element': 'input',
-                'type': 'text',
+                'element': 'textarea',
                 'name': 'description',
                 'id': 'description',
                 'autoComplete': 'description',

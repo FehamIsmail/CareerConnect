@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from "react";
-import { jobFormOptions } from "../constants/FormConstants";
-import { IJob, JobType, status, dict } from "../constants/types";
+import {jobFormOptions} from "../constants/FormConstants";
+import {dict, IJob, JobType, status} from "../constants/types";
 import * as utils from "../scripts/UserFormUtils";
-import { thinScrollBarStyle } from "../constants/styles";
+import {thinScrollBarStyle} from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {industryOptions} from "../constants/filter_constants";
 
+const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
     id: 0,
     title: '',
@@ -18,10 +20,11 @@ const defaultJobInfo: IJob = {
     city: '',
     province_territory: '',
     postal_code: '',
+    industry: 'Accounting',
     relocation: false,
     salary: null,
     posted_date: new Date(Date.now()),
-    apply_by_date: null,
+    deadline: null,
     contact_email: '',
     contact_phone: null,
     website_url:  null,
@@ -29,6 +32,7 @@ const defaultJobInfo: IJob = {
 }
 
 export default function JobForms(){
+    const [profile_picture, setProfile_picture] = useState<File | null>(null);
     const [jobInfo, setJobInfo] = useState<IJob>(defaultJobInfo)
     const [status, setStatus] = useState<status>({
         type: "nothing",
@@ -38,16 +42,16 @@ export default function JobForms(){
 
     const inputValue: dict = {
         title: {
-            value: jobInfo.title,
+            value: jobInfo.title || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           relocation: {
-            value: jobInfo.relocation,
+            value: jobInfo.relocation || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
             selectOptions: ['true', 'false']
           },
           types: {
-            value: jobInfo.types,
+            value: jobInfo.types || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
             selectOptions: Object.keys(JobType)
           },
@@ -55,67 +59,95 @@ export default function JobForms(){
             value: jobInfo.salary,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
+            industry: {
+                value: jobInfo.industry,
+                onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
+                selectOptions: industryOptions.map((option) => option.name)
+            },
           short_description:{
-            value: jobInfo.short_description,
+            value: jobInfo.short_description || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
-        apply_by_date: {
-            value: jobInfo.apply_by_date,
+        deadline: {
+            value: jobInfo.deadline,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
         },
          description:{
-            value: jobInfo.description,
+            value: jobInfo.description || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           company:{
-            value: jobInfo.company,
+            value: jobInfo.company || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           street_address:{
-            value: jobInfo.street_address,
+            value: jobInfo.street_address || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           city:{
-            value: jobInfo.city,
+            value: jobInfo.city || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           province_territory:{
-            value: jobInfo.province_territory,
+            value: jobInfo.province_territory || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           postal_code:{
-            value: jobInfo.postal_code,
+            value: jobInfo.postal_code || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           contact_email:{
-            value: jobInfo.contact_email,
+            value: jobInfo.contact_email || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           contact_phone:{
-            value: jobInfo.contact_phone,
+            value: jobInfo.contact_phone || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           website_url:{
-            value: jobInfo.website_url,
+            value: jobInfo.website_url || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
 
     }
 
-    const handleSubmit = (e: any) => {
+    useEffect(() => {
+        if (profile_picture) {
+          const reader = new FileReader();
+          reader.readAsDataURL(profile_picture);
+          reader.onload = () => {
+            const imageUrl = reader.result as string; // The data URL
+            // Set the source of your <img> element to the data URL
+            const img = document.getElementById(
+              "profile-picture-img"
+            ) as HTMLImageElement;
+            img.src = imageUrl;
+          };
+        }
+      }, [profile_picture]);
+
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-
+        let data;
+        if(profile_picture)
+            data = {...jobInfo, company_logo: profile_picture}
+        else{
+            const DefaultJobPictureFILE = await utils.createFileObjectFromImageUrl(DefaultJobPic, 'default_job_picture.jpg');
+            data = {...jobInfo, company_logo: DefaultJobPictureFILE}
+        }
+        console.log(data)
         axios
-            .put("http://localhost:8000/api/job/", jobInfo, {
+            .post("http://localhost:8000/api/jobs/", data, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                     "Content-Type": "multipart/form-data",
                 },
             })
             .then((res) => {
-                if (res.status == 200)
-                    setStatus({ type: "success", message: "Changes successfully saved" });
+                if (res.status == 201)
+                    setStatus({ type: "success", message: "Job created successfully" });
+                setJobInfo(defaultJobInfo);
                 navigate(".", { replace: true });
             })
             .catch((err) => {
@@ -133,6 +165,61 @@ export default function JobForms(){
 
     return (
         <div className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
+            <fieldset className="mt-4">
+            <div className="shadow sm:overflow-hidden sm:rounded-md">
+              <div className="space-y-6 bg-white py-6 px-4 sm:p-6">
+                <div>
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    Company logo
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Edit your company logo
+                  </p>
+                </div>
+                <div className="flex flex-col gap-6">
+                  <div className="col-span-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Photo
+                    </label>
+                    <div className="mt-1 flex items-center">
+                      <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100 border border-gray-300">
+                        <img
+                          id="profile-picture-img"
+                          alt="profile picture"
+                          className="h-full w-full text-gray-300 object-cover"
+                          src={
+                            jobInfo.company_logo || DefaultJobPic
+                          }
+                        />
+                      </span>
+                      <label
+                        htmlFor="photo-upload"
+                        className="ml-5 h-fit w-fit relative "
+                      >
+                        <span className="cursor-pointer transition-shadow rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-100 rounded-md bg-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:drop-shadow-sm">
+                          Change
+                        </span>
+                        <input
+                          id="photo-upload"
+                          name="photo-upload"
+                          type="file"
+                          onChange={(e) =>
+                            utils.handleFileChange(
+                              e,
+                              setProfile_picture,
+                              "IMAGE",
+                              3
+                            )
+                          }
+                          className={`sr-only`}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
           <form onSubmit={handleSubmit} action="#" method="POST">
             {jobFormOptions.map((opt, index) => {
               return (
@@ -148,9 +235,9 @@ export default function JobForms(){
                         </p>
                       </div>
                       <div className="grid grid-cols-6 gap-6">
-                        {opt.inputs.map((i) => {
+                        {opt.inputs.map((i, index) => {
                           return (
-                            <div className={"col-span-6 " + (i.name !== "description" && "sm:col-span-3")}>
+                            <div key={index} className={"col-span-6 " + (i.name !== "description" && "sm:col-span-3")}>
                               <label
                                 htmlFor={i.name}
                                 className="block text-sm font-medium text-gray-700"
@@ -167,7 +254,7 @@ export default function JobForms(){
                                   autoComplete={i.autoComplete}
                                   className={i.className}
                                 />
-                              ) : (
+                              ) : i.element == 'select'? (
                                 <select
                                   id={i.id}
                                   name={i.name}
@@ -181,6 +268,15 @@ export default function JobForms(){
                                         <option key={value} className={thinScrollBarStyle}>{value}</option>
                                   )}
                                 </select>
+                              ) : (
+                                <textarea
+                                  id={i.id}
+                                  name={i.name}
+                                  value={inputValue[i.name].value}
+                                  onChange={inputValue[i.name].onChange}
+                                  autoComplete={i.autoComplete}
+                                  className={i.className}
+                                  />
                               )}
                             </div>
                           );

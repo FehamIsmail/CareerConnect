@@ -76,6 +76,9 @@ class Student(User):
     def welcome(self):
         return f'Hi {self.first_name}! Welcome to CareerConnect Student interface!'
 
+    def __str__(self):
+        return f"{self.first_name}, {self.last_name}"
+
 
 class Employer(User):
     class Meta:
@@ -83,6 +86,9 @@ class Employer(User):
 
     def welcome(self):
         return f'Hi {self.first_name}! Welcome to CareerConnect Employer interface!'
+
+    def __str__(self):
+        return f"{self.first_name}, {self.last_name}"
 
 
 class EmployerProfile(models.Model):
@@ -95,6 +101,9 @@ class EmployerProfile(models.Model):
     # user.first_name
     # user.last_name
     company = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.first_name}, {self.user.last_name}"
 
 
 class StudentProfile(models.Model):
@@ -140,6 +149,9 @@ class StudentProfile(models.Model):
     street_address = models.CharField(max_length=50, null=True, blank=True)
     relocation = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.user.first_name}, {self.user.last_name}"
+
 
 # ============= STUDENT's Objects ============= #
 class CoverLetter(models.Model):
@@ -151,6 +163,9 @@ class CoverLetter(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"CL: {self.title}, by {self.student_profile.user.first_name}"
+
 
 class CurriculumVitae(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -161,6 +176,9 @@ class CurriculumVitae(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"CV: {self.title}, by {self.student_profile.user.first_name}"
+
 
 class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -169,6 +187,9 @@ class Application(models.Model):
     curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE, null=True, blank=True)
     package_name = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"package: {self.package_name}, by {self.student_profile.user.first_name}"
 
 
 # ============= EMPLOYER's Objects ============= #
@@ -195,6 +216,7 @@ class Job(models.Model):
     # Basic Info
     title = models.CharField(max_length=100, null=True, blank=True)
     types = models.CharField(max_length=200, choices=JOB_TYPE_CHOICES, null=True, blank=True)
+    industry = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     short_description = models.TextField(null=True, blank=True)
     num_positions = models.IntegerField(default=1)
@@ -218,8 +240,8 @@ class Job(models.Model):
     website_url = models.URLField(max_length=100, null=True, blank=True)
     company_logo = models.ImageField(upload_to=upload_to, blank=True, null=True)
     """
-        This method and is_active are used for Celery to update the 'is_active' field of jobs based on the expiration date.
-        They will stay commented out until the proper hosting is set up to run Celery tasks.
+    This method and is_active are used for Celery to update the 'is_active' field of jobs based on the expiration date.
+    They will stay commented out until the proper hosting is set up to run Celery tasks.
     """
 
     # is_active = models.BooleanField(default=True)
@@ -237,11 +259,15 @@ class Job(models.Model):
     def get_job_types(self):
         return self.types.split(',') if self.types else []
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class ApplicationStatus(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     APPLICATION_STATUS = (
+        ('OPEN', 'Open'),
         ('APPLIED', 'Applied'),
         ('INTERVIEW', 'Interview'),
         ('REJECTED', 'Rejected'),
