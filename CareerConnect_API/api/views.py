@@ -11,10 +11,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter
+from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter, ApplicationStatus
 from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer
+    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer,ApplicationStatusSerializer
 
 
 # Create your views here.
@@ -265,3 +265,24 @@ class JobApplicationView(UpdateAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class JobApplicantsView(ListCreateAPIView):
+    serializer_class = ApplicationSerializer
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        job_id = self.kwargs["pk"]
+        return Application.objects.filter(job__id=job_id)
+
+    def perform_create(self, serializer):
+        job_id = self.kwargs['pk']
+        serializer.save(job_id=job_id)
+
+    def post(self, request, *args, **kwargs):
+        job_id = self.kwargs['pk']
+        applicationid = request.data.get("ids")
+        application=get_object_or_404(Application, applicationid)
+        app_status=get_object_or_404(ApplicationStatus,job_id=job_id,application=application)
+        serializer=ApplicationStatusSerializer(instance=app_status,data=["status"])

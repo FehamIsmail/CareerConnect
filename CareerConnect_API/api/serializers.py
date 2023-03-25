@@ -6,7 +6,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
 
 from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User, Student, Employer, EmployerProfile, \
-    Job
+    Job, ApplicationStatus
 
 
 class UniqueEmailValidator(UniqueValidator):
@@ -162,3 +162,7 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
     #         data['profile_picture'] = encoded_image
     #     return data
 
+class ApplicationStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ApplicationStatus
+        fields="__all__"
