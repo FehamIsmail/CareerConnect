@@ -51,7 +51,7 @@ export default function JobForms(){
           types: {
             value: jobInfo.types,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
-            selectOptions: Object.values(JobType)
+            selectOptions: Object.keys(JobType)
           },
           salary: {
             value: jobInfo.salary,
@@ -123,7 +123,7 @@ export default function JobForms(){
     const handleSubmit = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-
+        console.log(jobInfo);
         axios
             .post("http://localhost:8000/api/jobs/", jobInfo, {
                 headers: {

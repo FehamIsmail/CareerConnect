@@ -143,10 +143,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     applications = ApplicationSerializer(many=True, read_only=True)
+    company_logo = serializers.ImageField(required=False)
 
     class Meta:
         model = Job
-        fields = '__all__'
+        exclude = ['employer']
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):

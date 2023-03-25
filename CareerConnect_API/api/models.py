@@ -76,6 +76,9 @@ class Student(User):
     def welcome(self):
         return f'Hi {self.first_name}! Welcome to CareerConnect Student interface!'
 
+    def __str__(self):
+        return f"{self.first_name}, {self.last_name}"
+
 
 class Employer(User):
     class Meta:
@@ -83,6 +86,9 @@ class Employer(User):
 
     def welcome(self):
         return f'Hi {self.first_name}! Welcome to CareerConnect Employer interface!'
+
+    def __str__(self):
+        return f"{self.first_name}, {self.last_name}"
 
 
 class EmployerProfile(models.Model):
@@ -95,6 +101,9 @@ class EmployerProfile(models.Model):
     # user.first_name
     # user.last_name
     company = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.first_name}, {self.user.last_name}"
 
 
 class StudentProfile(models.Model):
@@ -139,6 +148,9 @@ class StudentProfile(models.Model):
     postal_code = models.CharField(max_length=50, null=True, blank=True)
     street_address = models.CharField(max_length=50, null=True, blank=True)
     relocation = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.first_name}, {self.user.last_name}"
 
 
 # ============= STUDENT's Objects ============= #
@@ -236,6 +248,9 @@ class Job(models.Model):
 
     def get_job_types(self):
         return self.types.split(',') if self.types else []
+
+    def __str__(self):
+        return f"{self.title}"
 
 
 class ApplicationStatus(models.Model):
