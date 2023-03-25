@@ -207,6 +207,7 @@ class Job(models.Model):
     # Basic Info
     title = models.CharField(max_length=100, null=True, blank=True)
     types = models.CharField(max_length=200, choices=JOB_TYPE_CHOICES, null=True, blank=True)
+    industry = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     short_description = models.TextField(null=True, blank=True)
     num_positions = models.IntegerField(default=1)
@@ -230,8 +231,8 @@ class Job(models.Model):
     website_url = models.URLField(max_length=100, null=True, blank=True)
     company_logo = models.ImageField(upload_to=upload_to, blank=True, null=True)
     """
-        This method and is_active are used for Celery to update the 'is_active' field of jobs based on the expiration date.
-        They will stay commented out until the proper hosting is set up to run Celery tasks.
+    This method and is_active are used for Celery to update the 'is_active' field of jobs based on the expiration date.
+    They will stay commented out until the proper hosting is set up to run Celery tasks.
     """
 
     # is_active = models.BooleanField(default=True)
