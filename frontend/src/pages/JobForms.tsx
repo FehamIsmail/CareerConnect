@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import { jobFormOptions } from "../constants/FormConstants";
-import { IJob, JobType, status, dict } from "../constants/types";
+import {jobFormOptions} from "../constants/FormConstants";
+import {dict, IJob, JobType, status} from "../constants/types";
 import * as utils from "../scripts/UserFormUtils";
-import { thinScrollBarStyle } from "../constants/styles";
+import {thinScrollBarStyle} from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {industryOptions} from "../constants/filter_constants";
 
 const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
@@ -19,10 +20,11 @@ const defaultJobInfo: IJob = {
     city: '',
     province_territory: '',
     postal_code: '',
+    industry: 'Accounting',
     relocation: false,
     salary: null,
     posted_date: new Date(Date.now()),
-    apply_by_date: null,
+    deadline: null,
     contact_email: '',
     contact_phone: null,
     website_url:  null,
@@ -51,18 +53,23 @@ export default function JobForms(){
           types: {
             value: jobInfo.types || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
-            selectOptions: Object.values(JobType)
+            selectOptions: Object.keys(JobType)
           },
           salary: {
             value: jobInfo.salary,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
+            industry: {
+                value: jobInfo.industry,
+                onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
+                selectOptions: industryOptions.map((option) => option.name)
+            },
           short_description:{
             value: jobInfo.short_description || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
-        apply_by_date: {
-            value: jobInfo.apply_by_date,
+        deadline: {
+            value: jobInfo.deadline,
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
         },
          description:{
