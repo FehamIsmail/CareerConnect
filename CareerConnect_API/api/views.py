@@ -4,7 +4,7 @@ from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
     RetrieveUpdateDestroyAPIView, UpdateAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -14,7 +14,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter
 from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer
+    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer, JobSerializerForStudent
 
 
 # Create your views here.
@@ -133,14 +133,6 @@ class UserProfileView(RetrieveUpdateAPIView):
 
         return Response({'user': user_serializer.data, 'profile': profile_serializer.data}, status=status.HTTP_200_OK)
 
-    """
-    API endpoint that allows listing and creation of jobs.
-    GET requests return a list of all available jobs.
-    POST requests create a new job.
-
-    Only authenticated users can create jobs.
-    """
-
 
 class CurriculumVitaeListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -155,7 +147,16 @@ class CurriculumVitaeListView(ListCreateAPIView):
         # Set the student to the current authenticated user
         serializer.validated_data['student_profile'] = self.request.user.student_profile
         serializer.save()
-        print(f'{self.request.user.email} created cv!')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'cv': serializer.data,
+            'message': "Cv is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
@@ -164,11 +165,8 @@ class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
     """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = CoverLetter.objects.all()
     serializer_class = CVSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return CurriculumVitae.objects.filter(student_profile=user.student_profile)
 
 
 class CoverLetterListView(ListCreateAPIView):
@@ -177,11 +175,24 @@ class CoverLetterListView(ListCreateAPIView):
     queryset = CoverLetter.objects.all()
     serializer_class = CLSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        return CoverLetter.objects.filter(student_profile=user.student_profile)
+
     def perform_create(self, serializer):
         # Set the student to the current authenticated user
         serializer.validated_data['student_profile'] = self.request.user.student_profile
         serializer.save()
-        print(f'{self.request.user.email} created cl!')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'cl': serializer.data,
+            'message': "Cl is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
@@ -200,11 +211,24 @@ class ApplicationPackageListView(ListCreateAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        return Application.objects.filter(student_profile=user.student_profile)
+
     def perform_create(self, serializer):
         # Set the employer to the current authenticated user
         serializer.validated_data['student_profile'] = self.request.user.student_profile
         serializer.save()
-        print(f'{self.request.user.email} created application package!')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'package': serializer.data,
+            'message': "Application package is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
@@ -219,18 +243,30 @@ class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
 
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = JobSerializer
 
     def get_queryset(self):
         user = self.request.user
-        return Job.objects.filter(employer=user.employer_profile)
+        if user.is_authenticated and user.role == User.Role.EMPLOYER:
+            return Job.objects.filter(employer=user.employer_profile)
+        else:
+            return Job.objects.all()
 
     def perform_create(self, serializer):
         # Set the employer to the current authenticated user
         serializer.validated_data['employer'] = self.request.user.employer_profile
         serializer.save()
-        print(f'{self.request.user.email} created job!')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'job': serializer.data,
+            'message': "job is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
@@ -238,10 +274,19 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
     The permission "IsOwnerOrReadOnly" is self-explanatory:
     """
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
+    def is_owner(self, job):
+        return self.request.user.is_authenticated and hasattr(self.request.user, 'employer_profile') and job.employer == self.request.user.employer_profile
+
+    def get_serializer_class(self):
+        job = self.get_object()
+        if self.is_owner(job):
+            return JobSerializer
+        else:
+            return JobSerializerForStudent
 
 class JobApplicationView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -251,7 +296,7 @@ class JobApplicationView(UpdateAPIView):
 
     def post(self, request, *args, **kwargs):
         job = self.get_object()
-        application = get_object_or_404(Application, pk=kwargs['package'])
+        application = get_object_or_404(Application, pk=request.data['package_id'])
         job.applications.add(application)
         """
             change status from null to applied (through table) @Abdel
@@ -262,7 +307,7 @@ class JobApplicationView(UpdateAPIView):
 
     def delete(self, request, *args, **kwargs):
         job = self.get_object()
-        application = get_object_or_404(Application, pk=kwargs['package'])
+        application = get_object_or_404(Application, pk=request.POST['package_id'])
         if application.student_profile == request.user.student_profile:
             job.applications.remove(application)
             """

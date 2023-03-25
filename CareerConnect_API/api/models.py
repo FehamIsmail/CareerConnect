@@ -163,6 +163,9 @@ class CoverLetter(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"CL: {self.title}, by {self.student_profile.user.first_name}"
+
 
 class CurriculumVitae(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -173,6 +176,9 @@ class CurriculumVitae(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"CV: {self.title}, by {self.student_profile.user.first_name}"
+
 
 class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -181,6 +187,9 @@ class Application(models.Model):
     curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE, null=True, blank=True)
     package_name = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"package: {self.package_name}, by {self.student_profile.user.first_name}"
 
 
 # ============= EMPLOYER's Objects ============= #
