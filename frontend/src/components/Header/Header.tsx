@@ -71,7 +71,7 @@ const Header = () => {
             },
         })
             .then((response: any) => {
-                setProfile_picture(response.data.profile.profile_picture)
+                setProfile_picture('http://localhost:8000'+response.data.profile.profile_picture)
             })
             .catch(error => {
                 console.error(error);
@@ -235,7 +235,7 @@ const Header = () => {
                                     <span className="sr-only">Open user menu</span>
                                     <img
                                         className="h-8 w-8 rounded-full object-cover bg-white"
-                                        src={profile_picture ? `data:image/jpeg;base64,${profile_picture}` : DefaultProfilePic}
+                                        src={profile_picture || DefaultProfilePic}
                                         alt="User image"
                                     />
                                 </Menu.Button>

@@ -117,7 +117,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     # cv = CVSerializer(read_only=True, many=True)
     # cl = CLSerializer(read_only=True, many=True)
     application = ApplicationSerializer(read_only=True, many=True)
-    profile_picture = serializers.ImageField(required=False, use_url=True)
+    profile_picture = serializers.ImageField(required=False)
 
     class Meta:
         model = StudentProfile
@@ -139,14 +139,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
+    company_logo = serializers.ImageField(required=False)
+
     class Meta:
         model = Job
-        fields = ['title', 'types', 'description']
+        fields = ['title', 'types', 'description', 'company_logo']
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     job_set = JobSerializer(many=True, read_only=True)
-    profile_picture = serializers.ImageField(required=False, use_url=True)
+    profile_picture = serializers.ImageField(required=False)
 
     class Meta:
         model = EmployerProfile
