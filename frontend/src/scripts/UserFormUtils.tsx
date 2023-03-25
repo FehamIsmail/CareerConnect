@@ -1,5 +1,5 @@
 import React from "react";
-import {EmployerProfile, StudentProfile, UserInfo} from "../constants/types";
+import {EmployerProfile, IJob, StudentProfile, UserInfo} from "../constants/types";
 
 export const handleDragOver = (e: React.DragEvent<HTMLDivElement>, setDragging: React.Dispatch<React.SetStateAction<boolean>>) => {
     e.preventDefault();
@@ -78,4 +78,19 @@ export function handleOptionChange(event: React.ChangeEvent<HTMLSelectElement>, 
         ...prevState,
         [name]: value,
     }));
+}
+
+export function handleJobChange(event: React.ChangeEvent<HTMLSelectElement>, setStudentInfo: React.Dispatch<React.SetStateAction<IJob>>) {
+    const {name, value} = event.target;
+    setStudentInfo(prevState => ({
+        ...prevState,
+        [name]: value,
+    }));
+}
+
+// To set a default image for company logo
+export async function createFileObjectFromImageUrl(imageUrl: string, filename: string): Promise<File> {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    return new File([blob], filename, { type: blob.type });
 }

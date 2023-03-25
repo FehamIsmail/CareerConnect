@@ -20,4 +20,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 def set_default(sender, instance, **kwargs):
     if instance.default:
         # Set all other instances for the same student as non-default
-        sender.objects.filter(student=instance.student_profile).exclude(id=instance.id).update(default=False)
+        sender.objects.filter(student_profile=instance.student_profile).exclude(id=instance.id).update(default=False)

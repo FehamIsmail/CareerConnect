@@ -11,8 +11,9 @@ export interface IJob {
     postal_code?: string,
     relocation?: boolean,
     salary: number | null;
+    industry?: string | null;
     posted_date: Date;
-    apply_by_date: Date | null;
+    deadline: Date | null;
     contact_email: string;
     contact_phone: string | null;
     website_url: string | null;
@@ -181,3 +182,13 @@ export type FilterProps = {
     placeholder: string,
     options: Option[],
 }
+
+export type status = {
+    type: "success" | "error" | "nothing";
+    message: string;
+    messages?: string[];
+  };
+
+export type dict = {
+    [key: string]: any;
+  };

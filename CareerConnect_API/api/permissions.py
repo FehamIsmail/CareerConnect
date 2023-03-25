@@ -14,7 +14,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         # Instance must have an attribute named `employer`.
-        return obj.employer == request.user.employer_profile
+        if hasattr(obj, 'employer'):
+            return obj.employer == request.user.employer_profile
+        elif hasattr(obj, 'student_profile'):
+            return obj.student_profile == request.user.student_profile
 
 
 class CanCreateOrRemoveApplication(permissions.BasePermission):
@@ -22,7 +25,7 @@ class CanCreateOrRemoveApplication(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.method in ['POST', 'DELETE'] and request.user.is_authenticated and hasattr(request.user, 'student'):
+        if request.method in ['POST', 'DELETE'] and request.user.is_authenticated and hasattr(request.user, 'student_profile'):
             return True
 
         return False

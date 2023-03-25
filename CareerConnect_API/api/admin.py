@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User, Employer, Student, StudentProfile, EmployerProfile
+from .models import User, Employer, Student, StudentProfile, EmployerProfile, Job, CurriculumVitae, CoverLetter, \
+    Application
 
 
 @admin.register(User)
@@ -77,3 +78,8 @@ admin.site.register(Student, CustomStudentAdmin)
 admin.site.register(StudentProfile)
 admin.site.register(Employer, CustomEmployerAdmin)
 admin.site.register(EmployerProfile)
+admin.site.register(Job)
+
+admin.site.register(CurriculumVitae)
+admin.site.register(CoverLetter)
+admin.site.register(Application)
