@@ -114,6 +114,7 @@ export default function UserForm() {
       role === "STUDENT"
         ? { ...userInfo, ...studentInfo, profile_picture }
         : { ...userInfo, ...employerInfo, profile_picture };
+    console.log(data)
     axios
       .put("http://localhost:8000/api/profile/", data, {
         headers: {
@@ -147,7 +148,9 @@ export default function UserForm() {
         },
       })
       .then((response: any) => {
+        console.log(response)
         const profile = response.data.profile;
+        profile.profile_picture = 'http://localhost:8000' + profile.profile_picture
         const userInfo = response.data.user;
         if ("id" in profile) delete profile.id;
         if (userInfo.role === "STUDENT")
@@ -155,6 +158,7 @@ export default function UserForm() {
         if (userInfo.role === "EMPLOYER")
           setEmployerInfo((prevState) => ({ ...prevState, ...profile }));
         setUserInfo(userInfo);
+        console.log(profile)
       })
       .catch((error) => {
         console.error(error);
@@ -206,13 +210,8 @@ export default function UserForm() {
                           alt="profile picture"
                           className="h-full w-full text-gray-300 object-cover"
                           src={
-                            studentInfo.profile_picture ||
-                            employerInfo.profile_picture
-                              ? `data:image/jpeg;base64,${
-                                  studentInfo.profile_picture ||
-                                  employerInfo.profile_picture
-                                }`
-                              : DefaultProfilePic
+                            studentInfo.profile_picture ? studentInfo.profile_picture :
+                                employerInfo.profile_picture ? employerInfo.profile_picture : DefaultProfilePic
                           }
                         />
                       </span>
