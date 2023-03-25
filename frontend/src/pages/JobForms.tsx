@@ -6,8 +6,8 @@ import { thinScrollBarStyle } from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import DefaultProfilePic from "../assets/default_profile_pic.png";
 
+const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
     id: 0,
     title: '',
@@ -40,16 +40,16 @@ export default function JobForms(){
 
     const inputValue: dict = {
         title: {
-            value: jobInfo.title,
+            value: jobInfo.title || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           relocation: {
-            value: jobInfo.relocation,
+            value: jobInfo.relocation || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
             selectOptions: ['true', 'false']
           },
           types: {
-            value: jobInfo.types,
+            value: jobInfo.types || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
             selectOptions: Object.values(JobType)
           },
@@ -58,7 +58,7 @@ export default function JobForms(){
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           short_description:{
-            value: jobInfo.short_description,
+            value: jobInfo.short_description || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
         apply_by_date: {
@@ -66,39 +66,39 @@ export default function JobForms(){
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
         },
          description:{
-            value: jobInfo.description,
+            value: jobInfo.description || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           company:{
-            value: jobInfo.company,
+            value: jobInfo.company || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           street_address:{
-            value: jobInfo.street_address,
+            value: jobInfo.street_address || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           city:{
-            value: jobInfo.city,
+            value: jobInfo.city || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           province_territory:{
-            value: jobInfo.province_territory,
+            value: jobInfo.province_territory || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           postal_code:{
-            value: jobInfo.postal_code,
+            value: jobInfo.postal_code || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           contact_email:{
-            value: jobInfo.contact_email,
+            value: jobInfo.contact_email || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           contact_phone:{
-            value: jobInfo.contact_phone,
+            value: jobInfo.contact_phone || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
           website_url:{
-            value: jobInfo.website_url,
+            value: jobInfo.website_url || '',
             onChange: (e: any) => utils.handleJobChange(e, setJobInfo),
           },
 
@@ -111,7 +111,6 @@ export default function JobForms(){
           reader.onload = () => {
             const imageUrl = reader.result as string; // The data URL
             // Set the source of your <img> element to the data URL
-            setJobInfo({...jobInfo, company_logo: imageUrl});
             const img = document.getElementById(
               "profile-picture-img"
             ) as HTMLImageElement;
@@ -120,12 +119,19 @@ export default function JobForms(){
         }
       }, [profile_picture]);
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-
+        let data;
+        if(profile_picture)
+            data = {...jobInfo, company_logo: profile_picture}
+        else{
+            const DefaultJobPictureFILE = await utils.createFileObjectFromImageUrl(DefaultJobPic, 'default_job_picture.jpg');
+            data = {...jobInfo, company_logo: DefaultJobPictureFILE}
+        }
+        console.log(data)
         axios
-            .post("http://localhost:8000/api/jobs/", jobInfo, {
+            .post("http://localhost:8000/api/jobs/", data, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                     "Content-Type": "multipart/form-data",
@@ -169,15 +175,13 @@ export default function JobForms(){
                       Photo
                     </label>
                     <div className="mt-1 flex items-center">
-                      <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                      <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100 border border-gray-300">
                         <img
                           id="profile-picture-img"
                           alt="profile picture"
                           className="h-full w-full text-gray-300 object-cover"
                           src={
-                            jobInfo.company_logo 
-                            ? jobInfo.company_logo
-                            : DefaultProfilePic 
+                            jobInfo.company_logo || DefaultJobPic
                           }
                         />
                       </span>
@@ -224,9 +228,9 @@ export default function JobForms(){
                         </p>
                       </div>
                       <div className="grid grid-cols-6 gap-6">
-                        {opt.inputs.map((i) => {
+                        {opt.inputs.map((i, index) => {
                           return (
-                            <div className={"col-span-6 " + (i.name !== "description" && "sm:col-span-3")}>
+                            <div key={index} className={"col-span-6 " + (i.name !== "description" && "sm:col-span-3")}>
                               <label
                                 htmlFor={i.name}
                                 className="block text-sm font-medium text-gray-700"

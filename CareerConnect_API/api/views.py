@@ -95,6 +95,7 @@ class UserProfileView(RetrieveUpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, *args, **kwargs):
+
         user = request.user
         user_serializer = UserSerializer(user)
 

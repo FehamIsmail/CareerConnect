@@ -117,7 +117,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     # cv = CVSerializer(read_only=True, many=True)
     # cl = CLSerializer(read_only=True, many=True)
     application = ApplicationSerializer(read_only=True, many=True)
-    profile_picture = serializers.ImageField(required=False, use_url=False)
+    profile_picture = serializers.ImageField(required=False, use_url=True)
 
     class Meta:
         model = StudentProfile
@@ -125,13 +125,13 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                   'province_territory', 'city', 'postal_code', 'street_address', 'relocation', 'application']
 
     # Returns a base64-encoded string of the image
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if data.get('profile_picture'):
-            with open('media/' + data['profile_picture'], 'rb') as f:
-                encoded_image = base64.b64encode(f.read()).decode('utf-8')
-            data['profile_picture'] = encoded_image
-        return data
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     if data.get('profile_picture'):
+    #         with open('media/' + data['profile_picture'], 'rb') as f:
+    #             encoded_image = base64.b64encode(f.read()).decode('utf-8')
+    #         data['profile_picture'] = encoded_image
+    #     return data
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -146,17 +146,17 @@ class JobSerializer(serializers.ModelSerializer):
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     job_set = JobSerializer(many=True, read_only=True)
-    profile_picture = serializers.ImageField(required=False, use_url=False)
+    profile_picture = serializers.ImageField(required=False, use_url=True)
 
     class Meta:
         model = EmployerProfile
         fields = ['profile_picture', 'phone_number', 'company', 'job_set']
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if data.get('profile_picture'):
-            with open('media/' + data['profile_picture'], 'rb') as f:
-                encoded_image = base64.b64encode(f.read()).decode('utf-8')
-            data['profile_picture'] = encoded_image
-        return data
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     if data.get('profile_picture'):
+    #         with open('media/' + data['profile_picture'], 'rb') as f:
+    #             encoded_image = base64.b64encode(f.read()).decode('utf-8')
+    #         data['profile_picture'] = encoded_image
+    #     return data
 

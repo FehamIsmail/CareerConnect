@@ -87,3 +87,10 @@ export function handleJobChange(event: React.ChangeEvent<HTMLSelectElement>, set
         [name]: value,
     }));
 }
+
+// To set a default image for company logo
+export async function createFileObjectFromImageUrl(imageUrl: string, filename: string): Promise<File> {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    return new File([blob], filename, { type: blob.type });
+}
