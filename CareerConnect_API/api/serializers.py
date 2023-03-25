@@ -144,6 +144,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     applications = ApplicationSerializer(many=True, read_only=True)
     company_logo = serializers.ImageField(required=False)
+    applications = ApplicationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Job
