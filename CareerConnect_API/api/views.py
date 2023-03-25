@@ -4,17 +4,18 @@ from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
     RetrieveUpdateDestroyAPIView, UpdateAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter
+from .models import User, StudentProfile, Job, Application, CurriculumVitae, CoverLetter, ApplicationStatus
 from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer
+    UserSerializer, JobSerializer, ApplicationSerializer, CVSerializer, CLSerializer, JobSerializerForStudent, \
+    ApplicationStatusSerializer
 
 
 # Create your views here.
@@ -279,7 +280,8 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = JobSerializer
 
     def is_owner(self, job):
-        return self.request.user.is_authenticated and hasattr(self.request.user, 'employer_profile') and job.employer == self.request.user.employer_profile
+        return self.request.user.is_authenticated and hasattr(self.request.user,
+                                                              'employer_profile') and job.employer == self.request.user.employer_profile
 
     def get_serializer_class(self):
         job = self.get_object()
@@ -287,6 +289,22 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
             return JobSerializer
         else:
             return JobSerializerForStudent
+
+    def get(self, request, *args, **kwargs):
+
+        if hasattr(kwargs, 'phase'):
+            phase = kwargs['phase']
+        else:
+            return self.retrieve(request, *args, **kwargs)
+
+        candidates = None
+
+        if phase == 1:
+            job = self.get_object()
+            canditates = job.applications.all()
+
+        return Response({'canditates': canditates}, status=status.HTTP_200_OK)
+
 
 class JobApplicationView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -318,6 +336,7 @@ class JobApplicationView(UpdateAPIView):
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class JobApplicantsView(ListCreateAPIView):
     serializer_class = ApplicationSerializer
 
@@ -335,6 +354,6 @@ class JobApplicantsView(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         job_id = self.kwargs['pk']
         applicationid = request.data.get("ids")
-        application=get_object_or_404(Application, applicationid)
-        app_status=get_object_or_404(ApplicationStatus,job_id=job_id,application=application)
-        serializer=ApplicationStatusSerializer(instance=app_status,data=["status"])
+        application = get_object_or_404(Application, applicationid)
+        app_status = get_object_or_404(ApplicationStatus, job_id=job_id, application=application)
+        serializer = ApplicationStatusSerializer(instance=app_status, data=["status"])
