@@ -6,7 +6,7 @@ import {UserNav} from "../../pages/UserNav";
 import {LogIn} from "../../pages/LogIn";
 import {Register} from "../../pages/Register";
 import DocumentsPage from "../../pages/DocumentsPage";
-import ApplicationsPage from "../../pages/Applications";
+// import ApplicationsPage from "../../pages/Applications";
 import {useWindowDimensions} from "../../scripts/utils";
 import JobForms from '../../pages/JobForms';
 
@@ -28,7 +28,7 @@ const App = () => {
                 <Route path="user" element={<UserNav isUser={true}/>}> {/* ./jobs/create */}
                     <Route path="profile" element={<UserForm />}/>
                     <Route path="documents" element={<DocumentsPage />}/>
-                    <Route path="applications" element={<ApplicationsPage />}/>
+                    {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                 </Route>
                 <Route path="job" element={<UserNav isUser={false}/>}> {/* ./job/create */}
                     <Route path="create" element={<JobForms />}/>
