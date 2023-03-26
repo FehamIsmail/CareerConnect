@@ -144,4 +144,4 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
 class ApplicationStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model=ApplicationStatus
-        fields="__all__"
+        fields=["status"]

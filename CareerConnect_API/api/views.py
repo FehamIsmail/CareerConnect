@@ -6,7 +6,6 @@ from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCr
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -292,7 +291,26 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if hasattr(kwargs, 'phase'):
+        # if "phase" in kwargs:
+        #     phase = kwargs['phase']
+        # else:
+        return self.retrieve(request, *args, **kwargs)
+
+        # candidates = None
+
+        # if phase == 1:
+        #     job = self.get_object()
+        #     candidates = job.applications.all()
+        #     application_status=get_object_or_404(ApplicationStatus,Job=job,application_package=candidates[0])
+        #     serializer=ApplicationSerializer(candidates, many=True)
+        #     application_status_serializer=ApplicationStatusSerializer(instance=application_status,data={"status":"INTERVIEW"})
+        #     data=serializer.data
+        #     if application_status_serializer.is_valid():
+        #         application_status_serializer.save()
+        #
+        # return Response({'Application Status': application_status_serializer["status"].value}, status=status.HTTP_200_OK)
+    def post(self,request,*args,**kwargs):
+        if "phase" in kwargs:
             phase = kwargs['phase']
         else:
             return self.retrieve(request, *args, **kwargs)
@@ -301,9 +319,17 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
         if phase == 1:
             job = self.get_object()
-            canditates = job.applications.all()
+            candidates = job.applications.filter(id__in=request.data.get("ids",[]))#job.applications.all()
+            for candidate in candidates:
+                application_status = get_object_or_404(ApplicationStatus, Job=job, application_package=candidate)
+                serializer = ApplicationSerializer(candidates, many=True)
+                application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                            data={"status": "INTERVIEW"})
+                data = serializer.data
+                if application_status_serializer.is_valid():
+                    application_status_serializer.save()
 
-        return Response({'canditates': canditates}, status=status.HTTP_200_OK)
+        return Response({'Application Status': application_status_serializer["status"].value}, status=status.HTTP_200_OK)
 
 
 class JobApplicationView(UpdateAPIView):
@@ -338,22 +364,23 @@ class JobApplicationView(UpdateAPIView):
 
 
 class JobApplicantsView(ListCreateAPIView):
-    serializer_class = ApplicationSerializer
-
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-
-    def get_queryset(self):
-        job_id = self.kwargs["pk"]
-        return Application.objects.filter(job__id=job_id)
-
-    def perform_create(self, serializer):
-        job_id = self.kwargs['pk']
-        serializer.save(job_id=job_id)
-
-    def post(self, request, *args, **kwargs):
-        job_id = self.kwargs['pk']
-        applicationid = request.data.get("ids")
-        application = get_object_or_404(Application, applicationid)
-        app_status = get_object_or_404(ApplicationStatus, job_id=job_id, application=application)
-        serializer = ApplicationStatusSerializer(instance=app_status, data=["status"])
+    pass
+    # serializer_class = ApplicationSerializer
+    #
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    #
+    # def get_queryset(self):
+    #     job_id = self.kwargs["pk"]
+    #     return Application.objects.filter(job__id=job_id)
+    #
+    # def perform_create(self, serializer):
+    #     job_id = self.kwargs['pk']
+    #     serializer.save(job_id=job_id)
+    #
+    # def post(self, request, *args, **kwargs):
+    #     job_id = self.kwargs['pk']
+    #     applicationid = request.data.get("ids")
+    #     application = get_object_or_404(Application, applicationid)
+    #     app_status = get_object_or_404(ApplicationStatus, job_id=job_id, application=application)
+    #     serializer = ApplicationStatusSerializer(instance=app_status, data=["status"])
