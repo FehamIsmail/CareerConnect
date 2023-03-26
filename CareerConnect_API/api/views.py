@@ -315,7 +315,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
         if "phase" in kwargs:
             phase = kwargs['phase']
         else:
-            return self.retrieve(request, *args, **kwargs)
+            return self.update(request, *args, **kwargs)
 
         selected_candidates = None
         job = self.get_object()
@@ -349,7 +349,28 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if candidate in selected_candidates:
                     application_status_serializer = ApplicationStatusSerializer(instance=application_status,
-                                                                                data={"status": "INTERVIEW"})
+                                                                                data={"status": "PROCESSING"})
+                if candidate not in selected_candidates:
+                    application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                                data={"status": "REJECTED"})
+                if application_status_serializer.is_valid():
+                    application_status_serializer.save()
+
+            return Response({'Application Status': application_status_serializer.data},
+                            status=status.HTTP_200_OK)
+
+        elif phase == 3:
+            interviewing_ids = ApplicationStatus.objects.filter(status="POTENTIAL-OFFER").values_list(
+                "application_package_id")
+            candidates = job.applications.filter(id__in=interviewing_ids)
+            selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
+
+            for candidate in candidates:
+                application_status = get_object_or_404(ApplicationStatus, Job=job, application_package=candidate)
+
+                if candidate in selected_candidates:
+                    application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                                data={"status": "OFFER"})
                 if candidate not in selected_candidates:
                     application_status_serializer = ApplicationStatusSerializer(instance=application_status,
                                                                                 data={"status": "REJECTED"})
