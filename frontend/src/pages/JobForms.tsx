@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {jobFormOptions} from "../constants/FormConstants";
-import {dict, IJob, JobType, status} from "../constants/types";
+import {dict, IJob, JobType, StatusType} from "../constants/types";
 import * as utils from "../scripts/UserFormUtils";
 import {thinScrollBarStyle} from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
@@ -34,7 +34,7 @@ const defaultJobInfo: IJob = {
 export default function JobForms(){
     const [profile_picture, setProfile_picture] = useState<File | null>(null);
     const [jobInfo, setJobInfo] = useState<IJob>(defaultJobInfo)
-    const [status, setStatus] = useState<status>({
+    const [status, setStatus] = useState<StatusType>({
         type: "nothing",
         message: " ",
       });
