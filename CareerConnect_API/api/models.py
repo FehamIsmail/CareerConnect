@@ -267,12 +267,13 @@ class ApplicationStatus(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     APPLICATION_STATUS = (
-        ('OPEN', 'Open'),
         ('APPLIED', 'Applied'),
         ('INTERVIEW', 'Interview'),
+        ('PROCESSING','Processing'),
+        ('OFFER','Offer'),
         ('REJECTED', 'Rejected'),
     )
-    status = models.CharField(max_length=200, choices=APPLICATION_STATUS, null=True, blank=True)
+    status = models.CharField(max_length=200, choices=APPLICATION_STATUS, null=True, blank=True, default=APPLICATION_STATUS[0][1])
     updated_at = models.DateField(auto_now=True)
 
     application_package = models.ForeignKey(Application, on_delete=models.CASCADE)
