@@ -3,11 +3,10 @@ import {Menu, Popover, Transition} from '@headlessui/react'
 import {
     BriefcaseIcon,
     ClipboardDocumentIcon,
-    DocumentDuplicateIcon,
     UserIcon,
     CubeIcon,
     Bars3Icon,
-    XMarkIcon,
+    XMarkIcon, Square3Stack3DIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import {classNames, getAccessToken, handleLogout} from "../../scripts/utils";
@@ -17,8 +16,6 @@ import {Link} from "react-router-dom";
 import {useRecoilValue} from "recoil";
 import {authAtom, userTypeAtom} from "../../constants/atoms";
 import axios from "axios";
-
-
 
 const Header = () => {
     const { isAuthenticated } = useRecoilValue(authAtom);
@@ -33,11 +30,11 @@ const Header = () => {
             href: '#',
             icon: ClipboardDocumentIcon,
         },
-        (role == "STUDENT" ?
+        (role === "STUDENT" ?
          { name: 'Job Applications',
             description: 'View your job applications',
             href: '#',
-            icon: DocumentDuplicateIcon,
+            icon: Square3Stack3DIcon,
          } : {
             name: 'Employers / Post Job',
             description: 'Post a job as an employer',
@@ -49,20 +46,19 @@ const Header = () => {
     const accountActions = [
         {
             name: 'My Profile',
-            href: '/user/edit',
+            href: '/user/profile',
             description: 'Edit your profile details',
             icon: UserIcon,
         }
     ]
-    if(role == "STUDENT"){
+    if(role === "STUDENT"){
         accountActions.push({
             name: 'My Application Packages',
-            href: '#',
+            href: '/user/applications',
             description: 'Manage your application packages',
             icon: CubeIcon,
         })
     }
-    console.log(accountActions)
 
     const getUserInfo = () => {
         axios.get('http://localhost:8000/api/profile/', {
@@ -71,7 +67,8 @@ const Header = () => {
             },
         })
             .then((response: any) => {
-                setProfile_picture('http://localhost:8000'+response.data.profile.profile_picture)
+                if(response.data.profile.profile_picture)
+                    setProfile_picture('http://localhost:8000'+response.data.profile.profile_picture)
             })
             .catch(error => {
                 console.error(error);
@@ -80,7 +77,8 @@ const Header = () => {
 
     useEffect(() => {
         if(isAuthenticated) getUserInfo()
-    }, []);
+    }, [isAuthenticated]);
+
     return (
         <Popover className="relative bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
@@ -130,9 +128,9 @@ const Header = () => {
                                         leaveFrom="opacity-100 translate-y-0"
                                         leaveTo="opacity-0 translate-y-1"
                                     >
-                                        <Popover.Panel className="absolute z-10 -ml-4 mt-3 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
-                                            <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                                <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                                        <Popover.Panel className="absolute z-50 -ml-4 mt-3 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
+                                            <div className="relative z-50 overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                                                <div className="z-50 relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                     {jobActions.map((item) => (
                                                         <Link
                                                             key={item.name}
@@ -184,7 +182,7 @@ const Header = () => {
                                         leaveFrom="opacity-100 translate-y-0"
                                         leaveTo="opacity-0 translate-y-1"
                                     >
-                                        <Popover.Panel className="absolute z-10 -ml-4 mt-3 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
+                                        <Popover.Panel className="absolute z-50 -ml-4 mt-3 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
                                             <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                     {accountActions.map((item) => (
@@ -249,11 +247,11 @@ const Header = () => {
                                 leaveFrom="transform opacity-100 scale-100"
                                 leaveTo="transform opacity-0 scale-95"
                             >
-                                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <Menu.Item>
                                         {({ active }) => (
                                             <Link
-                                                to="/user/edit"
+                                                to="/user/profile"
                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                             >
                                                 Your Profile
@@ -375,7 +373,6 @@ const Header = () => {
                             }
                             {isAuthenticated &&
                                 <a
-                                    href=""
                                     onClick={handleLogout}
                                     className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700"
                                 >

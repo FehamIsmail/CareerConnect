@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {JobType} from "../constants/types";
-import {useSetRecoilState} from "recoil";
-import {authAtom} from "../constants/atoms";
 
 export const classNames = (...classes: (string)[]) => {
     return classes.filter(Boolean).join(' ')
@@ -75,10 +73,7 @@ export const handleLogout = () => {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('role')
     setAuthenticated(false)
-    // it is important to setAuth after to refresh components
-    // only when the code above is executed
-    const setAuth = useSetRecoilState(authAtom);
-    setAuth({ isAuthenticated: false });
+    window.location.reload()
 };
 
 export const setAuthenticated = (value:boolean) => {

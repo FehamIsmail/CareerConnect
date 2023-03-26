@@ -1,26 +1,6 @@
 import React from "react";
 import {EmployerProfile, IJob, StudentProfile, UserInfo} from "../constants/types";
 
-export const handleDragOver = (e: React.DragEvent<HTMLDivElement>, setDragging: React.Dispatch<React.SetStateAction<boolean>>) => {
-    e.preventDefault();
-    setDragging(true);
-};
-
-export const handleDragLeave = (e: React.DragEvent<HTMLDivElement>, setDragging: React.Dispatch<React.SetStateAction<boolean>>) => {
-    e.preventDefault();
-    setDragging(false);
-};
-
-export const handleDrop = (
-            e: React.DragEvent<HTMLDivElement>,
-            setDragging: React.Dispatch<React.SetStateAction<boolean>>,
-            setFile: React.Dispatch<React.SetStateAction<File|null>>) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-    setFile(file);
-};
-
 export const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>,
                                  setFile: React.Dispatch<React.SetStateAction<File|null>>,
                                  file_type?: 'IMAGE' | 'DOCUMENT' | null,
@@ -43,9 +23,7 @@ export const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>,
     setFile(file);
 };
 
-export const handleFileDelete = (setFile: React.Dispatch<React.SetStateAction<File|null>>) => {
-    setFile(null)
-}
+
 
 export const handleUserInputChange = (event: React.ChangeEvent<HTMLInputElement>, setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>) => {
     const {name, value} = event.target;

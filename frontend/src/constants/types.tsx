@@ -148,6 +148,15 @@ export type StudentProfile = {
     relocation: boolean,
 }
 
+export type Document = {
+    id: string
+    file?: string,
+    file2?: string
+    title: string,
+    default: boolean
+    type: 'CV' | 'LETTER' | 'APP_PKG' | ''
+}
+
 export type EmployerProfile = {
     company: string,
     phone_number: number
@@ -168,7 +177,7 @@ export type CoverLetter = {
 
 export type Application = {
     package_name: string,
-    cover_letter: CoverLetter,
+    cover_letter?: CoverLetter,
     curriculum_vitae: CurriculumVitae,
     default: boolean,
 }
@@ -183,7 +192,7 @@ export type FilterProps = {
     options: Option[],
 }
 
-export type status = {
+export type StatusType = {
     type: "success" | "error" | "nothing";
     message: string;
     messages?: string[];
