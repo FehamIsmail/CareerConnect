@@ -319,7 +319,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
         selected_candidates = None
         job = self.get_object()
-        application_status_serializer=None
+        application_status_serializer = None
 
         if phase == 1:
             all_candidates = job.applications.all()
@@ -338,7 +338,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
             return Response({'Application Status': application_status_serializer["status"].value},
                             status=status.HTTP_200_OK)
 
-        elif phase==2:
+        elif phase == 2:
             interviewing_ids = ApplicationStatus.objects.filter(status="INTERVIEW").values_list(
                 "application_package_id")
             candidates = job.applications.filter(id__in=interviewing_ids)
@@ -370,9 +370,13 @@ class JobApplicationView(UpdateAPIView):
         job = self.get_object()
         application = get_object_or_404(Application, pk=request.data['package_id'])
         job.applications.add(application)
-        """
-            change status from null to applied (through table) @Abdel
-        """
+
+        application_status = get_object_or_404(ApplicationStatus, Job=job, application_package=request.data['package_id'])
+        application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                    data={"status": "APPLIED"})
+        if application_status_serializer.is_valid():
+            application_status_serializer.save()
+
         job.save()
         serializer = self.get_serializer(application)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -381,12 +385,17 @@ class JobApplicationView(UpdateAPIView):
         job = self.get_object()
         application = get_object_or_404(Application, pk=request.POST['package_id'])
         if application.student_profile == request.user.student_profile:
+
+            application_status = get_object_or_404(ApplicationStatus, Job=job,
+                                                   application_package=request.data['package_id'])
+            application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                        data={"status": "OPEN"})
+            if application_status_serializer.is_valid():
+                application_status_serializer.save()
+
             job.applications.remove(application)
-            """
-                change status from applied to not applied (through table) @Abdel
-            """
+
             job.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
