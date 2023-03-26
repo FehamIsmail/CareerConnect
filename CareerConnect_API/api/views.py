@@ -305,11 +305,11 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
             return Response({'Candidates': serializer.data}, status=status.HTTP_200_OK)
 
         elif phase == 2:
-            interviewing_ids=ApplicationStatus.objects.filter(status="INTERVIEW").values_list("application_package_id")
+            interviewing_ids = ApplicationStatus.objects.filter(status="INTERVIEW").values_list(
+                "application_package_id")
             candidates = job.applications.filter(id__in=interviewing_ids)
             serializer = ApplicationSerializer(candidates, many=True)
             return Response({'Candidates': serializer.data}, status=status.HTTP_200_OK)
-            # candidates=job.applications.filter(job.applications.)
 
     def post(self, request, *args, **kwargs):
         if "phase" in kwargs:
@@ -318,9 +318,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
             return self.retrieve(request, *args, **kwargs)
 
         selected_candidates = None
+        job = self.get_object()
+        application_status_serializer=None
 
         if phase == 1:
-            job = self.get_object()
             all_candidates = job.applications.all()
             selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
             for candidate in all_candidates:
@@ -334,11 +335,29 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if application_status_serializer.is_valid():
                     application_status_serializer.save()
+            return Response({'Application Status': application_status_serializer["status"].value},
+                            status=status.HTTP_200_OK)
 
-        return Response({'Application Status': application_status_serializer["status"].value},
-                        status=status.HTTP_200_OK)
+        elif phase==2:
+            interviewing_ids = ApplicationStatus.objects.filter(status="INTERVIEW").values_list(
+                "application_package_id")
+            candidates = job.applications.filter(id__in=interviewing_ids)
+            selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
 
+            for candidate in candidates:
+                application_status = get_object_or_404(ApplicationStatus, Job=job, application_package=candidate)
 
+                if candidate in selected_candidates:
+                    application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                                data={"status": "INTERVIEW"})
+                if candidate not in selected_candidates:
+                    application_status_serializer = ApplicationStatusSerializer(instance=application_status,
+                                                                                data={"status": "REJECTED"})
+                if application_status_serializer.is_valid():
+                    application_status_serializer.save()
+
+            return Response({'Application Status': application_status_serializer.data},
+                            status=status.HTTP_200_OK)
 
 
 class JobApplicationView(UpdateAPIView):
