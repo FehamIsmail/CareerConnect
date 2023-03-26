@@ -150,7 +150,7 @@ export type StudentProfile = {
 
 export type Document = {
     id: string
-    file: string | null,
+    file?: string,
     file2?: string
     title: string,
     default: boolean

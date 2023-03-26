@@ -9,7 +9,7 @@ import {getEndpoint} from "../../scripts/DocumentUtils";
 
 
 interface DocumentTableProps {
-    documentList: Document[]
+    documentList: Document[] | any[]
     editDocument: (doc: Document) => any;
     setStatus: React.Dispatch<React.SetStateAction<StatusType>>
 }
@@ -18,7 +18,7 @@ interface DocumentTableProps {
 export default function DocumentTable(props:DocumentTableProps) {
     const {documentList, editDocument, setStatus} = props
     const navigate = useNavigate()
-    const type = documentList[0].type
+    const type = documentList[0]?.type
     const documentTypeName = type == 'CV' ? 'Resumes' :
         type == 'LETTER' ? 'Cover Letters' : 'Application Packages'
     const [defaultDocument, setDefaultDocument] = useState<Document | null>(null);
@@ -43,8 +43,7 @@ export default function DocumentTable(props:DocumentTableProps) {
     const deleteDocument = (doc: Document) => {
         const endpoint = getEndpoint(doc.type)
         const id = doc.id;
-
-        axios.delete(`http://localhost:8000/api/curriculumvitae/d24710e9-9c1c-424e-938c-26bd068e319a/`, {
+        axios.delete(`http://localhost:8000${endpoint}${id}/`, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                 },
@@ -53,7 +52,7 @@ export default function DocumentTable(props:DocumentTableProps) {
             console.log(res)
             if(res.status === 204){
                 setStatus({type: 'success', message: 'Document deleted'})
-                // window.location.reload()
+                window.location.reload()
             }
 
         }).catch(err => {
@@ -63,8 +62,17 @@ export default function DocumentTable(props:DocumentTableProps) {
         })
     }
 
-    const downloadDocument = (a: any) => {
-        console.log(a)
+    const downloadDocument = async (url: string, fileName: string) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
     }
 
     const handleSave = () => {
@@ -82,16 +90,16 @@ export default function DocumentTable(props:DocumentTableProps) {
             }
         ).then(res => {
             console.log(res)
-            // if (res.status == 200)
-            //     window.location.reload()
+            if (res.status == 200)
+                window.location.reload()
         }).catch(err => {
             console.log(err.response.data)
         })
 
     }
 
-
     useEffect(() => {
+        console.log(documentList)
         documentList.forEach(doc => {
             if(doc.default)
                 setDefaultDocument(doc)
@@ -99,13 +107,13 @@ export default function DocumentTable(props:DocumentTableProps) {
     }, [documentList]);
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8">
-            <div className="mt-6 sm:flex sm:items-center">
+        <div className="">
+            <div className="px-4 sm:px-6 lg:px-8 mt-6 sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <h1 className="text-base font-semibold leading-6 text-gray-900">{documentTypeName}</h1>
                 </div>
             </div>
-            <div className="mt-6 flow-root">
+            <div className="px-4 sm:px-6 lg:px-8 mt-6 flow-root">
                 <div className="overflow-x-auto">
                     <div className="inline-block min-w-0 w-full py-2 align-middle px-0 sm:px-2 md:px-0">
                         <table className="w-full divide-y divide-gray-300">
@@ -152,13 +160,14 @@ export default function DocumentTable(props:DocumentTableProps) {
                                         />
                                     </td>
                                     <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.title}</td>
-                                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.file?.split('/').pop()}</td>
-                                    {type == 'APP_PKG' &&
-                                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.file2}</td>}
+                                    {type !== 'APP_PKG' && <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.file?.split('/').pop()}</td>}
+                                    {type === 'APP_PKG' && <>
+                                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.curriculum_vitae}</td>
+                                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.cover_letter}</td></>}
                                     <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{document.type}</td>
                                     <td className="relative whitespace-nowrap p-4 text-center text-sm font-medium flex items-center justify-center gap-2 ">
                                         {type != 'APP_PKG' &&
-                                        <button onClick={() => downloadDocument(document.file)}>
+                                        <button onClick={() => downloadDocument(document.file, document.file?.split('/').pop())}>
                                             <ArrowDownTrayIcon className="h-4 w-4 text-indigo-600 hover:text-indigo-900"/>
                                         </button>}
                                         <button
@@ -176,15 +185,15 @@ export default function DocumentTable(props:DocumentTableProps) {
                         </table>
                     </div>
                 </div>
-                <div className="mt-4 bg-gray-50 px-4 py-3 text-right sm:px-6">
-                    <button
-                        type="submit"
-                        onClick={handleSave}
-                        className="inline-flex justify-center rounded-md border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary_dark focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Save
-                    </button>
-                </div>
+            </div>
+            <div className="mt-4 bg-gray-50 py-3 text-right sm:px-6">
+                <button
+                    type="submit"
+                    onClick={handleSave}
+                    className="inline-flex justify-center rounded-md border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary_dark focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Save
+                </button>
             </div>
         </div>
     )

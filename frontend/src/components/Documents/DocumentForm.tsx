@@ -8,7 +8,7 @@ import {createArrayFromStrings, getAccessToken} from "../../scripts/utils";
 
 const empty_document:Document = {
     id: '',
-    file: null,
+    file: '',
     title: '',
     default: false,
     type: '',
@@ -51,8 +51,11 @@ export const DocumentForm = (props:DocumentProps) => {
             }
         ).then(res => {
             console.log(res)
-            if(res.status === 201)
+            if(res.status === 201){
+                window.location.reload()
                 setStatus({type: 'success', message: 'Document successfully created'})
+            }
+
         }).catch(err => {
             console.log(err.response.data)
             const response_messages: string[] = createArrayFromStrings(err.response.data)
@@ -63,11 +66,12 @@ export const DocumentForm = (props:DocumentProps) => {
     const handleEdit = (e: any) => {
         e.preventDefault()
         const endpoint = getEndpoint(documentInfo.type)
+        const id = documentInfo.id
         if(!isTypeAndFileValid())
             return
         const data = createDataToSend()
         console.log(data)
-        axios.put(`http://localhost:8000${endpoint}`, data,{
+        axios.put(`http://localhost:8000${endpoint}${id}/`, data,{
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                     "Content-Type": 'multipart/form-data'
@@ -112,8 +116,8 @@ export const DocumentForm = (props:DocumentProps) => {
 
         else{
             data = {
-                cover_letter: documentInfo.file,
-                curriculum_vitae: documentInfo.file2,
+                curriculum_vitae: documentInfo.file,
+                cover_letter: documentInfo.file2,
                 package_name: documentInfo.title,
                 default: documentInfo.default
             };
@@ -200,7 +204,7 @@ export const DocumentForm = (props:DocumentProps) => {
                                 </label>
                             </div>
                         </div>}
-                    <div className="col-span-6">
+                    { action === 'CREATE' && <div className="col-span-6">
                         <label htmlFor="type" className="block text-sm font-medium text-gray-700">
                             Type
                         </label>
@@ -216,7 +220,7 @@ export const DocumentForm = (props:DocumentProps) => {
                             <option value="LETTER">Cover Letter</option>
                             <option value="APP_PKG">Application Package</option>
                         </select>
-                    </div>
+                    </div>}
 
                     {documentInfo.type != 'APP_PKG' && <div className="col-span-6">
                         <label htmlFor="file" className="block text-sm font-medium text-gray-700">

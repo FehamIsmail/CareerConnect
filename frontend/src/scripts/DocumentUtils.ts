@@ -101,10 +101,42 @@ export function convertToDocumentArray(data: any[], type:'curriculumvitae' | 'co
                 default: item.default,
                 type: getTypeFromName(type),
             };
-        else{}
+        else{
+            document = {
+                id: item.id,
+                file: item.curriculum_vitae,
+                file2: item.cover_letter,
+                title: item.package_name,
+                default: item.default,
+                type: getTypeFromName(type),
+            };
+        }
 
         documents.push(document);
     }
 
     return documents;
+}
+
+export function feedApplicationCVandCL(cvs: Document[], cls: Document[], apps: Document[]): any[]{
+    let new_apps:any[] = []
+    // console.log(apps.length)
+    apps.forEach((app, index) => {
+        // console.log(getNameFromId(cvs, app.file || ''))
+        new_apps.push({...apps[index], curriculum_vitae: getNameFromId(cvs, app.file||''), cover_letter:getNameFromId(cls, app.file2||'')})
+    })
+    // console.log(new_apps)
+    return new_apps
+}
+
+function getNameFromId(list: Document[], id: string): string{
+    let title = ''
+    list.forEach(item => {
+        if(item.id === id){
+            console.log(item)
+            title = item.title
+        }
+
+    })
+    return title
 }

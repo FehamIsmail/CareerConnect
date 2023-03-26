@@ -13,7 +13,7 @@ import {Document, StatusType} from "../constants/types";
 import {Status} from "../components/StatusBar/Status";
 import axios from "axios";
 import {getAccessToken} from "../scripts/utils";
-import {convertToDocumentArray} from "../scripts/DocumentUtils";
+import {convertToDocumentArray, feedApplicationCVandCL} from "../scripts/DocumentUtils";
 
 const mockCVs: Document[] = [
     {
@@ -96,7 +96,7 @@ export const DocumentsPage = () => {
     const [formVisibility, setFormVisibility] = useState<'hidden' | ''>()
     const [resumeList, setResumeList] = useState<Document[]>(mockCVs)
     const [letterList, setLetterList] = useState<Document[]>(mockCoverLetters)
-    const [appPackagesList, setAppPackagesList] = useState<Document[]>(mockApplicationPackages)
+    const [appPackagesList, setAppPackagesList] = useState<any>(mockApplicationPackages)
     const [formView, setFormView] = useState<'VIEW' | 'FORM'>()
     const [documentOnPreview, setDocumentOnPreview] = useState<Document>()
     const [listOnPreview, setListOnPreview] = useState<Document[]>(resumeList)
@@ -113,6 +113,13 @@ export const DocumentsPage = () => {
         getUserDocuments('coverletter')
         getUserDocuments('applications')
     }, []);
+
+    useEffect(() => {
+        if(appPackagesList.length === 0)
+            return
+        if(!('cover_letter' in appPackagesList[0]))
+            setAppPackagesList(feedApplicationCVandCL(resumeList, letterList, appPackagesList))
+    }, [appPackagesList]);
 
     function getUserDocuments(docType:string){
         axios.get(`http://localhost:8000/api/${docType}/`, {

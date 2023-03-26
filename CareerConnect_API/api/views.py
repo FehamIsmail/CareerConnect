@@ -165,7 +165,7 @@ class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
     """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    queryset = CoverLetter.objects.all()
+    queryset = CurriculumVitae.objects.all()
     serializer_class = CVSerializer
 
 
