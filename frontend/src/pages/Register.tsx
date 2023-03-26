@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
 import {Link, useNavigate} from "react-router-dom";
-import axios from "axios/index";
+import axios from "axios";
 
 enum ErrorType {
     PASSWORD = "Please review your password",
@@ -55,7 +55,7 @@ export function Register() {
         else
             user_data.company_name = organization
 
-        if (password1 == password2) {
+        if (password1===password2) {
             axios.post('http://localhost:8000/api/register/', user_data).then(res => {
                 console.log(res)
                 navigate('/');
@@ -176,7 +176,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="email"
-                                    className={` ${(showAlert && (error == ErrorType.EMAIL || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={` ${(showAlert && (error===ErrorType.EMAIL || error===ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Email address
                                 </label>
@@ -187,7 +187,7 @@ export function Register() {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        className={`${(showAlert && (error == ErrorType.EMAIL || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error===ErrorType.EMAIL || error === ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -195,7 +195,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="password"
-                                    className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={`${(showAlert && (error === ErrorType.PASSWORD || error === ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Password
                                 </label>
@@ -206,7 +206,7 @@ export function Register() {
                                         type="password"
                                         autoComplete="password"
                                         required
-                                        className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error === ErrorType.PASSWORD || error === ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>
@@ -214,7 +214,7 @@ export function Register() {
                             <div>
                                 <label
                                     htmlFor="repeat-password"
-                                    className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
+                                    className={`${(showAlert && (error === ErrorType.PASSWORD || error === ErrorType.BOTH)) ? 'text-red-600' : ''} block text-sm font-medium text-gray-700`}
                                 >
                                     Confirm Password
                                 </label>
@@ -225,7 +225,7 @@ export function Register() {
                                         type="password"
                                         autoComplete=""
                                         required
-                                        className={`${(showAlert && (error == ErrorType.PASSWORD || error == ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
+                                        className={`${(showAlert && (error === ErrorType.PASSWORD || error === ErrorType.BOTH)) ? 'border-red-600 border-[1px]' : ''} block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm`}
                                     />
                                 </div>
                             </div>

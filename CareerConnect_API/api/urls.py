@@ -21,8 +21,8 @@ urlpatterns = [
     path('curriculumvitae/', CurriculumVitaeListView.as_view(), name='cv-list'),
     path('curriculumvitae/<uuid:pk>/', CurriculumVitaeDetailView.as_view(), name='cv-detail'),
 
-    path('coverleter/', CoverLetterListView.as_view(), name='cv-list'),
-    path('coverletter/<uuid:pk>/', CoverLetterDetailView.as_view(), name='cv-detail'),
+    path('coverletter/', CoverLetterListView.as_view(), name='cl-list'),
+    path('coverletter/<uuid:pk>/', CoverLetterDetailView.as_view(), name='cl-detail'),
 
     path('applications/', ApplicationPackageListView.as_view(), name='application-list'),
     path('applications/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='application-detail'),
