@@ -118,21 +118,6 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         exclude = ['employer_profile']
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        request = self.context.get('request')
-        if request and request.user.is_authenticated and request.user.role == Role.STUDENT:
-            current_student = request.user.student_profile
-            packages = instance.application_packages.filter(
-                application__application_package_id__student_profile_id=current_student.id)
-            student_package = []
-            for package in packages:
-                application_data = ApplicationPackageSerializer(package).data
-                student_package.append(application_data)
-            data["application_packages"] = student_package
-
-        return data
-
 
 class JobSerializerForStudent(serializers.ModelSerializer):
     company_logo = serializers.ImageField(required=False)

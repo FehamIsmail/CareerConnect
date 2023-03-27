@@ -247,6 +247,14 @@ class JobListView(ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = JobSerializer
 
+    def get_serializer_class(self):
+        user=self.request.user
+        if user.is_authenticated and user.role == Role.EMPLOYER:
+            return JobSerializer
+        #students and people not logged in will see only the jobs
+        else:
+            return JobSerializerForStudent
+
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated and user.role == Role.EMPLOYER:
