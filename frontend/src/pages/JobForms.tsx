@@ -7,6 +7,8 @@ import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/util
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {industryOptions} from "../constants/filter_constants";
+import {useRecoilValue} from "recoil";
+import {authAtom, userTypeAtom} from "../constants/atoms";
 
 const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
@@ -38,7 +40,9 @@ export default function JobForms(){
         type: "nothing",
         message: " ",
       });
-      const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { isAuthenticated } = useRecoilValue(authAtom)
+    const role = useRecoilValue(userTypeAtom)
 
     const inputValue: dict = {
         title: {
@@ -112,6 +116,8 @@ export default function JobForms(){
     }
 
     useEffect(() => {
+        if(!isAuthenticated || role === "STUDENT")
+            navigate('/')
         if (profile_picture) {
           const reader = new FileReader();
           reader.readAsDataURL(profile_picture);

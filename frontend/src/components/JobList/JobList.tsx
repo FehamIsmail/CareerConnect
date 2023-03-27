@@ -1,20 +1,17 @@
 import React, {useEffect, useRef,} from 'react'
 import JobItem from "./JobItem";
 import {useRecoilValue, useSetRecoilState} from "recoil";
-import {jobListAtom, jobOnPreviewIDAtom} from "../../constants/atoms";
-import {mockJobs} from "../../constants/mockJobs";
+import {filteredJobListSelector, jobListAtom, jobOnPreviewIDAtom} from "../../constants/atoms";
 
 
 const JobList = () => {
-    const jobListSetter = useSetRecoilState(jobListAtom)
     const jobList = useRecoilValue(jobListAtom)
     const jobListDivRef = useRef<HTMLDivElement>(null)
     const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
     const jobOnPreviewSetter = useSetRecoilState(jobOnPreviewIDAtom);
+    const filteredJobList = useRecoilValue(filteredJobListSelector);
 
     useEffect(() => {
-        //Initializes the jobList Atom
-        jobListSetter(() => mockJobs)
         //Previews the first jobItem
         if (jobOnPreviewId == -1 && jobList.length > 0)
             jobOnPreviewSetter(jobList[0].id)
@@ -37,8 +34,8 @@ const JobList = () => {
 
     return (
         <div ref={jobListDivRef}
-             className="job-item h-fit bg-white min-w-0 divide-y divide-gray-200 border-[1px] border-gray-200 rounded-md shadow-default w-full">
-            {jobList.map((job) => (
+             className="job-item w-full h-fit bg-white min-w-0 divide-y divide-gray-200 border-[1px] border-gray-200 rounded-md shadow-default w-full">
+            {filteredJobList.map((job) => (
                 <JobItem key={job.id} job={job}/>
             ))}
         </div>

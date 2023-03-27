@@ -1,5 +1,5 @@
-import React from 'react'
-import {Outlet} from 'react-router-dom'
+import React, {useEffect} from 'react'
+import {Outlet, useNavigate} from 'react-router-dom'
 import {classNames} from "../scripts/utils";
 import {
     BellIcon,
@@ -8,6 +8,8 @@ import {
     UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import Header from "../components/Header/Header";
+import {useRecoilValue} from "recoil";
+import {authAtom} from "../constants/atoms";
 
 type UserNavOpt ={
     isUser: boolean
@@ -26,6 +28,14 @@ const jobNavigation = [
 
 export function UserNav(props:UserNavOpt) {
     const navigation = props.isUser ? userNavigation : jobNavigation;
+    const {isAuthenticated} = useRecoilValue(authAtom)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if( !isAuthenticated )
+            navigate('/login')
+    }, [])
+
 
     return (
         <>
