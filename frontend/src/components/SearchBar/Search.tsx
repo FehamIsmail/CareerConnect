@@ -1,6 +1,21 @@
 import React from "react";
+import {filterSortingAtom} from "../../constants/atoms";
+import {useRecoilState} from "recoil";
 
 function Search() {
+  const [filterSorting, setFilterSorting] = useRecoilState(filterSortingAtom);
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterSorting((prevFilterSorting) => ({
+      ...prevFilterSorting,
+      searchTerm: event.target.value,
+    }));
+  };
+
+  const ApplySearch = () => {
+    console.log('searching...')
+  };
+
   return (
     <>
       <form className="relative flex justify-center h-[54px] -top-[27px] w-full">
@@ -31,12 +46,15 @@ function Search() {
           <input
             type="search"
             id="default-search"
+            value={filterSorting.searchTerm}
+            onChange={handleFilterChange}
             className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Search for job postings..."
             required
           />
           <button
             type="submit"
+            onClick={ApplySearch}
             className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2"
           >
             Search

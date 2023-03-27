@@ -24,24 +24,28 @@ const Header = () => {
 
 
     const jobActions = [
-        {
-            name: 'Job Postings',
+        {   name: 'Job Postings',
             description: 'Browse job postings',
             href: '#',
             icon: ClipboardDocumentIcon,
-        },
-        (role === "STUDENT" ?
-         { name: 'Job Applications',
-            description: 'View your job applications',
-            href: '#',
-            icon: Square3Stack3DIcon,
-         } : {
-            name: 'Employers / Post Job',
-            description: 'Post a job as an employer',
-            href: '/job/create',
-            icon: BriefcaseIcon,
-        })
-    ]
+        },  ...(role === 'STUDENT' && isAuthenticated    ? [
+            {   name: 'Job Applications',
+                description: 'View your job applications',
+                href: '#',
+                icon: Square3Stack3DIcon,
+            },]
+        : []),
+        ...(role === 'EMPLOYER' && isAuthenticated
+            ? [
+                {
+                    name: 'Employers / Post Job',
+                    description: 'Post a job as an employer',
+                    href: '/job/create',
+                    icon: BriefcaseIcon,
+                },
+            ]
+            : []),
+    ];
 
     const accountActions = [
         {
@@ -283,13 +287,16 @@ const Header = () => {
                             </Transition>
                         </Menu>
                         }
-                        <div className="w-[1px] h-9 bg-gray-300"></div>
-                        <Link
-                            to="/"
+
+                        {role === "EMPLOYER" && <>
+                            <div className="w-[1px] h-9 bg-gray-300"></div>
+                            <Link
+                            to={isAuthenticated ? `/job/create` : `/register`}
                             className="ml-4 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-lightBlue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-lightBlue-700"
                         >
                             Post job
                         </Link>
+                        </>}
                     </div>
                 </div>
             </div>

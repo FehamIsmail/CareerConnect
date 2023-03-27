@@ -1,10 +1,24 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Switch} from '@headlessui/react'
 import {FilterProps} from "../../constants/types";
+import {filterSortingAtom} from "../../constants/atoms";
+import {useSetRecoilState} from "recoil";
 
 export function ToggleButton(props: FilterProps) {
-    const {placeholder} = props
+    const {placeholder, options} = props
     const [enabled, setEnabled] = useState(false)
+    const setFilterSorting = useSetRecoilState(filterSortingAtom);
+
+    const handleFilterChange = (value: boolean) => {
+        setFilterSorting((prevFilterSorting) => ({
+            ...prevFilterSorting,
+            [options[0]?.name]: value,
+        }));
+    };
+
+    useEffect(() => {
+        handleFilterChange(enabled)
+    }, [enabled]);
 
     return (
         <div className="flex flex-row items-center mt-4">

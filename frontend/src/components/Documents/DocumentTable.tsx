@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react'
-
 import {Document, StatusType} from "../../constants/types";
 import {ArrowDownTrayIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import axios from "axios";
@@ -17,7 +16,6 @@ interface DocumentTableProps {
 
 export default function DocumentTable(props:DocumentTableProps) {
     const {documentList, editDocument, setStatus} = props
-    const navigate = useNavigate()
     const type = documentList[0]?.type
     const documentTypeName = type == 'CV' ? 'Resumes' :
         type == 'LETTER' ? 'Cover Letters' : 'Application Packages'
@@ -81,15 +79,12 @@ export default function DocumentTable(props:DocumentTableProps) {
         const data = {default: true}
         const id = defaultDocument.id
         const endpoint = getEndpoint(defaultDocument.type)
-        console.log(defaultDocument)
-        console.log(id)
         axios.put(`http://localhost:8000${endpoint}${id}/`, data, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                 },
             }
         ).then(res => {
-            console.log(res)
             if (res.status == 200)
                 window.location.reload()
         }).catch(err => {
@@ -99,7 +94,6 @@ export default function DocumentTable(props:DocumentTableProps) {
     }
 
     useEffect(() => {
-        console.log(documentList)
         documentList.forEach(doc => {
             if(doc.default)
                 setDefaultDocument(doc)

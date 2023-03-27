@@ -3,12 +3,14 @@ import {Combobox, Transition} from '@headlessui/react'
 import {CheckIcon, ChevronDownIcon} from '@heroicons/react/20/solid'
 import {Option, FilterProps} from "../../constants/types";
 import {thinScrollBarStyle} from "../../constants/styles";
-
+import {useSetRecoilState} from "recoil";
+import {filterSortingAtom} from "../../constants/atoms";
 
 export default function FilteredComboBox(props: FilterProps) {
     const {options, placeholder} = props;
     const [selected, setSelected] = useState(options[0])
     const [query, setQuery] = useState('')
+    const setFilterSorting = useSetRecoilState(filterSortingAtom);
 
     const filteredOption =
         query === ''
@@ -20,6 +22,17 @@ export default function FilteredComboBox(props: FilterProps) {
                     .includes(query.toLowerCase().replace(/\s+/g, ''))
             )
 
+    const handleFilterChange = (value: string) => {
+        const filterType = options[0].name === 'Accounting' ? 'selectedIndustry' : 'selectedType'
+        setFilterSorting((prevFilterSorting) => ({
+            ...prevFilterSorting,
+            [filterType]: value,
+        }));
+    };
+
+    useEffect(() => {
+        handleFilterChange(selected.name)
+    }, [selected]);
 
     useEffect(() => {
         if(selected.name !== '')
