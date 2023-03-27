@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .enums import EducationLevel, Role, JobType, ApplicationStatus
+
 
 # https://rahmanfadhil.com/django-login-with-email/ Login with email or username
 def upload_to(instance, filename):
@@ -12,13 +14,13 @@ def upload_to(instance, filename):
 
 class CustomQuerySet(models.QuerySet):
     def students(self):
-        return self.filter(role=User.Role.STUDENT)
+        return self.filter(role=Role.STUDENT)
 
     def employers(self):
-        return self.filter(role=User.Role.EMPLOYER)
+        return self.filter(role=Role.EMPLOYER)
 
     def admins(self):
-        return self.filter(role=User.Role.ADMIN)
+        return self.filter(role=Role.ADMIN)
 
 
 # Base User model
@@ -41,7 +43,7 @@ class UserManager(BaseUserManager):
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email=email, password=password, role=User.Role.ADMIN, **extra_fields)
+        return self.create_user(email=email, password=password, role=Role.ADMIN, **extra_fields)
 
     def get_queryset(self):
         return CustomQuerySet(self.model, using=self._db)
@@ -60,11 +62,6 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", 'Admin'
-        STUDENT = "STUDENT", 'Student'
-        EMPLOYER = "EMPLOYER", 'Employer'
 
     role = models.CharField(max_length=50, choices=Role.choices)
 
@@ -120,20 +117,6 @@ class StudentProfile(models.Model):
     # Academic Info
     institution = models.CharField(max_length=100, null=True, blank=True)
     field_of_study = models.CharField(max_length=100, null=True, blank=True)
-
-    class EducationLevel(models.TextChoices):
-        SECONDARY_SCHOOL = 'SS', 'Secondary School'
-        HIGH_SCHOOL = 'HS', 'High School'
-        BACHELOR = 'BA', 'Bachelor'
-        MASTER = 'MA', 'Master'
-        DOCTORATE = 'PHD', 'Doctorate'
-        CERTIFICATE = 'CERT', 'Certificate'
-        DIPLOMA = 'DIP', 'Diploma'
-        ASSOCIATE = 'AA', 'Associate'
-        POSTGRADUATE = 'PG', 'Postgraduate'
-        PROFESSIONAL = 'PROF', 'Professional'
-        SPECIALIZATION = 'SPEC', 'Specialization'
-
     education_level = models.CharField(max_length=4, choices=EducationLevel.choices)
 
     # Contact Information
@@ -180,42 +163,29 @@ class CurriculumVitae(models.Model):
         return f"CV: {self.title}, by {self.student_profile.user.first_name}"
 
 
-class Application(models.Model):
+class ApplicationPackage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='application')
     cover_letter = models.ForeignKey(CoverLetter, on_delete=models.CASCADE, null=True, blank=True)
     curriculum_vitae = models.ForeignKey(CurriculumVitae, on_delete=models.CASCADE, null=True, blank=True)
-    package_name = models.CharField(max_length=100, null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
     default = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"package: {self.package_name}, by {self.student_profile.user.first_name}"
+        return f"package: {self.title}, by {self.student_profile.user.first_name}"
 
 
 # ============= EMPLOYER's Objects ============= #
 
 class Job(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    JOB_TYPE_CHOICES = (
-        ('FULL_TIME', 'Full-time'),
-        ('PART_TIME', 'Part-time'),
-        ('TEMPORARY', 'Temporary'),
-        ('CONTRACT', 'Contract'),
-        ('FREELANCE', 'Freelance'),
-        ('INTERNSHIP', 'Internship'),
-        ('VOLUNTEER', 'Volunteer'),
-        ('SEASONAL', 'Seasonal'),
-        ('REMOTE', 'Remote'),
-        ('CONSULTANT', 'Consultant'),
-        ('EXECUTIVE', 'Executive'),
-        ('ON_SITE', 'On-site'),
-    )
-    employer = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)
-    applications = models.ManyToManyField(Application, through='ApplicationStatus')
+
+    employer_profile = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)
+    application_packages = models.ManyToManyField(ApplicationPackage, through='Application')
 
     # Basic Info
     title = models.CharField(max_length=100, null=True, blank=True)
-    types = models.CharField(max_length=200, choices=JOB_TYPE_CHOICES, null=True, blank=True)
+    types = models.CharField(max_length=200, choices=JobType.choices, null=True, blank=True)
     industry = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     short_description = models.TextField(null=True, blank=True)
@@ -263,20 +233,13 @@ class Job(models.Model):
         return f"{self.title}"
 
 
-class ApplicationStatus(models.Model):
+class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    APPLICATION_STATUS = (
-        ('APPLIED', 'Applied'),
-        ('INTERVIEW', 'Interview'),
-        ('PROCESSING', 'Processing'),
-        ('OFFER', 'Offer'),
-        ('REJECTED', 'Rejected'),
-    )
-    status = models.CharField(max_length=200, choices=APPLICATION_STATUS, null=True, blank=True, default=APPLICATION_STATUS[0][1])
+    status = models.CharField(max_length=200, choices=ApplicationStatus.choices, default=ApplicationStatus.APPLIED, null=True, blank=True, )
     updated_at = models.DateField(auto_now=True)
 
-    application_package = models.ForeignKey(Application, on_delete=models.CASCADE)
+    application_package = models.ForeignKey(ApplicationPackage, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
     def __str__(self):
