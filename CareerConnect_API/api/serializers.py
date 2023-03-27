@@ -5,8 +5,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
 
-from .models import StudentProfile, Application, CoverLetter, CurriculumVitae, User, Student, Employer, EmployerProfile, \
-    Job
+from .enums import Role
+from .models import StudentProfile, ApplicationPackage, CoverLetter, CurriculumVitae, User, Student, Employer, \
+    EmployerProfile, \
+    Job, Application
 
 
 class UniqueEmailValidator(UniqueValidator):
@@ -47,21 +49,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = None
-        if validated_data['role'] == User.Role.STUDENT:
+        if validated_data['role'] == Role.STUDENT:
             user = Student.objects.create_user(
                 email=validated_data["email"],
                 first_name=validated_data["first_name"],
                 last_name=validated_data["last_name"],
-                role=User.Role.STUDENT,
+                role=Role.STUDENT,
                 password=validated_data["password"]
             )
 
-        elif validated_data['role'] == User.Role.EMPLOYER:
+        elif validated_data['role'] == Role.EMPLOYER:
             user = Employer.objects.create_user(
                 email=validated_data["email"],
                 first_name=validated_data["first_name"],
                 last_name=validated_data["last_name"],
-                role=User.Role.EMPLOYER,
+                role=Role.EMPLOYER,
                 password=validated_data["password"]
             )
 
@@ -97,13 +99,41 @@ class CLSerializer(serializers.ModelSerializer):
         exclude = ['student_profile']
 
 
-class ApplicationSerializer(serializers.ModelSerializer):
+class ApplicationPackageSerializer(serializers.ModelSerializer):
     cv = CVSerializer(read_only=True)
     cl = CLSerializer(read_only=True)
 
+    # application_status = ApplicationStatusSerializer(source='applicationstatus_set', read_only=True, many=True)
+
+    class Meta:
+        model = ApplicationPackage
+        exclude = ['student_profile']
+
+
+class JobSerializer(serializers.ModelSerializer):
+    application_packages = ApplicationPackageSerializer(read_only=True, many=True)
+    company_logo = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Job
+        exclude = ['employer_profile']
+
+
+class JobSerializerForStudent(serializers.ModelSerializer):
+    company_logo = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Job
+        exclude = ['employer_profile', 'application_packages']
+
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    job = JobSerializerForStudent(read_only=True)
+    application_package = ApplicationPackageSerializer(read_only=True)
+
     class Meta:
         model = Application
-        exclude = ['student_profile']
+        fields = '__all__'
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
@@ -115,27 +145,10 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class JobSerializer(serializers.ModelSerializer):
-    applications = ApplicationSerializer(many=True, read_only=True)
-    company_logo = serializers.ImageField(required=False)
-
-    class Meta:
-        model = Job
-        exclude = ['employer']
-
-
-class JobSerializerForStudent(serializers.ModelSerializer):
-    company_logo = serializers.ImageField(required=False)
-
-    class Meta:
-        model = Job
-        exclude = ['employer', 'applications']
-
-
 class EmployerProfileSerializer(serializers.ModelSerializer):
     job_set = JobSerializer(many=True, read_only=True)
     profile_picture = serializers.ImageField(required=False)
 
     class Meta:
         model = EmployerProfile
-        fields = ['profile_picture', 'phone_number', 'company', 'job_set']
+        fields = '__all__'

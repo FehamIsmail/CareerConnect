@@ -11,6 +11,13 @@ This project will provide a career services platform where students (job seekers
 <h2>Issues tracking</h2>
 
 <a href="https://docs.google.com/spreadsheets/d/1OpqNBRHSaydjWkSW3TTRSmgD_jWX_LWbxrSmAXZ2onI/edit?usp=sharing">Access Sheet Here</a> to have access to everything about the issues and user stories worked on
+  
+ <h2>Additional Features:</h2>
+  <ol>
+  <li>An employer can refer a candidate that applied to one of his jobs, to another employer or to another of his own job positions. The student would need to allow such recommendation to happen in his account settings.</li>
+    <li>Allowing the linking of a CareerConnect account with another AUTH provider like Google, Facebook or Microsoft to allow for an easier connection process.</li>
+    <li>Adding jobs to favorites/shortlist.</li>
+  </ol>
 
 <h3>Below are the core abilities of the project</h3>
 <ul>
