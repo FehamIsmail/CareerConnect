@@ -10,7 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .enums import Role
+from .enums import Role, ApplicationStatus
 from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application
 from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
@@ -346,10 +346,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
                 application = get_object_or_404(Application, job=job, application_package=packages)
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "INTERVIEW"})
+                                                                          data={"status": ApplicationStatus.INTERVIEW})
                 elif packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "REJECTED"})
+                                                                          data={"status": ApplicationStatus.REJECTED})
 
                 if application_serializer.is_valid():
                     application_serializer.save()
@@ -357,7 +357,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
                             status=status.HTTP_200_OK)
 
         elif phase == 2:
-            interviewing_ids = Application.objects.filter(status="INTERVIEW").values_list(
+            interviewing_ids = Application.objects.filter(status=ApplicationStatus.INTERVIEW).values_list(
                 "application_package_id")
             candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
             selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
@@ -367,10 +367,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "PROCESSING"})
+                                                                          data={"status": ApplicationStatus.PROCESSING})
                 if packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "REJECTED"})
+                                                                          data={"status": ApplicationStatus.REJECTED})
                 if application_serializer.is_valid():
                     application_serializer.save()
 
@@ -378,7 +378,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
                             status=status.HTTP_200_OK)
 
         elif phase == 3:
-            interviewing_ids = Application.objects.filter(status="PROCESSING").values_list(
+            interviewing_ids = Application.objects.filter(status=ApplicationStatus.PROCESSING).values_list(
                 "application_package_id")
             candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
             selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
@@ -388,10 +388,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "OFFER"})
+                                                                          data={"status": ApplicationStatus.OFFER})
                 if packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": "WAITLIST"})
+                                                                          data={"status": ApplicationStatus.WAITLIST})
                 if application_serializer.is_valid():
                     application_serializer.save()
 
@@ -442,7 +442,6 @@ class JobApplicationView(UpdateAPIView):
 
 class JobApplicantsView(ListCreateAPIView):
     serializer_class = ApplicationPackageSerializer
-
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
