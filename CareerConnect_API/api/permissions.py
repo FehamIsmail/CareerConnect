@@ -14,8 +14,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         # Instance must have an attribute named `employer`.
-        if hasattr(obj, 'employer'):
-            return obj.employer == request.user.employer_profile
+        if hasattr(obj, 'employer_profile'):
+            return obj.employer_profile == request.user.employer_profile
         elif hasattr(obj, 'student_profile'):
             return obj.student_profile == request.user.student_profile
 

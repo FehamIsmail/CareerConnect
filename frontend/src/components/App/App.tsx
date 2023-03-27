@@ -28,6 +28,7 @@ const App = () => {
                 <Route path="user" element={<UserNav isUser={true}/>}>
                     <Route path="profile" element={<UserForm />}/>
                     <Route path="documents" element={<DocumentsPage />}/>
+                    {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                 </Route>
                 <Route path="job" element={<UserNav isUser={false}/>}>
                     <Route path="create" element={<JobForms />}/>

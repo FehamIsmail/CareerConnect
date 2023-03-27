@@ -3,12 +3,12 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegistrationView, LoginView, UserProfileView, JobListView, JobDetailView, JobApplicationView, \
     ApplicationPackageListView, ApplicationPackageDetailView, CurriculumVitaeListView, CurriculumVitaeDetailView, \
-    CoverLetterListView, CoverLetterDetailView
+    CoverLetterListView, CoverLetterDetailView, JobApplicantsView
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', RegistrationView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     # path('logout/', LogoutView.as_view(), name='logout'),
@@ -16,6 +16,8 @@ urlpatterns = [
 
     path('jobs/', JobListView.as_view(), name='jobs-list'),
     path('jobs/<uuid:pk>/', JobDetailView.as_view(), name='job-detail'),
+    path('jobs/<uuid:pk>/<int:phase>/', JobDetailView.as_view(), name='job-phase'),
+
     path('jobs/<uuid:pk>/apply/', JobApplicationView.as_view(), name='job-apply'),
 
     path('curriculumvitae/', CurriculumVitaeListView.as_view(), name='cv-list'),
@@ -24,8 +26,11 @@ urlpatterns = [
     path('coverletter/', CoverLetterListView.as_view(), name='cl-list'),
     path('coverletter/<uuid:pk>/', CoverLetterDetailView.as_view(), name='cl-detail'),
 
-    path('applications/', ApplicationPackageListView.as_view(), name='application-list'),
-    path('applications/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='application-detail'),
+    path('application-packages/', ApplicationPackageListView.as_view(), name='packages-list'),
+    path('application-package/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='package-detail'),
+
+    #path('jobs/<uuid:pk>/applications/', JobApplicantsView.as_view(),name="job-applicants")
+    #path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
 
 
 ]
