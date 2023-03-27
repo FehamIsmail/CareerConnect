@@ -299,7 +299,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
         # candidates = None
         job = self.get_object()
-        candidates = job.applications.all()
+        candidates = job.application_packages.all()
 
         if phase == 1:
             application_serializer = ApplicationPackageSerializer(candidates, many=True)
@@ -308,7 +308,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
         elif phase == 2:
             interviewing_ids = Application.objects.filter(status="INTERVIEW").values_list(
                 "application_package_id")
-            candidates = job.applications.filter(id__in=interviewing_ids)
+            candidates = job.application_packages.filter(id__in=interviewing_ids)
             application_serializer = ApplicationPackageSerializer(candidates, many=True)
             return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
 
@@ -319,66 +319,66 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
             return self.update(request, *args, **kwargs)
 
         selected_candidates = None
+        application_serializer = None
         job = self.get_object()
-        application_status_serializer = None
 
         if phase == 1:
-            all_candidates = job.applications.all()
-            selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
-            for candidate in all_candidates:
-                application_status = get_object_or_404(Application, Job=job, application_package=candidate)
-                if candidate in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+            candidates_packages = job.application_packages.all()
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, Job=job, application_package=packages)
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "INTERVIEW"})
-                elif candidate not in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+                elif packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "REJECTED"})
 
-                if application_status_serializer.is_valid():
-                    application_status_serializer.save()
-            return Response({'Application Status': application_status_serializer["status"].value},
+                if application_serializer.is_valid():
+                    application_serializer.save()
+            return Response({'Application Status': application_serializer["status"].value},
                             status=status.HTTP_200_OK)
 
         elif phase == 2:
             interviewing_ids = Application.objects.filter(status="INTERVIEW").values_list(
                 "application_package_id")
-            candidates = job.applications.filter(id__in=interviewing_ids)
-            selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
+            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
 
-            for candidate in candidates:
-                application_status = get_object_or_404(Application, Job=job, application_package=candidate)
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, Job=job, application_package=packages)
 
-                if candidate in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "PROCESSING"})
-                if candidate not in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+                if packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "REJECTED"})
-                if application_status_serializer.is_valid():
-                    application_status_serializer.save()
+                if application_serializer.is_valid():
+                    application_serializer.save()
 
-            return Response({'Application Status': application_status_serializer.data},
+            return Response({'Application Status': application_serializer.data},
                             status=status.HTTP_200_OK)
 
         elif phase == 3:
             interviewing_ids = Application.objects.filter(status="POTENTIAL-OFFER").values_list(
                 "application_package_id")
-            candidates = job.applications.filter(id__in=interviewing_ids)
-            selected_candidates = job.applications.filter(id__in=request.data.get("ids", []))
+            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
 
-            for candidate in candidates:
-                application_status = get_object_or_404(Application, Job=job, application_package=candidate)
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, Job=job, application_package=packages)
 
-                if candidate in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "OFFER"})
-                if candidate not in selected_candidates:
-                    application_status_serializer = ApplicationSerializer(instance=application_status,
+                if packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
                                                                           data={"status": "REJECTED"})
-                if application_status_serializer.is_valid():
-                    application_status_serializer.save()
+                if application_serializer.is_valid():
+                    application_serializer.save()
 
-            return Response({'Application Status': application_status_serializer.data},
+            return Response({'Application Status': application_serializer.data},
                             status=status.HTTP_200_OK)
 
 
