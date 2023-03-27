@@ -269,12 +269,15 @@ class ApplicationStatus(models.Model):
     APPLICATION_STATUS = (
         ('APPLIED', 'Applied'),
         ('INTERVIEW', 'Interview'),
-        ('PROCESSING','Processing'),
-        ('OFFER','Offer'),
+        ('PROCESSING', 'Processing'),
+        ('OFFER', 'Offer'),
         ('REJECTED', 'Rejected'),
     )
     status = models.CharField(max_length=200, choices=APPLICATION_STATUS, null=True, blank=True, default=APPLICATION_STATUS[0][1])
     updated_at = models.DateField(auto_now=True)
 
     application_package = models.ForeignKey(Application, on_delete=models.CASCADE)
-    Job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Application by {self.application_package.student_profile.user.first_name} at {self.job}; status: {self.status}"

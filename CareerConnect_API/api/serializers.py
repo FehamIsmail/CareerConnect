@@ -97,9 +97,16 @@ class CLSerializer(serializers.ModelSerializer):
         exclude = ['student_profile']
 
 
+class ApplicationStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationStatus
+        fields = '__all__'
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
     cv = CVSerializer(read_only=True)
     cl = CLSerializer(read_only=True)
+    application_status = ApplicationStatusSerializer(source='applicationstatus_set', read_only=True, many=True)
 
     class Meta:
         model = Application
@@ -116,7 +123,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
-    applications = ApplicationSerializer(many=True, read_only=True)
+    applications = ApplicationSerializer(read_only=True, many=True)
     company_logo = serializers.ImageField(required=False)
 
     class Meta:
@@ -139,9 +146,3 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployerProfile
         fields = ['profile_picture', 'phone_number', 'company', 'job_set']
-
-
-class ApplicationStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=ApplicationStatus
-        fields=["status"]
