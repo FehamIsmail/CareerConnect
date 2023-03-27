@@ -251,6 +251,8 @@ class JobListView(ListCreateAPIView):
         user = self.request.user
         if user.is_authenticated and user.role == Role.EMPLOYER:
             return Job.objects.filter(employer_profile=user.employer_profile)
+        # elif user.is_authenticated and user.role == Role.STUDENT:
+        #     return Job.objects.filter(application__student_profile=user.student_profile)
         else:
             return Job.objects.all()
 
