@@ -26,13 +26,10 @@ urlpatterns = [
     path('coverletter/', CoverLetterListView.as_view(), name='cl-list'),
     path('coverletter/<uuid:pk>/', CoverLetterDetailView.as_view(), name='cl-detail'),
 
-    path('application-packages/', ApplicationPackageListView.as_view(), name='packages-list'),
+    path('application-package/', ApplicationPackageListView.as_view(), name='packages-list'),
     path('application-package/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='package-detail'),
 
-    #path('jobs/<uuid:pk>/applications/', JobApplicantsView.as_view(),name="job-applicants")
-    #path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
-
+    path('application/', JobApplicationView.as_view(), name="job-applications")
+    # path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
 
 ]
-
-

@@ -18,20 +18,6 @@ from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     ApplicationSerializer
 
 
-# Create your views here.
-
-class StudentProfileView(viewsets.ModelViewSet):
-    queryset = StudentProfile.objects.all()
-    serializer_class = StudentProfileSerializer
-
-
-# class JobListView(viewsets.ModelViewSet):
-#     authentication_classes = []
-#     permission_classes = [AllowAny]
-#     queryset = Job.objects.all()
-#     serializer_class = JobSerializer
-
-
 class RegistrationView(CreateAPIView):
     authentication_classes = []  # disable authentication
     permission_classes = [AllowAny]  # allow any user to access the view
@@ -78,16 +64,6 @@ class LoginView(TokenObtainPairView):
             'last_name': user.last_name,
             'role': user.role
         })
-
-
-# class LogoutView(APIView):
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request, format=None):
-#         # simply delete the token to force a login
-#         request.user.auth_token.delete()
-#         return Response(status=status.HTTP_200_OK)
 
 
 class UserProfileView(RetrieveUpdateAPIView):
@@ -146,18 +122,17 @@ class CurriculumVitaeListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Set the student to the current authenticated user
-        serializer.validated_data['student_profile'] = self.request.user.student_profile
-        serializer.save()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        response_data = {
-            'cv': serializer.data,
-            'message': "Cv is successfully created"
-        }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        serializer.save(student_profile=self.request.user.student_profile)
+    #
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     response_data = {
+    #         'cv': serializer.data,
+    #         'message': "Cv is successfully created"
+    #     }
+    #     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
@@ -182,18 +157,17 @@ class CoverLetterListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Set the student to the current authenticated user
-        serializer.validated_data['student_profile'] = self.request.user.student_profile
-        serializer.save()
+        serializer.save(student_profile=self.request.user.student_profile)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        response_data = {
-            'cl': serializer.data,
-            'message': "Cl is successfully created"
-        }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     response_data = {
+    #         'cl': serializer.data,
+    #         'message': "Cl is successfully created"
+    #     }
+    #     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
@@ -216,20 +190,16 @@ class ApplicationPackageListView(ListCreateAPIView):
         user = self.request.user
         return ApplicationPackage.objects.filter(student_profile=user.student_profile)
 
-    def perform_create(self, serializer):
-        # Set the employer to the current authenticated user
-        serializer.validated_data['student_profile'] = self.request.user.student_profile
-        serializer.save()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        response_data = {
-            'package': serializer.data,
-            'message': "Application package is successfully created"
-        }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+    # def create(self, request, *args, **kwargs):
+    #
+    #     serializer = self.get_serializer(data=request.data, partial=True, context={'request': request})
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     response_data = {
+    #         'package': serializer.data,
+    #         'message': "Application package is successfully created"
+    #     }
+    #     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
@@ -245,13 +215,12 @@ class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    serializer_class = JobSerializer
 
     def get_serializer_class(self):
-        user=self.request.user
+        user = self.request.user
         if user.is_authenticated and user.role == Role.EMPLOYER:
             return JobSerializer
-        #students and people not logged in will see only the jobs
+        # students and people not logged in will see only the jobs
         else:
             return JobSerializerForStudent
 
@@ -259,25 +228,22 @@ class JobListView(ListCreateAPIView):
         user = self.request.user
         if user.is_authenticated and user.role == Role.EMPLOYER:
             return Job.objects.filter(employer_profile=user.employer_profile)
-        # elif user.is_authenticated and user.role == Role.STUDENT:
-        #     return Job.objects.filter(application__student_profile=user.student_profile)
         else:
             return Job.objects.all()
 
     def perform_create(self, serializer):
-        # Set the employer to the current authenticated user
-        serializer.validated_data['employer_profile'] = self.request.user.employer_profile
-        serializer.save()
+        # Set the student to the current authenticated user
+        serializer.save(employer_profile=self.request.user.employer_profile)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        response_data = {
-            'job': serializer.data,
-            'message': "job is successfully created"
-        }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     response_data = {
+    #         'job': serializer.data,
+    #         'message': "job is successfully created"
+    #     }
+    #     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
@@ -346,10 +312,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
                 application = get_object_or_404(Application, job=job, application_package=packages)
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.INTERVIEW})
+                                                                   data={"status": ApplicationStatus.INTERVIEW})
                 elif packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.REJECTED})
+                                                                   data={"status": ApplicationStatus.REJECTED})
 
                 if application_serializer.is_valid():
                     application_serializer.save()
@@ -367,10 +333,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.PROCESSING})
+                                                                   data={"status": ApplicationStatus.PROCESSING})
                 if packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.REJECTED})
+                                                                   data={"status": ApplicationStatus.REJECTED})
                 if application_serializer.is_valid():
                     application_serializer.save()
 
@@ -388,10 +354,10 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
 
                 if packages in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.OFFER})
+                                                                   data={"status": ApplicationStatus.OFFER})
                 if packages not in selected_candidates:
                     application_serializer = ApplicationSerializer(instance=application,
-                                                                          data={"status": ApplicationStatus.WAITLIST})
+                                                                   data={"status": ApplicationStatus.WAITLIST})
                 if application_serializer.is_valid():
                     application_serializer.save()
 
@@ -399,45 +365,51 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
                             status=status.HTTP_200_OK)
 
 
-class JobApplicationView(UpdateAPIView):
+class JobApplicationView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    queryset = Job.objects.all()
-    serializer_class = ApplicationPackageSerializer
-    permission_classes = [IsAuthenticated, CanCreateOrRemoveApplication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
 
-    def post(self, request, *args, **kwargs):
-        job = self.get_object()
-        application_package = get_object_or_404(ApplicationPackage, pk=request.data['package_id'])
-        job.application_packages.add(application_package)
-        job.save()
+    def get_queryset(self):
+        user = self.request.user
+        return Application.objects.filter(application_package__student_profile=user.student_profile)
 
-        application = Application(job=job, application_package=application_package)
-        application_serializer = ApplicationSerializer(instance=application)
 
-        response_data = {
-            'application': application_serializer.data,
-            'message': f"Application with package: {application_package.title} to job: {job.title} successful!"
-        }
 
-        return Response(response_data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, *args, **kwargs):
-        job = self.get_object()
-        student_profile = request.user.student_profile
-        application_package = ApplicationPackage.objects.get(student_profile=student_profile, job=job)
-
-        application = Application(job=job, application_package=application_package)
-        application_serializer = ApplicationSerializer(instance=application)
-
-        job.application_packages.remove(application_package)
-        job.save()
-
-        response_data = {
-            'application': application_serializer.data,
-            'message': f"Application with package: {application_package.title} to job: {job.title} successfully removed!"
-        }
-
-        return Response(response_data, status=status.HTTP_204_NO_CONTENT)
+    # def post(self, request, *args, **kwargs):
+    #     job = self.get_object()
+    #     application_package = get_object_or_404(ApplicationPackage, pk=request.data['package_id'])
+    #     job.application_packages.add(application_package)
+    #     job.save()
+    #
+    #     application = Application(job=job, application_package=application_package)
+    #     application_serializer = ApplicationSerializer(instance=application)
+    #
+    #     response_data = {
+    #         'application': application_serializer.data,
+    #         'message': f"Application with package: {application_package.title} to job: {job.title} successful!"
+    #     }
+    #
+    #     return Response(response_data, status=status.HTTP_201_CREATED)
+    #
+    # def delete(self, request, *args, **kwargs):
+    #     job = self.get_object()
+    #     student_profile = request.user.student_profile
+    #     application_package = ApplicationPackage.objects.get(student_profile=student_profile, job=job)
+    #
+    #     application = Application(job=job, application_package=application_package)
+    #     application_serializer = ApplicationSerializer(instance=application)
+    #
+    #     job.application_packages.remove(application_package)
+    #     job.save()
+    #
+    #     response_data = {
+    #         'application': application_serializer.data,
+    #         'message': f"Application with package: {application_package.title} to job: {job.title} successfully removed!"
+    #     }
+    #
+    #     return Response(response_data, status=status.HTTP_204_NO_CONTENT)
 
 
 class JobApplicantsView(ListCreateAPIView):

@@ -49,22 +49,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = None
+        validated_data.pop('confirm_password')
         if validated_data['role'] == Role.STUDENT:
             user = Student.objects.create_user(
-                email=validated_data["email"],
-                first_name=validated_data["first_name"],
-                last_name=validated_data["last_name"],
-                role=Role.STUDENT,
-                password=validated_data["password"]
+                **validated_data
             )
 
         elif validated_data['role'] == Role.EMPLOYER:
             user = Employer.objects.create_user(
-                email=validated_data["email"],
-                first_name=validated_data["first_name"],
-                last_name=validated_data["last_name"],
-                role=Role.EMPLOYER,
-                password=validated_data["password"]
+                **validated_data
             )
 
         return user
@@ -84,24 +77,30 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CVSerializer(serializers.ModelSerializer):
-    curriculum_vitae = serializers.FileField(required=False)
-
     class Meta:
         model = CurriculumVitae
         exclude = ['student_profile']
+        extra_kwargs = {
+            'curriculum_vitae': {'required': True},
+            'title': {'required': True},
+        }
 
 
 class CLSerializer(serializers.ModelSerializer):
-    cover_letter = serializers.FileField(required=False)
-
     class Meta:
         model = CoverLetter
         exclude = ['student_profile']
+        extra_kwargs = {
+            'cover_letter': {'required': True},
+            'title': {'required': True},
+        }
 
 
 class ApplicationPackageSerializer(serializers.ModelSerializer):
-    cv = CVSerializer(read_only=True)
-    cl = CLSerializer(read_only=True)
+    curriculum_vitae = CVSerializer(read_only=True)
+    cover_letter = CLSerializer(read_only=True)
+    cv_id = serializers.UUIDField(write_only=True, required=True)
+    cl_id = serializers.UUIDField(write_only=True, required=True)
 
     # application_status = ApplicationStatusSerializer(source='applicationstatus_set', read_only=True, many=True)
 
@@ -109,14 +108,31 @@ class ApplicationPackageSerializer(serializers.ModelSerializer):
         model = ApplicationPackage
         exclude = ['student_profile']
 
+    def create(self, validated_data):
+        cv_id = validated_data.pop('cv_id')
+        cl_id = validated_data.pop('cl_id')
+        cv = CurriculumVitae.objects.get(id=cv_id)
+        cl = CoverLetter.objects.get(id=cl_id)
 
-class JobSerializer(serializers.ModelSerializer):
-    application_packages = ApplicationPackageSerializer(read_only=True, many=True)
-    company_logo = serializers.ImageField(required=False)
+        package = ApplicationPackage.objects.create(
+            student_profile=self.context['request'].user.student_profile,
+            curriculum_vitae=cv,
+            cover_letter=cl,
+            **validated_data)
+        return package
 
-    class Meta:
-        model = Job
-        exclude = ['employer_profile']
+    def update(self, instance, validated_data):
+        cv_id = validated_data.pop('cv_id')
+        cl_id = validated_data.pop('cl_id')
+        cv = CurriculumVitae.objects.get(id=cv_id)
+        cl = CoverLetter.objects.get(id=cl_id)
+        instance.curriculum_vitae = cv
+        instance.cover_letter = cl
+        instance.title = validated_data.get('title', instance.title)
+        instance.default = validated_data.get('default', instance.default)
+        instance.save()
+
+        return instance
 
 
 class JobSerializerForStudent(serializers.ModelSerializer):
@@ -130,10 +146,41 @@ class JobSerializerForStudent(serializers.ModelSerializer):
 class ApplicationSerializer(serializers.ModelSerializer):
     job = JobSerializerForStudent(read_only=True)
     application_package = ApplicationPackageSerializer(read_only=True)
+    package_id = serializers.UUIDField(write_only=True, required=True)
 
+    # good for isma
     class Meta:
         model = Application
         fields = '__all__'
+
+    def validate(self, attrs):
+        job_id = self.context['request'].parser_context['kwargs']['pk']
+        student_profile = self.context['request'].user.student_profile
+
+        # Check if there is already an Application instance for the student and the job
+        if Application.objects.filter(job_id=job_id, application_package__student_profile=student_profile).exists():
+            raise serializers.ValidationError({'application': 'You have already applied to this job.'})
+
+        return attrs
+
+    def create(self, validated_data):
+        job_id = self.context['request'].parser_context['kwargs']['pk']
+        package_id = validated_data.pop('package_id')
+
+        job = Job.objects.get(id=job_id)
+        package = ApplicationPackage.objects.get(id=package_id)
+        application = Application.objects.create(job=job, application_package=package)
+        return application
+
+
+class JobSerializer(serializers.ModelSerializer):
+    application_packages = ApplicationPackageSerializer(read_only=True, many=True)
+    company_logo = serializers.ImageField(required=False)
+    application = ApplicationSerializer(source='application_set', read_only=True, many=True)
+
+    class Meta:
+        model = Job
+        exclude = ['employer_profile']
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
@@ -142,7 +189,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentProfile
-        fields = '__all__'
+        exclude = ['user']
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
@@ -151,4 +198,4 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployerProfile
-        fields = '__all__'
+        exclude = ['user']
