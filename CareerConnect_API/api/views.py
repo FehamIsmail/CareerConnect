@@ -12,10 +12,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .enums import Role, ApplicationStatus
 from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application
-from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
+from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, JobSerializerForStudent, \
-    ApplicationSerializer
+    UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, \
+    ApplicationSerializer, ApplicationSerializerForSelection
 
 
 class RegistrationView(CreateAPIView):
@@ -69,7 +69,8 @@ class LoginView(TokenObtainPairView):
 class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+
+    # parser_classes = [MultiPartParser, FormParser] TODO: Isma3il why? :(
 
     def get(self, request, *args, **kwargs):
 
@@ -144,6 +145,9 @@ class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
     queryset = CurriculumVitae.objects.all()
     serializer_class = CVSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, partial=True)
+
 
 class CoverLetterListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -179,6 +183,9 @@ class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
     queryset = CoverLetter.objects.all()
     serializer_class = CLSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, partial=True)
+
 
 class ApplicationPackageListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -211,18 +218,14 @@ class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ApplicationPackage.objects.all()
     serializer_class = ApplicationPackageSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, partial=True)
+
 
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-
-    def get_serializer_class(self):
-        user = self.request.user
-        if user.is_authenticated and user.role == Role.EMPLOYER:
-            return JobSerializer
-        # students and people not logged in will see only the jobs
-        else:
-            return JobSerializerForStudent
+    serializer_class = JobSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -255,119 +258,103 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
-    def is_owner(self, job):
-        return self.request.user.is_authenticated and hasattr(self.request.user,
-                                                              'employer_profile') and job.employer_profile == self.request.user.employer_profile
+    # def is_owner(self, job):
+    #     return self.request.user.is_authenticated and hasattr(self.request.user,
+    #                                                           'employer_profile') and job.employer_profile == self.request.user.employer_profile
 
-    def get_serializer_class(self):
-        job = self.get_object()
-        if self.is_owner(job):
-            return JobSerializer
-        else:
-            return JobSerializerForStudent
+
+class JobSelectionView(RetrieveUpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOnly]
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
 
     def get(self, request, *args, **kwargs):
-
-        if "phase" in kwargs:
-            phase = kwargs['phase']
-        else:
-            return self.retrieve(request, *args, **kwargs)
-
-        # candidates = None
         job = self.get_object()
-        candidates = job.application_packages.all()
+        all_candidates = job.application_set.all()
+        phase = kwargs['phase']
 
         if phase == 1:
-            application_serializer = ApplicationPackageSerializer(candidates, many=True)
-            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
+            application_serializer = ApplicationSerializerForSelection(all_candidates, many=True)
+            return Response({'candidates': application_serializer.data}, status=status.HTTP_200_OK)
 
         elif phase == 2:
-            interviewing_ids = Application.objects.filter(status="INTERVIEW").values_list(
-                "application_package_id")
-            candidates = job.application_packages.filter(id__in=interviewing_ids)
-            application_serializer = ApplicationPackageSerializer(candidates, many=True)
-            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
+            interviewing_application_ids = Application.objects.filter(job=job,
+                                                                      status=ApplicationStatus.INTERVIEW).values_list(
+                'id')
+            interviewing_candidates = job.application_set.filter(id__in=interviewing_application_ids)
+
+            rejected_application_ids = Application.objects.filter(job=job,
+                                                                  status=ApplicationStatus.REJECTED).values_list('id')
+            rejected_candidates = job.application_set.filter(id__in=rejected_application_ids)
+
+            interviewing_serializer = ApplicationSerializerForSelection(interviewing_candidates, many=True)
+            rejected_serializer = ApplicationSerializerForSelection(rejected_candidates, many=True)
+
+            response_data = {'interviewing_candidates': interviewing_serializer.data,
+                             'rejected_candidates': rejected_serializer.data}
+            return Response(response_data, status=status.HTTP_200_OK)
 
         elif phase == 3:
-            interviewing_ids = Application.objects.filter(status="PROCESSING").values_list(
-                "application_package_id")
-            candidates = job.application_packages.filter(id__in=interviewing_ids)
-            application_serializer = ApplicationPackageSerializer(candidates, many=True)
-            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
+            offer_application_ids = Application.objects.filter(job=job, status=ApplicationStatus.OFFER).values_list(
+                'id')
+            offer_candidates = job.application_set.filter(id__in=offer_application_ids)
+
+            processing_application_ids = Application.objects.filter(job=job,
+                                                                    status=ApplicationStatus.PROCESSING).values_list(
+                'id')
+            processing_candidates = job.application_set.filter(id__in=processing_application_ids)
+
+            rejected_application_ids = Application.objects.filter(job=job,
+                                                                  status=ApplicationStatus.REJECTED).values_list('id')
+            rejected_candidates = job.application_set.filter(id__in=rejected_application_ids)
+
+            offer_serializer = ApplicationSerializerForSelection(offer_candidates, many=True)
+            processing_serializer = ApplicationSerializerForSelection(processing_candidates, many=True)
+            rejected_serializer = ApplicationSerializerForSelection(rejected_candidates, many=True)
+
+            response_data = {'offer_candidates': offer_serializer.data,
+                             'processing_candidates': processing_serializer.data,
+                             'rejected_candidates': rejected_serializer.data}
+            return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        if "phase" in kwargs:
-            phase = kwargs['phase']
-        else:
-            return self.update(request, *args, **kwargs)
 
-        selected_candidates = None
+        phase = kwargs['phase']
         application_serializer = None
         job = self.get_object()
+        all_candidates = job.application_set.all()
+        selected_candidates_ids = request.data.get('selected_candidates', [])
+
+        def filter_candidate(next_status):
+            for candidate in all_candidates:
+                new_status = next_status if str(candidate.id) in selected_candidates_ids else ApplicationStatus.REJECTED
+                application_serializer = ApplicationSerializerForSelection(instance=candidate,
+                                                                           data={'status': new_status}, partial=True)
+
+                if application_serializer.is_valid():
+                    application_serializer.save()
+                else:
+                    return Response(application_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            selected_candidates = job.application_set.filter(status=next_status)
+            response_serializer = ApplicationSerializerForSelection(selected_candidates, many=True)
+            return Response({'selected candidate': response_serializer.data},
+                            status=status.HTTP_200_OK)
 
         if phase == 1:
-            candidates_packages = job.application_packages.all()
-            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
-            for packages in candidates_packages:
-                application = get_object_or_404(Application, job=job, application_package=packages)
-                if packages in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.INTERVIEW})
-                elif packages not in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.REJECTED})
-
-                if application_serializer.is_valid():
-                    application_serializer.save()
-            return Response({'Application Status': application_serializer["status"].value},
-                            status=status.HTTP_200_OK)
+            return filter_candidate(next_status=ApplicationStatus.INTERVIEW)
 
         elif phase == 2:
-            interviewing_ids = Application.objects.filter(status=ApplicationStatus.INTERVIEW).values_list(
-                "application_package_id")
-            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
-            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
-
-            for packages in candidates_packages:
-                application = get_object_or_404(Application, job=job, application_package=packages)
-
-                if packages in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.PROCESSING})
-                if packages not in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.REJECTED})
-                if application_serializer.is_valid():
-                    application_serializer.save()
-
-            return Response({'Application Status': application_serializer.data},
-                            status=status.HTTP_200_OK)
+            return filter_candidate(next_status=ApplicationStatus.PROCESSING)
 
         elif phase == 3:
-            interviewing_ids = Application.objects.filter(status=ApplicationStatus.PROCESSING).values_list(
-                "application_package_id")
-            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
-            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
-
-            for packages in candidates_packages:
-                application = get_object_or_404(Application, job=job, application_package=packages)
-
-                if packages in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.OFFER})
-                if packages not in selected_candidates:
-                    application_serializer = ApplicationSerializer(instance=application,
-                                                                   data={"status": ApplicationStatus.WAITLIST})
-                if application_serializer.is_valid():
-                    application_serializer.save()
-
-            return Response({'Application Status': "application_serializer.data"},
-                            status=status.HTTP_200_OK)
+            return filter_candidate(next_status=ApplicationStatus.OFFER)
 
 
 class JobApplicationView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly, IsStudentAndOwner]
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
@@ -376,6 +363,14 @@ class JobApplicationView(ListCreateAPIView):
         return Application.objects.filter(application_package__student_profile=user.student_profile)
 
 
+class JobApplicationDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    The permission "IsOwnerOrReadOnly" is self-explanatory:
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsStudentAndOwner]
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
 
     # def post(self, request, *args, **kwargs):
     #     job = self.get_object()
