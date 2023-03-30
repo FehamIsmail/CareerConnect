@@ -18,10 +18,9 @@ export const LandingPage = () => {
 
     useEffect(() => {
         const headers:any = { 'Content-Type': 'application/json' };
-        if (isAuthenticated) {
-            console.log('here')
+
+        if (isAuthenticated)
             headers.Authorization = `Bearer ${getAccessToken()}`;
-        }
         axios({
                 method: 'get',
                 url: 'http://localhost:8000/api/jobs/',
@@ -52,7 +51,7 @@ export const LandingPage = () => {
             <div className="flex flex-row gap-6 px-6 md:px-[2.7%] pb-4 overflow-x-clip ">
                 <div className="flex w-full flex-col md:flex-row gap-6 md:gap-[6.2%] md:w-1/2">
                     <JobFilterSorting />
-                    {filteredJobList.length > 0 ? <JobList/> : <h1 className="relative translate-x-[18.5rem] translate-y-[1.5rem] text-[2rem] text-center font-semibold">No jobs found/posted</h1>}
+                    {filteredJobList.length > 0 ? <JobList/> : <h1 className="relative md:translate-x-[18.5rem] md:translate-y-[1.5rem] text-[2rem] text-center font-semibold">No jobs found/posted</h1>}
                 </div>
                 <div className="hidden md:flex md:w-1/2">
                     {filteredJobList.length > 0 && <JobDescription job={undefined} isFromJobItem={true}/>}

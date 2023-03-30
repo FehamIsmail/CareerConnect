@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react'
-import {IJob} from "../../constants/types";
+import {IJob, DefaultJobPic} from "../../constants/types";
 import {useRecoilValue} from "recoil";
 import {jobOnPreview, jobOnPreviewIDAtom} from "../../constants/atoms";
-import {getJobTypesString, useWindowDimensions} from "../../scripts/utils";
-import job_logo from "../../assets/sample logo.png";
+import {getJobTypesString, simplifyURL, useWindowDimensions} from "../../scripts/utils";
 import {HeartIcon} from "@heroicons/react/24/outline";
 import {thinScrollBarStyle} from "../../constants/styles";
+
+
 
 type JobDescriptionProps = {
     job?: IJob;
@@ -53,11 +54,11 @@ const JobDescription = (props: JobDescriptionProps) => {
         <>
             <div className={`${className} cursor-default`}>
                 {jobOnFocus && (<>
-                    <div className={`top h-[188px] p-6 bg-white shadow-bottom ${fadeStyle}`}>
-                        <div className="logo-top h-8 flex items-center gap-3">
+                    <div className={`h-fit top p-6 bg-white shadow-bottom ${fadeStyle}`}>
+                        <div className={`${width < 1060 ? 'hidden' : ''} logo-top h-8 flex items-center gap-3`}>
                             <img
                                 alt="Job Logo"
-                                src={job_logo}
+                                src={job?.company_logo || DefaultJobPic}
                                 className={`w-8 h-8 object-cover`}/>
                             <div
                                 className="w-full flex flex-col ss:gap-1.5 ss:flex-row ss:items-center overflow-hidden ">
@@ -67,14 +68,14 @@ const JobDescription = (props: JobDescriptionProps) => {
                             </div>
                             <HeartIcon className="relative h-6 top-[2px]"/>
                         </div>
-                        <div className={`flex flex-col gap-[2px] text-top h-fit mt-2`}>
-                            {jobOnFocus.website_url && (<p className="text-[#085FF7] font-medium text-sm"><a
-                                href={jobOnFocus.website_url}>{jobOnFocus.company}</a></p>)}
-                            <p className="text-black font-[500] text-xs">{jobOnFocus.street_address}</p>
-                            <p className="text-black font-[500] text-xs">{getJobTypesString(jobOnFocus.types)}</p>
+                        <div className={`flex flex-col gap-[2px] text-top h-fit ${width < 1060 ? '' : 'mt-2'} `}>
+                            {jobOnFocus.website_url && (<p className="text-[#085FF7] font-medium text-md"><a className='block h-full w-fit'
+                                href={jobOnFocus.website_url}>{simplifyURL(jobOnFocus.website_url)}</a></p>)}
+                            <p className="text-black font-[500] text-sm">{jobOnFocus.street_address}</p>
+                            <p className="text-black font-[500] mb-2 text-sm">{jobOnFocus.types && getJobTypesString(jobOnFocus.types)}</p>
                         </div>
                         <button
-                            className="mt-2 font-[300] opacity-1 hover:bg-primary_dark bg-primary text-white text-sm py-2.5 px-[28px] rounded-md">
+                            className="font-[300] opacity-1 hover:bg-primary_dark bg-primary text-white text-md py-2.5 px-[28px] rounded-md">
                             Apply
                         </button>
                     </div>
@@ -82,15 +83,15 @@ const JobDescription = (props: JobDescriptionProps) => {
                         <div className="job-details p-6 h-fit w-full">
                             <p className="text-lg font-[500]">Job Details</p>
                             {jobOnFocus.salary && (<>
-                                <p className="mt-2 text-sm font-[500]">Salary</p>
-                                <p className="mt-[1px] text-[#3F3F46] text-xs font-[500]">{jobOnFocus.salary}</p>
+                                <p className="mt-2 text-md font-[500]">Salary</p>
+                                <p className="mt-[1px] text-[#3F3F46] text-sm font-[500]">{jobOnFocus.salary}</p>
                             </>)}
-                            <p className="mt-2 text-sm font-[500]">Job Type</p>
-                            <p className="mt-[1px] text-[#3F3F46] text-xs font-[500]">{getJobTypesString(jobOnFocus.types)}</p>
+                            <p className="mt-2 text-md font-[500]">Job Type</p>
+                            <p className="mt-[1px] text-[#3F3F46] text-sm font-[500]">{jobOnFocus.types && getJobTypesString(jobOnFocus.types)}</p>
                         </div>
                         <div className="actual-job-description p-6 h-fit w-full">
                             <p className="text-lg font-[500]">Job Description</p>
-                            <p className="mt-4 text-sm text-[13px] font-[400]">
+                            <p className="mt-4 text-md text-[13px] font-[400]">
                                 {jobOnFocus.description}
                             </p>
                         </div>

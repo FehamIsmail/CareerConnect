@@ -93,7 +93,7 @@ export const jobFormOptions = [
         'subheader': 'Fill General Information',
         'inputs': [
             {
-                'label': 'Title',
+                'label': 'Position Title',
                 'element': 'input',
                 'type': 'text',
                 'name': 'title',

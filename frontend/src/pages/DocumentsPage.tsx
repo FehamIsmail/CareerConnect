@@ -15,88 +15,13 @@ import axios from "axios";
 import {getAccessToken} from "../scripts/utils";
 import {convertToDocumentArray, feedApplicationCVandCL} from "../scripts/DocumentUtils";
 
-const mockCVs: Document[] = [
-    {
-        id: 'hfa705d8',
-        file: "document1.pdf",
-        title: "Resume 1",
-        default: false,
-        type: "CV"
-    },
-    {
-        id: 'abf7a809d',
-        file: "document2.docx",
-        title: "Resume 2",
-        default: true,
-        type: "CV"
-    },
-    {
-        id: 'a0bf7nd689',
-        file: "document3.doc",
-        title: "Resume 3",
-        default: false,
-        type: "CV"
-    },
-    {
-        id: 'ghmfc7098',
-        file: "document4.pdf",
-        title: "Resume 4",
-        default: false,
-        type: "CV"
-    },
-];
-
-const mockCoverLetters: Document[] = [
-    {
-        id: 'a0dgs789',
-        file: "document5.pdf",
-        title: "Cover Letter 1",
-        default: true,
-        type: "LETTER"
-    },
-    {
-        id: 'ga2sd7089',
-        file: "document6.docx",
-        title: "Cover Letter 2",
-        default: false,
-        type: "LETTER"
-    },
-    {
-        id: 'a5gs7980df',
-        file: "document7.doc",
-        title: "Cover Letter 3",
-        default: false,
-        type: "LETTER"
-    },
-];
-
-const mockApplicationPackages: Document[] = [
-    {
-        id: 'a8gf9s0a9',
-        file: "Resume - 1.docx",
-        file2: "Cover Letter 2.pdf",
-        title: "Application Pkg 1",
-        default: true,
-        type: "APP_PKG"
-    },
-    {
-        id: 'a0s6n7av7',
-        file: "Resume 6.docx",
-        file2: "Cover Letter3.pdf",
-        title: "Application Package 2",
-        default: false,
-        type: "APP_PKG"
-    },
-];
-
-
 export const DocumentsPage = () => {
     const [formType, setFormType] = useState<'CV' | 'LETTER' | 'APP_PKG'>()
     const [formAction, setFormAction] = useState<'EDIT' | 'CREATE'>('CREATE')
     const [formVisibility, setFormVisibility] = useState<'hidden' | ''>()
-    const [resumeList, setResumeList] = useState<Document[]>(mockCVs)
-    const [letterList, setLetterList] = useState<Document[]>(mockCoverLetters)
-    const [appPackagesList, setAppPackagesList] = useState<any>(mockApplicationPackages)
+    const [resumeList, setResumeList] = useState<Document[]>([])
+    const [letterList, setLetterList] = useState<Document[]>([])
+    const [appPackagesList, setAppPackagesList] = useState<any>([])
     const [formView, setFormView] = useState<'VIEW' | 'FORM'>()
     const [documentOnPreview, setDocumentOnPreview] = useState<Document>()
     const [listOnPreview, setListOnPreview] = useState<Document[]>(resumeList)
@@ -111,7 +36,7 @@ export const DocumentsPage = () => {
     useEffect(() => {
         getUserDocuments('curriculumvitae')
         getUserDocuments('coverletter')
-        getUserDocuments('applications')
+        getUserDocuments('application-package')
     }, []);
 
     useEffect(() => {
@@ -133,7 +58,7 @@ export const DocumentsPage = () => {
                 setResumeList(convertToDocumentArray(res.data, docType))
             if(docType === 'coverletter')
                 setLetterList(convertToDocumentArray(res.data, docType))
-            if(docType === 'applications')
+            if(docType === 'application-package')
                 setAppPackagesList(convertToDocumentArray(res.data, docType))
         }).catch(err => {
             console.log(err.response.data)

@@ -96,6 +96,8 @@ export const JOB_TYPE_METADATA: Record<JobType, JobTypeMetadata> = {
     },
 };
 
+export const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
+
 export enum EducationLevel {
     SECONDARY_SCHOOL = 'SS',
     HIGH_SCHOOL = 'HS',

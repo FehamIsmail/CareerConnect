@@ -32,10 +32,6 @@ export const DocumentForm = (props:DocumentProps) => {
         setDocumentInfo(documentOnPreview || empty_document)
     }, [documentOnPreview]);
 
-    useEffect(() => {
-        console.log(documentInfo)
-    }, [documentInfo]);
-
     const handleCreate = (e: any) => {
         e.preventDefault()
         const endpoint = getEndpoint(documentInfo.type)
@@ -116,8 +112,8 @@ export const DocumentForm = (props:DocumentProps) => {
 
         else{
             data = {
-                curriculum_vitae: documentInfo.file,
-                cover_letter: documentInfo.file2,
+                cv_id: documentInfo.file,
+                cl_id: documentInfo.file2,
                 package_name: documentInfo.title,
                 default: documentInfo.default
             };

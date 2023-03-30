@@ -69,7 +69,6 @@ class LoginView(TokenObtainPairView):
 class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
     # parser_classes = [MultiPartParser, FormParser] TODO: Isma3il why? :(
 
     def get(self, request, *args, **kwargs):
