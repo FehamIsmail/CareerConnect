@@ -42,4 +42,3 @@ class ApplicationStatus(models.TextChoices):
     PROCESSING = 'PROCESSING', 'Processing'
     OFFER = 'OFFER', 'Offer'
     REJECTED = 'REJECTED', 'Rejected'
-    WAITLIST= 'WAITLIST','Waitlist'

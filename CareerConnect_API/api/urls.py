@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegistrationView, LoginView, UserProfileView, JobListView, JobDetailView, JobApplicationView, \
     ApplicationPackageListView, ApplicationPackageDetailView, CurriculumVitaeListView, CurriculumVitaeDetailView, \
-    CoverLetterListView, CoverLetterDetailView, JobApplicantsView
+    CoverLetterListView, CoverLetterDetailView, JobApplicantsView, JobSelectionView, JobApplicationDetailView
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -16,7 +16,7 @@ urlpatterns = [
 
     path('jobs/', JobListView.as_view(), name='jobs-list'),
     path('jobs/<uuid:pk>/', JobDetailView.as_view(), name='job-detail'),
-    path('jobs/<uuid:pk>/<int:phase>/', JobDetailView.as_view(), name='job-phase'),
+    path('jobs/<uuid:pk>/<int:phase>/', JobSelectionView.as_view(), name='job-process'),
 
     path('jobs/<uuid:pk>/apply/', JobApplicationView.as_view(), name='job-apply'),
 
@@ -26,13 +26,11 @@ urlpatterns = [
     path('coverletter/', CoverLetterListView.as_view(), name='cl-list'),
     path('coverletter/<uuid:pk>/', CoverLetterDetailView.as_view(), name='cl-detail'),
 
-    path('application-packages/', ApplicationPackageListView.as_view(), name='packages-list'),
+    path('application-package/', ApplicationPackageListView.as_view(), name='packages-list'),
     path('application-package/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='package-detail'),
 
-    #path('jobs/<uuid:pk>/applications/', JobApplicantsView.as_view(),name="job-applicants")
-    #path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
-
+    path('application/', JobApplicationView.as_view(), name="application-list"),
+    path('application/<uuid:pk>/', JobApplicationDetailView.as_view(), name="application-detail")
+    # path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
 
 ]
-
-
