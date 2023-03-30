@@ -12,10 +12,24 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .enums import Role, ApplicationStatus
 from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application
-from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
+from .permissions import IsOwnerOrReadOnly, CanCreateOrRemoveApplication
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
-    UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, \
-    ApplicationSerializer, ApplicationSerializerForSelection
+    UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, JobSerializerForStudent, \
+    ApplicationSerializer
+
+
+# Create your views here.
+
+class StudentProfileView(viewsets.ModelViewSet):
+    queryset = StudentProfile.objects.all()
+    serializer_class = StudentProfileSerializer
+
+
+# class JobListView(viewsets.ModelViewSet):
+#     authentication_classes = []
+#     permission_classes = [AllowAny]
+#     queryset = Job.objects.all()
+#     serializer_class = JobSerializer
 
 
 class RegistrationView(CreateAPIView):
@@ -66,11 +80,20 @@ class LoginView(TokenObtainPairView):
         })
 
 
+# class LogoutView(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request, format=None):
+#         # simply delete the token to force a login
+#         request.user.auth_token.delete()
+#         return Response(status=status.HTTP_200_OK)
+
+
 class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
-    # parser_classes = [MultiPartParser, FormParser] TODO: Isma3il why? :(
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, *args, **kwargs):
 
@@ -123,17 +146,18 @@ class CurriculumVitaeListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Set the student to the current authenticated user
-        serializer.save(student_profile=self.request.user.student_profile)
-    #
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     response_data = {
-    #         'cv': serializer.data,
-    #         'message': "Cv is successfully created"
-    #     }
-    #     return Response(response_data, status=status.HTTP_201_CREATED)
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
+        serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'cv': serializer.data,
+            'message': "Cv is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
@@ -144,9 +168,6 @@ class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = CurriculumVitae.objects.all()
     serializer_class = CVSerializer
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, partial=True)
 
 
 class CoverLetterListView(ListCreateAPIView):
@@ -161,17 +182,18 @@ class CoverLetterListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Set the student to the current authenticated user
-        serializer.save(student_profile=self.request.user.student_profile)
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
+        serializer.save()
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     response_data = {
-    #         'cl': serializer.data,
-    #         'message': "Cl is successfully created"
-    #     }
-    #     return Response(response_data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'cl': serializer.data,
+            'message': "Cl is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
@@ -182,9 +204,6 @@ class CoverLetterDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = CoverLetter.objects.all()
     serializer_class = CLSerializer
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, partial=True)
 
 
 class ApplicationPackageListView(ListCreateAPIView):
@@ -197,16 +216,20 @@ class ApplicationPackageListView(ListCreateAPIView):
         user = self.request.user
         return ApplicationPackage.objects.filter(student_profile=user.student_profile)
 
-    # def create(self, request, *args, **kwargs):
-    #
-    #     serializer = self.get_serializer(data=request.data, partial=True, context={'request': request})
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     response_data = {
-    #         'package': serializer.data,
-    #         'message': "Application package is successfully created"
-    #     }
-    #     return Response(response_data, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        # Set the employer to the current authenticated user
+        serializer.validated_data['student_profile'] = self.request.user.student_profile
+        serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'package': serializer.data,
+            'message': "Application package is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
@@ -218,37 +241,45 @@ class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ApplicationPackage.objects.all()
     serializer_class = ApplicationPackageSerializer
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, partial=True)
-
 
 class JobListView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = JobSerializer
 
+    def get_serializer_class(self):
+        user=self.request.user
+        if user.is_authenticated and user.role == Role.EMPLOYER:
+            return JobSerializer
+        #students and people not logged in will see only the jobs
+        else:
+            return JobSerializerForStudent
+
     def get_queryset(self):
         user = self.request.user
         params = self.request.query_params
         self_only = params.get('self_only') == 'true'
-        if user.is_authenticated and user.role == Role.EMPLOYER and self_only:
+        if user.is_authenticated and user.role == User.Role.EMPLOYER and self_only:
             return Job.objects.filter(employer_profile=user.employer_profile)
+        # elif user.is_authenticated and user.role == Role.STUDENT:
+        #     return Job.objects.filter(application__student_profile=user.student_profile)
         else:
             return Job.objects.all()
 
     def perform_create(self, serializer):
-        # Set the student to the current authenticated user
-        serializer.save(employer_profile=self.request.user.employer_profile)
+        # Set the employer to the current authenticated user
+        serializer.validated_data['employer_profile'] = self.request.user.employer_profile
+        serializer.save()
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     response_data = {
-    #         'job': serializer.data,
-    #         'message': "job is successfully created"
-    #     }
-    #     return Response(response_data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_data = {
+            'job': serializer.data,
+            'message': "job is successfully created"
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
@@ -260,153 +291,155 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
-    # def is_owner(self, job):
-    #     return self.request.user.is_authenticated and hasattr(self.request.user,
-    #                                                           'employer_profile') and job.employer_profile == self.request.user.employer_profile
+    def is_owner(self, job):
+        return self.request.user.is_authenticated and hasattr(self.request.user,
+                                                              'employer_profile') and job.employer_profile == self.request.user.employer_profile
 
-
-class JobSelectionView(RetrieveUpdateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOnly]
-    queryset = Job.objects.all()
-    serializer_class = JobSerializer
+    def get_serializer_class(self):
+        job = self.get_object()
+        if self.is_owner(job):
+            return JobSerializer
+        else:
+            return JobSerializerForStudent
 
     def get(self, request, *args, **kwargs):
+
+        if "phase" in kwargs:
+            phase = kwargs['phase']
+        else:
+            return self.retrieve(request, *args, **kwargs)
+
+        # candidates = None
         job = self.get_object()
-        all_candidates = job.application_set.all()
-        phase = kwargs['phase']
+        candidates = job.application_packages.all()
 
         if phase == 1:
-            application_serializer = ApplicationSerializerForSelection(all_candidates, many=True)
-            return Response({'candidates': application_serializer.data}, status=status.HTTP_200_OK)
+            application_serializer = ApplicationPackageSerializer(candidates, many=True)
+            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
 
         elif phase == 2:
-            interviewing_application_ids = Application.objects.filter(job=job,
-                                                                      status=ApplicationStatus.INTERVIEW).values_list(
-                'id')
-            interviewing_candidates = job.application_set.filter(id__in=interviewing_application_ids)
-
-            rejected_application_ids = Application.objects.filter(job=job,
-                                                                  status=ApplicationStatus.REJECTED).values_list('id')
-            rejected_candidates = job.application_set.filter(id__in=rejected_application_ids)
-
-            interviewing_serializer = ApplicationSerializerForSelection(interviewing_candidates, many=True)
-            rejected_serializer = ApplicationSerializerForSelection(rejected_candidates, many=True)
-
-            response_data = {'interviewing_candidates': interviewing_serializer.data,
-                             'rejected_candidates': rejected_serializer.data}
-            return Response(response_data, status=status.HTTP_200_OK)
+            interviewing_ids = Application.objects.filter(status="INTERVIEW").values_list(
+                "application_package_id")
+            candidates = job.application_packages.filter(id__in=interviewing_ids)
+            application_serializer = ApplicationPackageSerializer(candidates, many=True)
+            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
 
         elif phase == 3:
-            offer_application_ids = Application.objects.filter(job=job, status=ApplicationStatus.OFFER).values_list(
-                'id')
-            offer_candidates = job.application_set.filter(id__in=offer_application_ids)
-
-            processing_application_ids = Application.objects.filter(job=job,
-                                                                    status=ApplicationStatus.PROCESSING).values_list(
-                'id')
-            processing_candidates = job.application_set.filter(id__in=processing_application_ids)
-
-            rejected_application_ids = Application.objects.filter(job=job,
-                                                                  status=ApplicationStatus.REJECTED).values_list('id')
-            rejected_candidates = job.application_set.filter(id__in=rejected_application_ids)
-
-            offer_serializer = ApplicationSerializerForSelection(offer_candidates, many=True)
-            processing_serializer = ApplicationSerializerForSelection(processing_candidates, many=True)
-            rejected_serializer = ApplicationSerializerForSelection(rejected_candidates, many=True)
-
-            response_data = {'offer_candidates': offer_serializer.data,
-                             'processing_candidates': processing_serializer.data,
-                             'rejected_candidates': rejected_serializer.data}
-            return Response(response_data, status=status.HTTP_200_OK)
+            interviewing_ids = Application.objects.filter(status="PROCESSING").values_list(
+                "application_package_id")
+            candidates = job.application_packages.filter(id__in=interviewing_ids)
+            application_serializer = ApplicationPackageSerializer(candidates, many=True)
+            return Response({'Candidates': application_serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
+        if "phase" in kwargs:
+            phase = kwargs['phase']
+        else:
+            return self.update(request, *args, **kwargs)
 
-        phase = kwargs['phase']
+        selected_candidates = None
         application_serializer = None
         job = self.get_object()
-        all_candidates = job.application_set.all()
-        selected_candidates_ids = request.data.get('selected_candidates', [])
 
-        def filter_candidate(next_status):
-            for candidate in all_candidates:
-                new_status = next_status if str(candidate.id) in selected_candidates_ids else ApplicationStatus.REJECTED
-                application_serializer = ApplicationSerializerForSelection(instance=candidate,
-                                                                           data={'status': new_status}, partial=True)
+        if phase == 1:
+            candidates_packages = job.application_packages.all()
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, job=job, application_package=packages)
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.INTERVIEW})
+                elif packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.REJECTED})
 
                 if application_serializer.is_valid():
                     application_serializer.save()
-                else:
-                    return Response(application_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            selected_candidates = job.application_set.filter(status=next_status)
-            response_serializer = ApplicationSerializerForSelection(selected_candidates, many=True)
-            return Response({'selected candidate': response_serializer.data},
+            return Response({'Application Status': application_serializer["status"].value},
                             status=status.HTTP_200_OK)
 
-        if phase == 1:
-            return filter_candidate(next_status=ApplicationStatus.INTERVIEW)
-
         elif phase == 2:
-            return filter_candidate(next_status=ApplicationStatus.PROCESSING)
+            interviewing_ids = Application.objects.filter(status=ApplicationStatus.INTERVIEW).values_list(
+                "application_package_id")
+            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
+
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, job=job, application_package=packages)
+
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.PROCESSING})
+                if packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.REJECTED})
+                if application_serializer.is_valid():
+                    application_serializer.save()
+
+            return Response({'Application Status': application_serializer.data},
+                            status=status.HTTP_200_OK)
 
         elif phase == 3:
-            return filter_candidate(next_status=ApplicationStatus.OFFER)
+            interviewing_ids = Application.objects.filter(status=ApplicationStatus.PROCESSING).values_list(
+                "application_package_id")
+            candidates_packages = job.application_packages.filter(id__in=interviewing_ids)
+            selected_candidates = job.application_packages.filter(id__in=request.data.get("ids", []))
+
+            for packages in candidates_packages:
+                application = get_object_or_404(Application, job=job, application_package=packages)
+
+                if packages in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.OFFER})
+                if packages not in selected_candidates:
+                    application_serializer = ApplicationSerializer(instance=application,
+                                                                          data={"status": ApplicationStatus.WAITLIST})
+                if application_serializer.is_valid():
+                    application_serializer.save()
+
+            return Response({'Application Status': "application_serializer.data"},
+                            status=status.HTTP_200_OK)
 
 
-class JobApplicationView(ListCreateAPIView):
+class JobApplicationView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly, IsStudentAndOwner]
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
+    queryset = Job.objects.all()
+    serializer_class = ApplicationPackageSerializer
+    permission_classes = [IsAuthenticated, CanCreateOrRemoveApplication]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Application.objects.filter(application_package__student_profile=user.student_profile)
+    def post(self, request, *args, **kwargs):
+        job = self.get_object()
+        application_package = get_object_or_404(ApplicationPackage, pk=request.data['package_id'])
+        job.application_packages.add(application_package)
+        job.save()
 
+        application = Application(job=job, application_package=application_package)
+        application_serializer = ApplicationSerializer(instance=application)
 
-class JobApplicationDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    The permission "IsOwnerOrReadOnly" is self-explanatory:
-    """
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsStudentAndOwner]
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
+        response_data = {
+            'application': application_serializer.data,
+            'message': f"Application with package: {application_package.title} to job: {job.title} successful!"
+        }
 
-    # def post(self, request, *args, **kwargs):
-    #     job = self.get_object()
-    #     application_package = get_object_or_404(ApplicationPackage, pk=request.data['package_id'])
-    #     job.application_packages.add(application_package)
-    #     job.save()
-    #
-    #     application = Application(job=job, application_package=application_package)
-    #     application_serializer = ApplicationSerializer(instance=application)
-    #
-    #     response_data = {
-    #         'application': application_serializer.data,
-    #         'message': f"Application with package: {application_package.title} to job: {job.title} successful!"
-    #     }
-    #
-    #     return Response(response_data, status=status.HTTP_201_CREATED)
-    #
-    # def delete(self, request, *args, **kwargs):
-    #     job = self.get_object()
-    #     student_profile = request.user.student_profile
-    #     application_package = ApplicationPackage.objects.get(student_profile=student_profile, job=job)
-    #
-    #     application = Application(job=job, application_package=application_package)
-    #     application_serializer = ApplicationSerializer(instance=application)
-    #
-    #     job.application_packages.remove(application_package)
-    #     job.save()
-    #
-    #     response_data = {
-    #         'application': application_serializer.data,
-    #         'message': f"Application with package: {application_package.title} to job: {job.title} successfully removed!"
-    #     }
-    #
-    #     return Response(response_data, status=status.HTTP_204_NO_CONTENT)
+        return Response(response_data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, *args, **kwargs):
+        job = self.get_object()
+        student_profile = request.user.student_profile
+        application_package = ApplicationPackage.objects.get(student_profile=student_profile, job=job)
+
+        application = Application(job=job, application_package=application_package)
+        application_serializer = ApplicationSerializer(instance=application)
+
+        job.application_packages.remove(application_package)
+        job.save()
+
+        response_data = {
+            'application': application_serializer.data,
+            'message': f"Application with package: {application_package.title} to job: {job.title} successfully removed!"
+        }
+
+        return Response(response_data, status=status.HTTP_204_NO_CONTENT)
 
 
 class JobApplicantsView(ListCreateAPIView):
