@@ -51,7 +51,7 @@ export function getEndpoint(t: string){
         case 'LETTER':
             return '/api/coverletter/'
         case 'APP_PKG':
-            return '/api/applications/'
+            return '/api/application-package/'
         default:
             return ''
     }
@@ -75,7 +75,7 @@ export function getAttributeName(t: string){
     }
 }
 
-export function getTypeFromName(type:'curriculumvitae' | 'coverletter' | 'applications'){
+export function getTypeFromName(type:'curriculumvitae' | 'coverletter' | 'application-package'){
     switch(type){
         case 'curriculumvitae':
             return 'CV'
@@ -86,14 +86,14 @@ export function getTypeFromName(type:'curriculumvitae' | 'coverletter' | 'applic
     }
 }
 
-export function convertToDocumentArray(data: any[], type:'curriculumvitae' | 'coverletter' | 'applications'): Document[]{
+export function convertToDocumentArray(data: any[], type:'curriculumvitae' | 'coverletter' | 'application-package'): Document[]{
     const documents: Document[] = [];
 
     for (const item of data) {
         let document: Document = { id: '', file: '', title: '', default: false, type: 'APP_PKG' };
         // console.log(item)
 
-        if(type !== 'applications')
+        if(type !== 'application-package')
             document = {
                 id: item.id,
                 file: item[getAttributeName(type)],

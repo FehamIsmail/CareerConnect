@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {jobFormOptions} from "../constants/FormConstants";
-import {dict, IJob, JobType, StatusType} from "../constants/types";
+import {dict, IJob, JobType, StatusType, DefaultJobPic} from "../constants/types";
 import * as utils from "../scripts/UserFormUtils";
 import {thinScrollBarStyle} from "../constants/styles";
 import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
@@ -10,7 +10,6 @@ import {industryOptions} from "../constants/filter_constants";
 import {useRecoilValue} from "recoil";
 import {authAtom, userTypeAtom} from "../constants/atoms";
 
-const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
     id: 0,
     title: '',
@@ -33,7 +32,7 @@ const defaultJobInfo: IJob = {
     company_logo: null,
 }
 
-export default function JobForms(){
+export default function JobForm(){
     const [profile_picture, setProfile_picture] = useState<File | null>(null);
     const [jobInfo, setJobInfo] = useState<IJob>(defaultJobInfo)
     const [status, setStatus] = useState<StatusType>({

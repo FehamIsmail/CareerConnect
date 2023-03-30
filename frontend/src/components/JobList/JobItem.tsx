@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {IJob} from "../../constants/types";
-import job_logo from "../../assets/sample logo.png"
+import {IJob, DefaultJobPic} from "../../constants/types";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {jobOnPreviewIDAtom} from "../../constants/atoms";
@@ -22,6 +21,7 @@ const JobItem = (props: JobItemProps) => {
 
 
     useEffect(() => {
+        console.log(job)
         //Changes the jobOnPreview
         setPreviewed(jobOnPreviewId == job.id);
         //Scrolls on top of the job item when the job is previewed after 500ms
@@ -44,7 +44,7 @@ const JobItem = (props: JobItemProps) => {
                 <div className="logo-top h-8 flex items-center gap-3">
                     <img
                         alt="Job Logo"
-                        src={job_logo}
+                        src={job.company_logo || DefaultJobPic}
                         className="w-8 h-8 object-cover"/>
                     <div className="w-full flex flex-col ss:gap-1.5 ss:flex-row ss:items-center overflow-hidden ">
                         <div className="job-title font-normal text-[#3F3F46] text-base sm:leading-5 whitespace-nowrap overflow-hidden overflow-ellipsis">
@@ -76,7 +76,7 @@ const JobItem = (props: JobItemProps) => {
                     {job.short_description}
                 </div>
                 <div className="mt-2 items-center flex flex-row gap-2">
-                    {job.types.map((type, index) => (
+                    {job.types && job.types.map((type, index) => (
                         <JobLabel key={index} jobType={type}/>
                     ))}
                     <HeartIcon className="h-4 ml-auto"/>

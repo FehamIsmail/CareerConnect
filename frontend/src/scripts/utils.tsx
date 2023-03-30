@@ -123,3 +123,8 @@ export function appendObjectToFormData(formData: FormData, object: any, prefix?:
         }
     }
 }
+
+export function simplifyURL(url:string) {
+    const matches = url.match(/^https?:\/\/(?:www\.)?([^/?#]+)(?:[/?#]|$)/i);
+    return matches && matches[1];
+}

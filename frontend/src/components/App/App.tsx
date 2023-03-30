@@ -8,7 +8,7 @@ import {Register} from "../../pages/Register";
 import DocumentsPage from "../../pages/DocumentsPage";
 // import ApplicationsPage from "../../pages/Applications";
 import {useWindowDimensions} from "../../scripts/utils";
-import JobForms from '../../pages/JobForms';
+import JobForm from '../../pages/JobForm';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -31,7 +31,7 @@ const App = () => {
                     {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                 </Route>
                 <Route path="job" element={<UserNav isUser={false}/>}>
-                    <Route path="create" element={<JobForms />}/>
+                    <Route path="create" element={<JobForm />}/>
                 </Route>
                 <Route path="login" element={<LogIn/>}/>
                 <Route path="register" element={<Register/>}/>

@@ -53,7 +53,7 @@ export const filteredJobListSelector = selector({
         const filterSorting = get(filterSortingAtom);
         return jobList.filter((job: IJob) => {
             const titleMatches = job.title.toLowerCase().includes(filterSorting.searchTerm.toLowerCase());
-            const typesMatches = filterSorting.selectedType ? job.types.some(type => type === filterSorting.selectedType) : true;
+            const typesMatches = filterSorting.selectedType ? job.types?.some(type => type === filterSorting.selectedType) : true;
             const industryMatches = filterSorting.selectedIndustry ? job.industry === filterSorting.selectedIndustry : true;
             const remoteMatches = filterSorting.isRemote ? job.types.includes(JobType.REMOTE) : true;
             return titleMatches && typesMatches && industryMatches && remoteMatches;
