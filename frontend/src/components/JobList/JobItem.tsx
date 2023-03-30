@@ -39,7 +39,7 @@ const JobItem = (props: JobItemProps) => {
     }, [jobOnPreviewSetter, job.id]);
 
     return (
-        <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer ">
+        <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer w-full">
             <div className={`h-fit bg-white overflow-visible transition-[border-color] transition-shadow ${!previewed? 'hover:border-gray-300 border-transparent' : 'border-gray-400 drop-shadow-md'} border-[1px] p-6 duration-100 ease-linear`}>
                 <div className="logo-top h-8 flex items-center gap-3">
                     <img

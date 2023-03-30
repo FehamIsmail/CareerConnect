@@ -1,5 +1,5 @@
 import {atom, selector} from 'recoil'
-import {IJob} from "./types";
+import {IJob, JobType} from "./types";
 
 const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 let role: 'STUDENT' | 'EMPLOYER' | null = localStorage.getItem('role') as 'STUDENT' | 'EMPLOYER' | null
@@ -35,3 +35,28 @@ export const userTypeAtom = atom<'STUDENT' | 'EMPLOYER' | null>({
     default: role,
 });
 
+export const filterSortingAtom = atom({
+    key: 'filterSorting',
+    default: {
+        searchTerm: '',
+        sorting: '',
+        selectedIndustry: '',
+        selectedType: '',
+        isRemote: false
+    },
+});
+
+export const filteredJobListSelector = selector({
+    key: 'filteredJobListSelector',
+    get: ({ get }) => {
+        const jobList = get(jobListAtom);
+        const filterSorting = get(filterSortingAtom);
+        return jobList.filter((job: IJob) => {
+            const titleMatches = job.title.toLowerCase().includes(filterSorting.searchTerm.toLowerCase());
+            const typesMatches = filterSorting.selectedType ? job.types.some(type => type === filterSorting.selectedType) : true;
+            const industryMatches = filterSorting.selectedIndustry ? job.industry === filterSorting.selectedIndustry : true;
+            const remoteMatches = filterSorting.isRemote ? job.types.includes(JobType.REMOTE) : true;
+            return titleMatches && typesMatches && industryMatches && remoteMatches;
+        });
+    },
+});

@@ -8,14 +8,13 @@ export const filterRadioOptions:Option[] = [
 ]
 
 export const sortByOptions: Option[] = [
-    { id: 0, name: "Relevance" },
+    { id: 0, name: "Relevance"},
     { id: 1, name: "Date Posted: Newest First" },
     { id: 2, name: "Date Posted: Oldest First" },
-    { id: 4, name: "Apply by Date: Newest First" },
-    { id: 4, name: "Apply by Date: Oldest First" },
-    { id: 4, name: "Salary: Low to High" },
-    { id: 3, name: "Salary: High to Low" },
-    { id: 4, name: "Salary: Low to High" },
+    { id: 3, name: "Deadline: Newest First" },
+    { id: 4, name: "Deadline: Oldest First" },
+    { id: 5, name: "Salary: Low to High" },
+    { id: 6, name: "Salary: High to Low" },
 ];
 
 export const industryOptions: Option[] = [

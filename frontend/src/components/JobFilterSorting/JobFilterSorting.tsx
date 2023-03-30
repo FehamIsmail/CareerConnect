@@ -47,7 +47,7 @@ const JobFilterSorting = () => {
                     <FilteredComboBox placeholder="" options={workOptions}/>
                     <p className="mt-2 text-base font-bold">Industries</p>
                     <FilteredComboBox placeholder="" options={industryOptions}/>
-                    <ToggleButton placeholder={"Only Remote"} options={[{id: 0, name: 'toggle'}]}/>
+                    <ToggleButton placeholder={"Only Remote"} options={[{id: 0, name: 'isRemote'}]}/>
                     {width <= 1060 && (
                         <div onClick={handleOpen}
                              className="flex cursor-pointer justify-center items-center mt-6 text-base font-bold">

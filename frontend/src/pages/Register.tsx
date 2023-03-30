@@ -56,9 +56,10 @@ export function Register() {
             user_data.company_name = organization
 
         if (password1===password2) {
-            axios.post('http://localhost:8000/api/register/', user_data).then(res => {
+            axios.post('http://localhost:8000/api/register/', user_data)
+            .then(res => {
                 console.log(res)
-                navigate('/');
+                navigate('/login');
                 setShowAlert(true)
             }).catch(err => {
                 const res = err.response.data

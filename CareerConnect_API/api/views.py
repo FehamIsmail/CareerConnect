@@ -229,7 +229,9 @@ class JobListView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and user.role == Role.EMPLOYER:
+        params = self.request.query_params
+        self_only = params.get('self_only') == 'true'
+        if user.is_authenticated and user.role == User.Role.EMPLOYER and self_only:
             return Job.objects.filter(employer_profile=user.employer_profile)
         else:
             return Job.objects.all()

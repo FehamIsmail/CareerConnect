@@ -12,7 +12,7 @@ import JobForms from '../../pages/JobForms';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
+    const [isOverflowing, setIsOverflowing] = useState<boolean>(false)
     const { height } = useWindowDimensions()
 
     useEffect(() => {
@@ -25,19 +25,19 @@ const App = () => {
         <div ref={containerRef} className={`${!isOverflowing ? '-mr-4' : ''}`}>
             <Routes>
                 <Route path="" element={<LandingPage/>}/>
-                <Route path="user" element={<UserNav isUser={true}/>}> {/* ./jobs/create */}
+                <Route path="user" element={<UserNav isUser={true}/>}>
                     <Route path="profile" element={<UserForm />}/>
                     <Route path="documents" element={<DocumentsPage />}/>
                     {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                 </Route>
-                <Route path="job" element={<UserNav isUser={false}/>}> {/* ./job/create */}
+                <Route path="job" element={<UserNav isUser={false}/>}>
                     <Route path="create" element={<JobForms />}/>
                 </Route>
                 <Route path="login" element={<LogIn/>}/>
                 <Route path="register" element={<Register/>}/>
             </Routes>
         </div>
-    )
+    );
 }
 
 export default App;
