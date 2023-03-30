@@ -1,6 +1,21 @@
 from rest_framework import permissions
 
 
+class IsOwnerOnly(permissions.BasePermission):
+    """
+    Object-level permission to only allow the owner of an object to edit or delete it.
+    Assumes the model instance has an `owner` attribute.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to the owner of the object only.
+        if request.method in permissions.SAFE_METHODS:
+            return obj.employer_profile.user == request.user
+
+        # Write permissions are only allowed to the owner of the object.
+        return obj.employer_profile.user == request.user
+
+
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
@@ -20,12 +35,18 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return obj.student_profile == request.user.student_profile
 
 
-class CanCreateOrRemoveApplication(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+class IsStudentAndOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.method in ['POST', 'DELETE'] and request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+        if request.method in ['POST'] and request.user.is_authenticated \
+                and hasattr(request.user, 'student_profile'):
             return True
+        return False
 
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['GET', 'DELETE'] and request.user.is_authenticated \
+                and hasattr(request.user, 'student_profile') and obj.application_package.student_profile == request.user.student_profile:
+            return True
         return False
