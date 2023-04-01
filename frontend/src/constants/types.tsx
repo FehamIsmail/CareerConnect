@@ -150,6 +150,15 @@ export type StudentProfile = {
     relocation: boolean,
 }
 
+export type CandidateType = {
+    id: string,
+    name: string,
+    email: string,
+    profile_picture: string | null,
+    applied_date: Date,
+    status: string
+}
+
 export type Document = {
     id: string
     file?: string,

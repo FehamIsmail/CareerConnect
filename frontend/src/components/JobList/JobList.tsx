@@ -3,8 +3,11 @@ import JobItem from "./JobItem";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {filteredJobListSelector, jobListAtom, jobOnPreviewIDAtom} from "../../constants/atoms";
 
+type JobListProps = {
+    cb?: (jobId: number) => void
+}
 
-const JobList = () => {
+const JobList = (props: JobListProps) => {
     const jobList = useRecoilValue(jobListAtom)
     const jobListDivRef = useRef<HTMLDivElement>(null)
     const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
@@ -36,7 +39,7 @@ const JobList = () => {
         <div ref={jobListDivRef}
              className="job-item w-full h-fit bg-white min-w-0 divide-y divide-gray-200 border-[1px] border-gray-200 rounded-md shadow-default w-full">
             {filteredJobList.map((job) => (
-                <JobItem key={job.id} job={job}/>
+                <JobItem key={job.id} job={job} cb={props.cb}/>
             ))}
         </div>
 

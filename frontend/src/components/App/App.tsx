@@ -9,6 +9,9 @@ import DocumentsPage from "../../pages/DocumentsPage";
 // import ApplicationsPage from "../../pages/Applications";
 import {useWindowDimensions} from "../../scripts/utils";
 import JobForm from '../../pages/JobForm';
+import Candidate from '../../pages/Candidate';
+import CandidateView from '../../pages/CandidateView';
+import JobSelect from '../../pages/JobSelect';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -32,6 +35,8 @@ const App = () => {
                 </Route>
                 <Route path="job" element={<UserNav isUser={false}/>}>
                     <Route path="create" element={<JobForm />}/>
+                    <Route path="JobSelect" element={<JobSelect />}/>
+                    <Route path="candidates/:jobID" element={<Candidate />}/>
                 </Route>
                 <Route path="login" element={<LogIn/>}/>
                 <Route path="register" element={<Register/>}/>

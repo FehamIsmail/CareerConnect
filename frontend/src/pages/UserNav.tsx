@@ -24,6 +24,8 @@ const userNavigation = [
 
 const jobNavigation = [
     { name: "Create Job", href: "/job/create", icon: UserCircleIcon, current: true },
+    { name: "View Jobs", href: "/job/JobSelect", icon: UserCircleIcon, current: false },
+
 ]
 
 export function UserNav(props:UserNavOpt) {
