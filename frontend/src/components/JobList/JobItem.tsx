@@ -9,10 +9,11 @@ import {useWindowDimensions} from "../../scripts/utils";
 
 type JobItemProps = {
     job: IJob;
+    cb?: (jobId: number) => void
 }
 
 const JobItem = (props: JobItemProps) => {
-    const {job} = props;
+    const {job, cb} = props;
     const jobOnPreviewSetter = useSetRecoilState(jobOnPreviewIDAtom);
     const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
     const [previewed, setPreviewed] = useState<boolean>(false);
@@ -34,9 +35,13 @@ const JobItem = (props: JobItemProps) => {
     }, [jobOnPreviewId]);
 
     const setJobOnPreview = useCallback(() => {
-        //Sets the new jobOnPreviewID
-        jobOnPreviewSetter(() => job.id)
-    }, [jobOnPreviewSetter, job.id]);
+        if (cb) {
+            cb(job.id);
+        } else {
+            //Sets the new jobOnPreviewID
+            jobOnPreviewSetter(() => job.id)
+        }
+    }, [cb, jobOnPreviewSetter, job.id]);
 
     return (
         <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer w-full">
