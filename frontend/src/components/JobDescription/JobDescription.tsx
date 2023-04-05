@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {IJob, DefaultJobPic} from "../../constants/types";
-import {useRecoilValue} from "recoil";
-import {jobOnPreview, jobOnPreviewIDAtom} from "../../constants/atoms";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import {jobOnPreview, jobOnPreviewIDAtom, showApplyPopupState, userTypeAtom} from "../../constants/atoms";
 import {getJobTypesString, simplifyURL, useWindowDimensions} from "../../scripts/utils";
 import {HeartIcon} from "@heroicons/react/24/outline";
 import {thinScrollBarStyle} from "../../constants/styles";
@@ -15,14 +15,16 @@ type JobDescriptionProps = {
 
 const JobDescription = (props: JobDescriptionProps) => {
     // jobOnFocus variable will be used only in desktop mode
-    const jobOnFocus: IJob | null = useRecoilValue(jobOnPreview);
     const {job, isFromJobItem} = props;
+    const jobOnFocus: IJob | null = useRecoilValue(jobOnPreview);
+    const SetShowApplyPopup = useSetRecoilState(showApplyPopupState)
     const {width} = useWindowDimensions();
     const [className, setClassName] = useState<string>('');
     const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
     const [previewed, setPreviewed] = useState<boolean>(false);
     const [fade, setFade] = useState<boolean>(false);
     const fadeStyle = `${fade ? 'opacity-50' : 'opacity-1 transition-opacity duration-200 ease-linear'}`
+    const user = useRecoilValue(userTypeAtom)
 
     useEffect(() => {
         if (job) {
@@ -74,10 +76,11 @@ const JobDescription = (props: JobDescriptionProps) => {
                             <p className="text-black font-[500] text-sm">{jobOnFocus.street_address}</p>
                             <p className="text-black font-[500] mb-2 text-sm">{jobOnFocus.types && getJobTypesString(jobOnFocus.types)}</p>
                         </div>
-                        <button
-                            className="font-[300] opacity-1 hover:bg-primary_dark bg-primary text-white text-md py-2.5 px-[28px] rounded-md">
+                        {user === 'STUDENT' && <button
+                            onClick={() => SetShowApplyPopup(true)}
+                            className={` font-[400] opacity-1 hover:bg-primary_dark bg-primary text-white text-md py-2.5 px-[28px] rounded-md`}>
                             Apply
-                        </button>
+                        </button>}
                     </div>
                     <div className={`job-description-content divide-gray-300 divide-y h-fit ${fadeStyle}`}>
                         <div className="job-details p-6 h-fit w-full">

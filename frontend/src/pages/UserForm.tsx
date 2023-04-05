@@ -142,7 +142,7 @@ export default function UserForm() {
                           className="ml-5 h-fit w-fit relative "
                       >
                         <span className="cursor-pointer transition-shadow rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-100 rounded-md bg-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:drop-shadow-sm">Change</span>
-                        <input id="photo-upload" name="photo-upload" type="file"
+                        <input id="photo-upload" name="photo-upload" type="file"  accept="image/png, image/jpeg"
                                onChange={e => utils.handleFileChange(e, setProfile_picture, 'IMAGE', 3)}
                                className={`sr-only`}/>
                       </label>

@@ -13,7 +13,7 @@ import {Document, StatusType} from "../constants/types";
 import {Status} from "../components/StatusBar/Status";
 import axios from "axios";
 import {getAccessToken} from "../scripts/utils";
-import {convertToDocumentArray, feedApplicationCVandCL} from "../scripts/DocumentUtils";
+import {convertToDocumentArray} from "../scripts/DocumentUtils";
 
 export const DocumentsPage = () => {
     const [formType, setFormType] = useState<'CV' | 'LETTER' | 'APP_PKG'>()
@@ -40,10 +40,11 @@ export const DocumentsPage = () => {
     }, []);
 
     useEffect(() => {
-        if(appPackagesList.length === 0)
-            return
-        if(!('cover_letter' in appPackagesList[0]))
-            setAppPackagesList(feedApplicationCVandCL(resumeList, letterList, appPackagesList))
+        // if(appPackagesList.length === 0)
+        //     return
+        // if(!('cover_letter' in appPackagesList[0]))
+        //     setAppPackagesList(feedApplicationCVandCL(resumeList, letterList, appPackagesList))
+        console.log(appPackagesList)
     }, [appPackagesList]);
 
     function getUserDocuments(docType:string){
