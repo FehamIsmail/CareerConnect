@@ -5,21 +5,24 @@ import {useRecoilValue, useSetRecoilState} from "recoil";
 import {jobOnPreviewIDAtom} from "../../constants/atoms";
 import JobDescription from "../JobDescription/JobDescription";
 import JobLabel from "./JobLabel";
-import {useWindowDimensions} from "../../scripts/utils";
+import {getAccessToken, useWindowDimensions} from "../../scripts/utils";
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 type JobItemProps = {
     job: IJob;
-    cb?: (jobId: number) => void
+    cb?: (jobId: number) => void;
+    showControls?: boolean;
 }
 
 const JobItem = (props: JobItemProps) => {
-    const {job, cb} = props;
+    const {job, cb, showControls} = props;
     const jobOnPreviewSetter = useSetRecoilState(jobOnPreviewIDAtom);
     const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
     const [previewed, setPreviewed] = useState<boolean>(false);
     const jobItemRef = useRef<HTMLDivElement>(null)
     const { width } = useWindowDimensions();
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log(job)
@@ -42,6 +45,22 @@ const JobItem = (props: JobItemProps) => {
             jobOnPreviewSetter(() => job.id)
         }
     }, [cb, jobOnPreviewSetter, job.id]);
+
+    const onDelete=() =>{
+        axios
+            .delete(`http://localhost:8000/api/jobs/${job.id}/`, {
+                headers: {
+                    Authorization: `Bearer ${getAccessToken()}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((res) => {
+             console.log(res);
+            })
+            .catch((err) => {
+             console.log(err);
+            });
+    }
 
     return (
         <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer w-full">
@@ -80,14 +99,16 @@ const JobItem = (props: JobItemProps) => {
                     className="job-description text-sm text-[#71717A]">
                     {job.short_description}
                 </div>
-                <div className="mt-2 items-center flex flex-row gap-2">
+                <div className="mt-2 items-center justify-end flex flex-row gap-2">
                     {job.types && job.types.map((type, index) => (
                         <JobLabel key={index} jobType={type}/>
                     ))}
-                    <HeartIcon className="h-4 ml-auto"/>
+                    {showControls &&<div>
+                        <button onClick={e=>{e.stopPropagation(); navigate(`/job/edit/${job.id}`)}} className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l'>Edit</button>
+                        <button onClick={onDelete} className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'>Delete</button>
+                    </div>}
+                    <HeartIcon className="h-4 ml-[10x]"/>
                 </div>
-
-
             </div>
             <JobDescription job={job} isFromJobItem={false} />
         </div>
