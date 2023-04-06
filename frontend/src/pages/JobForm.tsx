@@ -228,7 +228,7 @@ export default function JobForm(){
           <form onSubmit={handleSubmit} action="#" method="POST">
             {jobFormOptions.map((opt, index) => {
               return (
-                <fieldset>
+                <fieldset key={index}>
                   <div className="mt-4 mb-4 shadow sm:overflow-hidden sm:rounded-md">
                     <div className="space-y-6 bg-white py-6 px-4 sm:p-6">
                       <div>
@@ -254,7 +254,7 @@ export default function JobForm(){
                                   type={i.type}
                                   name={i.name}
                                   id={i.id}
-                                  value={inputValue[i.name].value}
+                                  value={inputValue[i.name].value || ''}
                                   onChange={inputValue[i.name].onChange}
                                   autoComplete={i.autoComplete}
                                   className={i.className}
@@ -263,7 +263,7 @@ export default function JobForm(){
                                 <select
                                   id={i.id}
                                   name={i.name}
-                                  value={inputValue[i.name].value}
+                                  value={inputValue[i.name].value || ''}
                                   onChange={inputValue[i.name].onChange}
                                   autoComplete={i.autoComplete}
                                   className={i.className}

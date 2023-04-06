@@ -106,7 +106,7 @@ export function convertToDocumentArray(data: any[], type:'curriculumvitae' | 'co
                 id: item.id,
                 file: item.curriculum_vitae,
                 file2: item.cover_letter,
-                title: item.package_name,
+                title: item.title,
                 default: item.default,
                 type: getTypeFromName(type),
             };

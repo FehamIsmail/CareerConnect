@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Route, Routes} from "react-router-dom";
 import {LandingPage} from "../../pages/LandingPage";
 import UserForm from "../../pages/UserForm";
-import {UserNav} from "../../pages/UserNav";
+import {SideNav} from "../../pages/SideNav";
 import {LogIn} from "../../pages/LogIn";
 import {Register} from "../../pages/Register";
 import DocumentsPage from "../../pages/DocumentsPage";
@@ -15,26 +15,18 @@ import JobEdit from '../../pages/JobEdit';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isOverflowing, setIsOverflowing] = useState<boolean>(false)
-    const { height } = useWindowDimensions()
-
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-        setIsOverflowing(container.scrollHeight > height)
-    }, [containerRef.current?.scrollHeight, height]);
 
     return (
-        <div ref={containerRef} className={`${!isOverflowing ? '-mr-4' : ''}`}>
+        <div ref={containerRef}>
             <Routes>
                 <Route path="" element={<LandingPage/>}/>
-                <Route path="user" element={<UserNav isUser={true}/>}>
+                <Route path="user" element={<SideNav/>}>
                     <Route path="profile" element={<UserForm />}/>
                     <Route path="documents" element={<DocumentsPage />}/>
-                    {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                 </Route>
-                <Route path="job" element={<UserNav isUser={false}/>}>
+                <Route path="job" element={<SideNav/>}>
                     <Route path="create" element={<JobForm />}/>
+                    {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                     <Route path="JobSelect" element={<JobSelect pathSegment='candidates' />}/>
                     <Route path="candidates/:jobID" element={<Candidate />}/>
                     <Route path="JobEditSelect" element={<JobSelect pathSegment='edit' />}/>

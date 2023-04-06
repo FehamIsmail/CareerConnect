@@ -109,12 +109,11 @@ export const DocumentForm = (props:DocumentProps) => {
                 delete data[getAttributeName(documentInfo.type)]
             }
         }
-
         else{
             data = {
                 cv_id: documentInfo.file,
                 cl_id: documentInfo.file2,
-                package_name: documentInfo.title,
+                title: documentInfo.title,
                 default: documentInfo.default
             };
         }
@@ -156,7 +155,7 @@ export const DocumentForm = (props:DocumentProps) => {
                             <option value="">-- Select --</option>
                             {resumeList.map((item) => (
                                 <option key={item.id} value={item.id}>
-                                    {item.file?.split('/').pop()}
+                                    {`${item.file?.split('/').pop()} (${item.title})`}
                                 </option>
                             ))}
                         </select>
@@ -177,7 +176,7 @@ export const DocumentForm = (props:DocumentProps) => {
                                     <option value="">-- Select --</option>
                                     {letterList.map((item) => (
                                         <option key={item.id} value={item.id}>
-                                            {item.file?.split('/').pop()}
+                                            {`${item.file?.split('/').pop()} (${item.title})`}
                                         </option>
                                     ))}
                                 </select>

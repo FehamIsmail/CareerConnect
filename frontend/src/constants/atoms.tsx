@@ -60,3 +60,8 @@ export const filteredJobListSelector = selector({
         });
     },
 });
+
+export const showApplyPopupState = atom({
+    key: 'showApplyPopupState',
+    default: false,
+});
