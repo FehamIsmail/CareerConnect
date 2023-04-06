@@ -45,7 +45,8 @@ const JobItem = (props: JobItemProps) => {
         }
     }, [job.id, jobOnPreviewSetter]);
 
-    const onDelete=() =>{
+    const onDelete=(e:React.MouseEvent<HTMLButtonElement, MouseEvent>) =>{
+        e.stopPropagation();
         axios
             .delete(`http://localhost:8000/api/jobs/${job.id}/`, {
                 headers: {
@@ -55,15 +56,23 @@ const JobItem = (props: JobItemProps) => {
             })
             .then((res) => {
              console.log(res);
+             navigate(0);
             })
             .catch((err) => {
              console.log(err);
             });
     }
 
+    const JobItemBorder=()=>{
+       if (showControls || previewed){
+        return "hover:border-gray-300 border-transparent"
+       }
+        return "border-gray-400 drop-shadow-md"
+    }
+
     return (
         <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer w-full">
-            <div className={`h-fit bg-white overflow-visible transition-[border-color] transition-shadow ${!previewed? 'hover:border-gray-300 border-transparent' : 'border-gray-400 drop-shadow-md'} border-[1px] p-6 duration-100 ease-linear`}>
+            <div className={`h-fit bg-white overflow-visible transition-[border-color] transition-shadow ${JobItemBorder()} border-[1px] p-6 duration-100 ease-linear`}>
                 <div className="logo-top h-8 flex items-center gap-3">
                     <img
                         alt="Job Logo"
@@ -104,7 +113,7 @@ const JobItem = (props: JobItemProps) => {
                     ))}
                     {showControls &&<div>
                         <button onClick={e=>{e.stopPropagation(); navigate(`/job/edit/${job.id}`)}} className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l'>Edit</button>
-                        <button onClick={onDelete} className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'>Delete</button>
+                        <button onClick={e=>onDelete(e)} className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'>Delete</button>
                     </div>}
                     <HeartIcon className="h-4 ml-[10x]"/>
                 </div>
