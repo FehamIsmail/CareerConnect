@@ -128,3 +128,18 @@ export function simplifyURL(url:string) {
     const matches = url.match(/^https?:\/\/(?:www\.)?([^/?#]+)(?:[/?#]|$)/i);
     return matches && matches[1];
 }
+
+export function shortenFileName(fileName: string, maxLength?: number): string {
+    if(!maxLength)
+        maxLength = 30
+    if (fileName.length > maxLength) {
+        const ellipsis = "...";
+        const prefixLength = Math.floor((maxLength - ellipsis.length) / 2);
+        const suffixLength = maxLength - prefixLength - ellipsis.length;
+        const prefix = fileName.substring(0, prefixLength);
+        const suffix = fileName.substring(fileName.length - suffixLength);
+        return prefix + ellipsis + suffix;
+    } else {
+        return fileName;
+    }
+}

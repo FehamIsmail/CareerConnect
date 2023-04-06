@@ -22,7 +22,6 @@ const JobItem = (props: JobItemProps) => {
 
 
     useEffect(() => {
-        console.log(job)
         //Changes the jobOnPreview
         setPreviewed(jobOnPreviewId == job.id);
         //Scrolls on top of the job item when the job is previewed after 500ms
@@ -41,7 +40,7 @@ const JobItem = (props: JobItemProps) => {
             //Sets the new jobOnPreviewID
             jobOnPreviewSetter(() => job.id)
         }
-    }, [cb, jobOnPreviewSetter, job.id]);
+    }, [job.id, jobOnPreviewSetter]);
 
     return (
         <div ref={jobItemRef} onClick={setJobOnPreview} className="cursor-pointer w-full">

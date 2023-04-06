@@ -4,7 +4,7 @@ import {
     BriefcaseIcon,
     ClipboardDocumentIcon,
     UserIcon,
-    CubeIcon,
+    DocumentTextIcon,
     Bars3Icon,
     XMarkIcon, Square3Stack3DIcon,
 } from '@heroicons/react/24/outline'
@@ -28,15 +28,16 @@ const Header = () => {
             description: 'Browse job postings',
             href: '#',
             icon: ClipboardDocumentIcon,
-        },  ...(role === 'STUDENT' && isAuthenticated    ? [
-            {   name: 'Job Applications',
-                description: 'View your job applications',
-                href: '#',
-                icon: Square3Stack3DIcon,
-            },]
+        },
+        ...(role === 'STUDENT' && isAuthenticated ? [
+                {   name: 'Job Applications',
+                    description: 'View your job applications',
+                    href: '/job/applications',
+                    icon: Square3Stack3DIcon,
+                }
+            ]
         : []),
-        ...(role === 'EMPLOYER' && isAuthenticated
-            ? [
+        ...(role === 'EMPLOYER' && isAuthenticated ? [
                 {
                     name: 'Employers / Post Job',
                     description: 'Post a job as an employer',
@@ -44,7 +45,7 @@ const Header = () => {
                     icon: BriefcaseIcon,
                 },
             ]
-            : []),
+        : []),
     ];
 
     const accountActions = [
@@ -53,16 +54,18 @@ const Header = () => {
             href: '/user/profile',
             description: 'Edit your profile details',
             icon: UserIcon,
-        }
+        },
+        ...(role === 'STUDENT'
+            ? [
+                {
+                    name: 'My Documents',
+                    href: '/user/documents',
+                    description: 'Upload or edit your documents',
+                    icon: DocumentTextIcon,
+                }
+                ] : []
+        )
     ]
-    if(role === "STUDENT"){
-        accountActions.push({
-            name: 'My Application Packages',
-            href: '/user/applications',
-            description: 'Manage your application packages',
-            icon: CubeIcon,
-        })
-    }
 
     const getUserInfo = () => {
         axios.get('http://localhost:8000/api/profile/', {
@@ -84,7 +87,7 @@ const Header = () => {
     }, [isAuthenticated]);
 
     return (
-        <Popover className="relative bg-white drop-shadow-md">
+        <Popover className="relative z-50 bg-white drop-shadow-md">
             <div className="mx-auto max-w-screen-xl px-8">
                 <div className="flex items-center justify-between border-gray-100 py-3 md:justify-start md:space-x-10">
                     <div className="flex justify-start md:w-0 md:flex-1">
@@ -132,6 +135,7 @@ const Header = () => {
                                         leaveFrom="opacity-100 translate-y-0"
                                         leaveTo="opacity-0 translate-y-1"
                                     >
+                                        <div className="relative z-50 w-full h-full">
                                         <Popover.Panel className="absolute z-50 -ml-4 mt-3 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
                                             <div className="relative z-50 overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div className="z-50 relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
@@ -151,6 +155,7 @@ const Header = () => {
                                                 </div>
                                             </div>
                                         </Popover.Panel>
+                                        </div>
                                     </Transition>
                                 </>
                             )}
