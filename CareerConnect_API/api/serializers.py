@@ -110,6 +110,27 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
         model = EmployerProfile
         exclude = ['user']
 
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+        exclude_fields = kwargs.pop('exclude_fields', None)
+
+        # Instantiate the superclass normally
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+        elif exclude_fields is not None:
+            # Drop any fields that are specified in the `exclude_fields` argument.
+            not_allowed = set(exclude_fields)
+            for field_name in not_allowed:
+                self.fields.pop(field_name)
+
 
 # ======================= CV/CL/PACKAGE Serializer ======================= #
 
@@ -142,8 +163,6 @@ class CVSerializer(serializers.ModelSerializer):
             not_allowed = set(exclude_fields)
             for field_name in not_allowed:
                 self.fields.pop(field_name)
-
-
 
 
 class CLSerializer(serializers.ModelSerializer):
@@ -228,9 +247,11 @@ class ApplicationPackageSerializer(serializers.ModelSerializer):
 # ======================= Jobs Serializer ======================= #
 
 class JobSerializer(serializers.ModelSerializer):
+    employer_profile = EmployerProfileSerializer(read_only=True, fields=('company', ))
+
     class Meta:
         model = Job
-        exclude = ['employer_profile', 'application_packages']
+        exclude = ['application_packages']
 
 
 # class JobSerializerForStudent(serializers.ModelSerializer):
