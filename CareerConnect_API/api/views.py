@@ -10,12 +10,14 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .enums import Role, ApplicationStatus
-from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application
+from .enums import Role, ApplicationStatus, NotificationColor
+from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application, \
+    StudentNotifications
 from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, \
-    ApplicationSerializer, ApplicationSerializerForSelection
+    ApplicationSerializer, ApplicationSerializerForSelection, StudentNotificationsSerializer
+from .functions import make_student_notif
 
 
 class RegistrationView(CreateAPIView):
@@ -69,7 +71,8 @@ class LoginView(TokenObtainPairView):
 class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    # parser_classes = [MultiPartParser, FormParser] TODO: Isma3il why? :(
+
+    # parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, *args, **kwargs):
 
@@ -328,10 +331,53 @@ class JobSelectionView(RetrieveUpdateAPIView):
         selected_candidates_ids = request.data.get('selected_candidates', [])
 
         def filter_candidate(next_status):
-            for candidate in all_candidates:
+            # CHECK IN THE LOOP MAKES SURE THAT THE STATUS OF A REJECTED CANDIDATE DOES NOT CHANGE AGAIN TO REJECTED
+            # IT DISCARDS THE CANDIDATE WHEN ITS STATUS HAS ALREADY BEEN SET TO REJECTED
+            for candidate in [candidate for candidate in all_candidates if
+                              candidate.status != ApplicationStatus.REJECTED]:
+                message = ""
+                color = ""
+
                 new_status = next_status if str(candidate.id) in selected_candidates_ids else ApplicationStatus.REJECTED
                 application_serializer = ApplicationSerializerForSelection(instance=candidate,
                                                                            data={'status': new_status}, partial=True)
+
+                student_profile = ApplicationPackage.objects.filter(
+                    id=Application.objects.filter(id=candidate.id)[0].application_package_id)[0].student_profile
+
+                if new_status == ApplicationStatus.INTERVIEW:
+                    message = f"Congratulations {str(student_profile.user).split('@')[0]}, you have been selected for" \
+                              f" an interview for the following position:\n\n" \
+                              f"{job}\n\nThe employer will contact you over email to give you your interview details.\n" \
+                              f"In the mean time, do not hesitate to go to your profile to look over the application you" \
+                              f" submitted and familiarize better with the job description!\n\n" \
+                              f"Once again, congratulations\n- The CareerConnect team "
+                    color = NotificationColor.GREEN
+
+                elif new_status == ApplicationStatus.REJECTED:
+                    message = f"Dear {str(student_profile.user).split('@')[0]}, \nUnfortunately, your application for" \
+                              f" the position:\n\n {job}\n\n was not selected to move to the next step. We wish you " \
+                              f"the best in your job search and encourage you to apply again in the future.\n" \
+                              f" Best regards, \nCareerConnect"
+                    color = NotificationColor.RED
+
+                elif new_status == ApplicationStatus.PROCESSING:
+                    message = f"Dear {str(student_profile.user).split('@')[0]}, \nYour application for the " \
+                              f"position:\n\n {job}\n\n is being analyzed. You will have some more news as soon as" \
+                              f" the employer updates your application status. Be sure to check once in a while!\n\n" \
+                              f"Best regards, \nCareerConnect"
+                    color = NotificationColor.BLUE
+
+                elif new_status == ApplicationStatus.OFFER:
+                    message = f"Congratulations {str(student_profile.user).split('@')[0]}, you have been selected" \
+                              f" for the following position:\n\n{job}\n\nThe employer will contact you over email " \
+                              f"to give you more details about the position, important dates and your contract.\n" \
+                              f"In the mean time, do not hesitate to go to your profile to look over the application " \
+                              f"you submitted and familiarize better with the job description!\n\nOnce again," \
+                              f" congratulations\n- The CareerConnect team "
+                    color = NotificationColor.GREEN
+
+                make_student_notif(student_profile, message, color)
 
                 if application_serializer.is_valid():
                     application_serializer.save()
@@ -427,3 +473,16 @@ class JobApplicantsView(ListCreateAPIView):
         application = get_object_or_404(ApplicationPackage, applicationid)
         app_status = get_object_or_404(Application, job_id=job_id, application=application)
         serializer = ApplicationSerializer(instance=app_status, data=["status"])
+
+
+class NotificationsListView(ListCreateAPIView):
+    serializer_class = StudentNotificationsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = StudentNotifications.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        return StudentNotifications.objects.filter(user_profile=user.student_profile)
+
+    # def get(self):
