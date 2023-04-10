@@ -58,6 +58,7 @@ class LoginView(APIView):
 
         # If authentication succeeds, generate a JWT token and return it in the response
         login(request, user)
+
         return Response({
             # 'access_token': str(refresh.access_token),
             # 'refresh_token': str(refresh),

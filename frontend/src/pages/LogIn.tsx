@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
-import {setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
+import {getAccessToken, setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
 import {useSetRecoilState} from "recoil";
 import {authAtom, userTypeAtom} from "../constants/atoms";
 import {GoogleLogin} from '@react-oauth/google';
@@ -17,36 +17,51 @@ export function LogIn() {
     const setUserType = useSetRecoilState(userTypeAtom);
     const navigate = useNavigate();
 
+
     const handleLogin = (e: any) => {
-        e.preventDefault();
-        const email = e.target['email'].value
-        const password = e.target['password'].value
-        axios.post('http://localhost:8000/auth/token',
-            {
-                grant_type: 'password',
-                username: email,
-                password: password,
-                client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
-                client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
+    e.preventDefault();
+    const email = e.target['email'].value
+    const password = e.target['password'].value
+    axios.post('http://localhost:8000/auth/token',
+        {
+            grant_type: 'password',
+            username: email,
+            password: password,
+            client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
+            client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
+        }
+    )
+        .then(res => {
+            if (res.status == 200) {
+                setAccessToken(res.data.access_token)
+                setRefreshToken(res.data.refresh_token)
+                setAuth({ isAuthenticated: true });
+                setAuthenticated(true)
+
+                // Fetch user profile after successful login
+                return axios.get('http://localhost:8000/api/profile/', {
+                    headers: {
+                        Authorization: `Bearer ${res.data.access_token}`,
+                    },
+                });
             }
-        )
-            .then(res => {
-                //console.log(res);
-                if (res.status == 200) {
-                    setAccessToken(res.data.access_token)
-                    setRefreshToken(res.data.refresh_token)
-                    setAuth({isAuthenticated: true});
-                    // setUserType(res.data.role)
-                    // localStorage.setItem('role', res.data.role)
-                    setAuthenticated(true)
-                    navigate('/')
-                }
-            }).catch(err => {
+        })
+        .then((response: any) => {
+            const role = response.data.user.role
+            setUserType(role)
+            if (role === "STUDENT")
+                localStorage.setItem('role', 'STUDENT')
+            if (role === "EMPLOYER")
+                localStorage.setItem('role', 'EMPLOYER')
+
+            navigate('/');
+        })
+        .catch(err => {
             console.log(err)
             setError('Invalid Credentials')
             setMessage('Make sure the email and password are valid')
             setShowAlert(true)
-        })
+        });
     }
 
     const login = useGoogleLogin({
@@ -55,8 +70,6 @@ export function LogIn() {
 
     const responseGoogle = (response: any) => {
         console.log(response)
-        // var decoded = jwt_decode(response.credential);
-        // console.log(decoded)
 
         axios.post('http://localhost:8000/auth/convert-token',
             {
@@ -68,22 +81,36 @@ export function LogIn() {
             }
         )
             .then(res => {
-                //console.log(res);
-                if (res.status == 200) {
-                    setAccessToken(res.data.access_token)
-                    setRefreshToken(res.data.refresh_token)
-                    setAuth({isAuthenticated: true});
-                    // setUserType(res.data.role)
-                    // localStorage.setItem('role', res.data.role)
-                    setAuthenticated(true)
-                    navigate('/')
-                }
-            }).catch(err => {
+            if (res.status == 200) {
+                setAccessToken(res.data.access_token)
+                setRefreshToken(res.data.refresh_token)
+                setAuth({ isAuthenticated: true });
+                setAuthenticated(true)
+
+                // Fetch user profile after successful login
+                return axios.get('http://localhost:8000/api/profile/', {
+                    headers: {
+                        Authorization: `Bearer ${res.data.access_token}`,
+                    },
+                });
+            }
+        })
+        .then((response: any) => {
+            const role = response.data.user.role
+            setUserType(role)
+            if (role === "STUDENT")
+                localStorage.setItem('role', 'STUDENT')
+            if (role === "EMPLOYER")
+                localStorage.setItem('role', 'EMPLOYER')
+
+            navigate('/');
+        })
+        .catch(err => {
             console.log(err)
             setError('Invalid Credentials')
             setMessage('Make sure the email and password are valid')
             setShowAlert(true)
-        })
+        });
 
     };
 
@@ -208,7 +235,7 @@ export function LogIn() {
 
 
                         <div className="mt-6">
-                            <div className="relative hidden">
+                            <div className="relative">
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-gray-300" />
                                 </div>
@@ -232,7 +259,7 @@ export function LogIn() {
                                 </Link>
                             </div>
 
-                            <div className="mt-6 grid grid-cols-3 gap-3 hidden">
+                            <div className="mt-6 grid grid-cols-3 gap-3">
                                 <div>
                                     <a
                                         href="#"

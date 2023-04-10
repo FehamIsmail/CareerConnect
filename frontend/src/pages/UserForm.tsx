@@ -86,18 +86,13 @@ export default function UserForm() {
         .then((response: any) => {
           const profile = response.data.profile
           const userInfo = response.data.user
-
-          setUserType(userInfo.role)
-
           if('id' in profile)
             delete profile.id
           if(profile.profile_picture)
             profile.profile_picture = 'http://localhost:8000' + profile.profile_picture
           if(userInfo.role === "STUDENT")
-            localStorage.setItem('role', 'Student')
             setStudentInfo(prevState => ({...prevState, ...profile}))
           if(userInfo.role === "EMPLOYER")
-            localStorage.setItem('role', 'Employer')
             setEmployerInfo(prevState => ({...prevState, ...profile}))
           setUserInfo(userInfo);
         })
