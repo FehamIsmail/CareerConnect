@@ -486,7 +486,7 @@ class JobApplicantsView(ListCreateAPIView):
 
 class NotificationsListView(ListCreateAPIView):
     serializer_class = StudentNotificationsSerializer
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = StudentNotifications.objects.all()
 
