@@ -42,3 +42,8 @@ class ApplicationStatus(models.TextChoices):
     PROCESSING = 'PROCESSING', 'Processing'
     OFFER = 'OFFER', 'Offer'
     REJECTED = 'REJECTED', 'Rejected'
+
+class NotificationColor(models.TextChoices):
+    RED = 'RED', 'Red' #DECLINE
+    BLUE = 'BLUE', 'Blue' #INFORMATIONAL, WHEN STATUS IS BEING DEBATED AFTER INTERVIEW
+    GREEN = 'GREEN', 'Green' #SELECTED FOR INTERVIEW, JOB OFFER

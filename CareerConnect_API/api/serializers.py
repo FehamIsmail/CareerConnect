@@ -8,7 +8,7 @@ from rest_framework.validators import UniqueValidator
 from .enums import Role
 from .models import StudentProfile, ApplicationPackage, CoverLetter, CurriculumVitae, User, Student, Employer, \
     EmployerProfile, \
-    Job, Application
+    Job, Application, StudentNotifications
 
 
 class UniqueEmailValidator(UniqueValidator):
@@ -296,3 +296,9 @@ class JobSerializerForSelection(serializers.ModelSerializer):
     class Meta:
         model = Job
         exclude = ['employer_profile']
+
+
+class StudentNotificationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentNotifications
+        exclude = ['user_profile']
