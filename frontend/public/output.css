@@ -727,79 +727,47 @@ select {
   --tw-backdrop-sepia:  ;
 }
 
-.\!container {
-  width: 100% !important;
-}
-
 .container {
   width: 100%;
 }
 
 @media (min-width: 480px) {
-  .\!container {
-    max-width: 480px !important;
-  }
-
   .container {
     max-width: 480px;
   }
 }
 
 @media (min-width: 620px) {
-  .\!container {
-    max-width: 620px !important;
-  }
-
   .container {
     max-width: 620px;
   }
 }
 
 @media (min-width: 768px) {
-  .\!container {
-    max-width: 768px !important;
-  }
-
   .container {
     max-width: 768px;
   }
 }
 
 @media (min-width: 1060px) {
-  .\!container {
-    max-width: 1060px !important;
-  }
-
   .container {
     max-width: 1060px;
   }
 }
 
 @media (min-width: 1200px) {
-  .\!container {
-    max-width: 1200px !important;
-  }
-
   .container {
     max-width: 1200px;
   }
 }
 
 @media (min-width: 1600px) {
-  .\!container {
-    max-width: 1600px !important;
-  }
-
   .container {
     max-width: 1600px;
   }
 }
 
 @media (min-width: 1700px) {
-  .\!container {
-    max-width: 1700px !important;
-  }
-
   .container {
     max-width: 1700px;
   }
@@ -891,6 +859,10 @@ select {
   right: 2px;
 }
 
+.right-\[9px\] {
+  right: 9px;
+}
+
 .top-0 {
   top: 0px;
 }
@@ -905,6 +877,10 @@ select {
 
 .top-\[1px\] {
   top: 1px;
+}
+
+.top-\[25px\] {
+  top: 25px;
 }
 
 .top-\[2px\] {
@@ -1232,6 +1208,10 @@ select {
   width: 1px;
 }
 
+.w-\[250px\] {
+  width: 250px;
+}
+
 .w-auto {
   width: auto;
 }
@@ -1449,6 +1429,10 @@ select {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
 }
 
 .gap-1 {
@@ -2468,24 +2452,6 @@ select {
   --scrollbar-thumb: #e5e7eb !important;
 }
 
-.main-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #646464 #f6f7ed;
-}
-
-.main-scrollbar::-webkit-scrollbar-track {
-  background: rgba(246, 247, 237, 0);
-}
-
-.main-scrollbar::-webkit-scrollbar-thumb {
-  background: #646464;
-  border-radius: 100vh;
-}
-
-.main-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #525252;
-}
-
 .svg-white {
   -webkit-filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(132deg) brightness(112%) contrast(101%);
           filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(132deg) brightness(112%) contrast(101%);
@@ -2876,6 +2842,13 @@ select {
   background-color: rgb(41 75 221 / var(--tw-bg-opacity));
 }
 
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-gray-700 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+  }
+}
+
 @media (min-width: 620px) {
   .ss\:block {
     display: block;
@@ -3085,6 +3058,10 @@ select {
 
   .md\:h-\[89\.4vh\] {
     height: 89.4vh;
+  }
+
+  .md\:h-auto {
+    height: auto;
   }
 
   .md\:h-fit {
