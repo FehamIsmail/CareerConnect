@@ -242,7 +242,7 @@ class Job(models.Model):
 class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    status = models.CharField(max_length=200, choices=ApplicationStatus.choices, default=ApplicationStatus.APPLIED, null=True, blank=True, )
+    status = models.CharField(max_length=200, choices=ApplicationStatus.choices, default=ApplicationStatus.APPLIED, null=True, blank=True)
     updated_at = models.DateField(auto_now=True)
 
     application_package = models.ForeignKey(ApplicationPackage, on_delete=models.CASCADE)
