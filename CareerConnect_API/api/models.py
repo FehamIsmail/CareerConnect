@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .enums import EducationLevel, Role, JobType, ApplicationStatus
+from .enums import EducationLevel, Role, JobType, ApplicationStatus, NotificationColor
 
 
 # https://rahmanfadhil.com/django-login-with-email/ Login with email or username
@@ -250,3 +250,23 @@ class Application(models.Model):
 
     def __str__(self):
         return f"Application by {self.application_package.student_profile.user.first_name} at {self.job}; status: {self.status}"
+
+
+class StudentNotifications(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_read = models.BooleanField(default=False)
+
+    user_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+    COLOR = models.CharField(max_length=20, choices=NotificationColor.choices, default=None, null=True, blank=True)
+
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True,)
+
+class EmployerNotifications(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_read=models.BooleanField(default=False)
+
+    user_profile = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)
+
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
