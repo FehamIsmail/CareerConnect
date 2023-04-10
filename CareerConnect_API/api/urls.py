@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegistrationView, LoginView, UserProfileView, JobListView, JobDetailView, JobApplicationView, \
     ApplicationPackageListView, ApplicationPackageDetailView, CurriculumVitaeListView, CurriculumVitaeDetailView, \
-    CoverLetterListView, CoverLetterDetailView, JobApplicantsView, JobSelectionView, JobApplicationDetailView
+    CoverLetterListView, CoverLetterDetailView, JobApplicantsView, JobSelectionView, JobApplicationDetailView, NotificationsListView
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -30,7 +30,9 @@ urlpatterns = [
     path('application-package/<uuid:pk>/', ApplicationPackageDetailView.as_view(), name='package-detail'),
 
     path('application/', JobApplicationView.as_view(), name="application-list"),
-    path('application/<uuid:pk>/', JobApplicationDetailView.as_view(), name="application-detail")
+    path('application/<uuid:pk>/', JobApplicationDetailView.as_view(), name="application-detail"),
+
+    path('profile/notifications/', NotificationsListView.as_view() , name="notifications-list")
     # path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
 
 ]
