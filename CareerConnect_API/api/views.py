@@ -1,21 +1,20 @@
-from django.contrib.auth import authenticate
-from rest_framework import viewsets, status
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework import status
 from rest_framework.exceptions import server_error
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, \
-    RetrieveUpdateDestroyAPIView, UpdateAPIView, get_object_or_404
-from rest_framework.parsers import MultiPartParser, FormParser
+    RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .enums import Role, ApplicationStatus
-from .models import User, StudentProfile, Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application
+from .enums import Role, ApplicationStatus, NotificationColor
+from .functions import make_student_notif
+from .models import Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application, \
+    StudentNotifications
 from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, \
-    ApplicationSerializer, ApplicationSerializerForSelection
+    ApplicationSerializer, ApplicationSerializerForSelection, StudentNotificationsSerializer
 
 
 class RegistrationView(CreateAPIView):
@@ -40,31 +39,30 @@ class RegistrationView(CreateAPIView):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
-    def post(self, request, *args, **kwargs):
-        # Get user credentials from the request data
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        # Authenticate user
-        user = authenticate(email=email, password=password)
-
-        # If authentication fails, return an error response
-        if not user:
-            return Response({'error': 'Invalid credentials'}, status=400)
-
-        # If authentication succeeds, generate a JWT token and return it in the response
-        login(request, user)
-
-        return Response({
-            # 'access_token': str(refresh.access_token),
-            # 'refresh_token': str(refresh),
-            'user_id': user.id,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'role': user.role
-        })
+# class LoginView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         # Get user credentials from the request data
+#         email = request.data.get('email')
+#         password = request.data.get('password')
+#
+#         # Authenticate user
+#         user = authenticate(email=email, password=password)
+#
+#         # If authentication fails, return an error response
+#         if not user:
+#             return Response({'error': 'Invalid credentials'}, status=400)
+#
+#         # If authentication succeeds, generate a JWT token and return it in the response
+#         login(request, user)
+#         return Response({
+#             # 'access_token': str(refresh.access_token),
+#             # 'refresh_token': str(refresh),
+#             'user_id': user.id,
+#             'email': user.email,
+#             'first_name': user.first_name,
+#             'last_name': user.last_name,
+#             'role': user.role
+#         })
 
 
 class UserProfileView(RetrieveUpdateAPIView):
