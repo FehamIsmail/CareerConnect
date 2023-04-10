@@ -244,3 +244,22 @@ class Application(models.Model):
 
     def __str__(self):
         return f"Application by {self.application_package.student_profile.user.first_name} at {self.job}; status: {self.status}"
+
+
+class StudentNotifications(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_read=models.BooleanField(default=False)
+
+    user_profile = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+class EmployerNotifications(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_read=models.BooleanField(default=False)
+
+    user_profile = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE)
+
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
