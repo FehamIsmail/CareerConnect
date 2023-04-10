@@ -297,6 +297,7 @@ class JobSerializerForSelection(serializers.ModelSerializer):
         model = Job
         exclude = ['employer_profile']
 
+
 class StudentNotificationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentNotifications
