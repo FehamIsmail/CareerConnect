@@ -18,8 +18,17 @@ export function LogIn() {
         e.preventDefault();
         const email = e.target['email'].value
         const password = e.target['password'].value
-        axios.post('http://localhost:8000/api/login/', {email: email, password: password})
+        axios.post('http://localhost:8000/auth/token',
+            {
+                grant_type: 'password',
+                username: email,
+                password: password,
+                client_id: 'j5KkQxr3sGdCvEFEFjQeEfKVniUyi00eMkhcUl1A',
+                client_secret: '2hf0VxG4w4p6XF1TwIe9LmPucCRqXFuzKTLnrzBLfiwAkEyhHl234BEm9pZyUYOfI5EhnE0mgZok6C4laJQ5BtKrGnzQZSPXfgMV1HkomQhLsI02tjvBaS3IxJCjJQrE',
+            }
+        )
             .then(res => {
+                //console.log(res);
                 if(res.status == 200){
                     setAccessToken(res.data.access_token)
                     setRefreshToken(res.data.refresh_token)
