@@ -5,7 +5,6 @@ from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListCr
     RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .enums import Role, ApplicationStatus, NotificationColor
 from .functions import make_student_notif
