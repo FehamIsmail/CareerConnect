@@ -1,16 +1,15 @@
-import React, {useEffect, useState} from "react";
-import {jobFormOptions} from "../constants/FormConstants";
-import {dict, IJob, JobType, StatusType} from "../constants/types";
-import * as utils from "../scripts/UserFormUtils";
-import {thinScrollBarStyle} from "../constants/styles";
-import {createArrayFromStrings, ErrorList, getAccessToken} from "../scripts/utils";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { createArrayFromStrings, ErrorList, getAccessToken } from "../scripts/utils";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
-import {industryOptions} from "../constants/filter_constants";
-import {useRecoilValue} from "recoil";
-import {authAtom, userTypeAtom} from "../constants/atoms";
+import { DefaultJobPic, dict, IJob, JobType, StatusType } from "../constants/types";
+import { authAtom, jobListAtom, userTypeAtom } from "../constants/atoms";
+import { useNavigate, useParams } from "react-router";
+import { industryOptions } from "../constants/filter_constants";
+import { jobFormOptions } from "../constants/FormConstants";
+import * as utils from "../scripts/UserFormUtils";
+import { thinScrollBarStyle } from "../constants/styles";
 
-const DefaultJobPic = "https://media.istockphoto.com/id/1249853728/vector/briefcase-suitcase-business-portfolio-bag-icon-logo.jpg?s=612x612&w=0&k=20&c=cdkn01u3B6m6LpsXijNnNdPjNGindHrUMmEyd2tHbwE="
 const defaultJobInfo: IJob = {
     id: 0,
     title: '',
@@ -33,7 +32,8 @@ const defaultJobInfo: IJob = {
     company_logo: null,
 }
 
-export default function JobForms(){
+export default function JobEdit() {
+    const {jobID}= useParams(); 
     const [profile_picture, setProfile_picture] = useState<File | null>(null);
     const [jobInfo, setJobInfo] = useState<IJob>(defaultJobInfo)
     const [status, setStatus] = useState<StatusType>({
@@ -115,6 +115,23 @@ export default function JobForms(){
 
     }
 
+    useEffect(()=>{
+        const headers: any = { "Content-Type": "application/json" };
+        headers.Authorization = `Bearer ${getAccessToken()}`;
+    
+        axios({
+          method: "get",
+          url: `http://localhost:8000/api/jobs/${jobID}/`,
+          headers,
+        })
+          .then((res) => {
+          setJobInfo(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },[]);
+
     useEffect(() => {
         if(!isAuthenticated || role === "STUDENT")
             navigate('/')
@@ -144,16 +161,15 @@ export default function JobForms(){
         }
         console.log(data)
         axios
-            .post("http://localhost:8000/api/jobs/", data, {
+            .put(`http://localhost:8000/api/jobs/${jobID}/`, data, {
                 headers: {
                     Authorization: `Bearer ${getAccessToken()}`,
                     "Content-Type": "multipart/form-data",
                 },
             })
             .then((res) => {
-                if (res.status == 201)
+                if (res.status == 200)
                     setStatus({ type: "success", message: "Job created successfully" });
-                setJobInfo(defaultJobInfo);
                 navigate(".", { replace: true });
             })
             .catch((err) => {
