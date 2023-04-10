@@ -3,7 +3,7 @@ import {countryList} from "../constants/constants";
 import {thinScrollBarStyle} from "../constants/styles";
 import axios from "axios";
 import {createArrayFromStrings, getAccessToken} from "../scripts/utils";
-import {useRecoilValue} from "recoil";
+import {useRecoilValue, useSetRecoilState} from "recoil";
 import {userTypeAtom} from "../constants/atoms";
 import DefaultProfilePic from "../assets/default_profile_pic.png"
 import {EducationLevel, educationLevelDetails, EmployerProfile, StudentProfile, UserInfo} from "../constants/types";
@@ -52,6 +52,7 @@ export default function UserForm() {
   const [status, setStatus] = useState<status>({type: 'nothing', message: ' '})
   const navigate = useNavigate();
   const role = useRecoilValue(userTypeAtom);
+  const setUserType = useSetRecoilState(userTypeAtom);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -85,13 +86,18 @@ export default function UserForm() {
         .then((response: any) => {
           const profile = response.data.profile
           const userInfo = response.data.user
+
+          setUserType(userInfo.role)
+
           if('id' in profile)
             delete profile.id
           if(profile.profile_picture)
             profile.profile_picture = 'http://localhost:8000' + profile.profile_picture
           if(userInfo.role === "STUDENT")
+            localStorage.setItem('role', 'Student')
             setStudentInfo(prevState => ({...prevState, ...profile}))
           if(userInfo.role === "EMPLOYER")
+            localStorage.setItem('role', 'Employer')
             setEmployerInfo(prevState => ({...prevState, ...profile}))
           setUserInfo(userInfo);
         })

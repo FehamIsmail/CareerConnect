@@ -25,14 +25,20 @@ class CustomQuerySet(models.QuerySet):
 
 # Base User model
 class UserManager(BaseUserManager):
-    def create_user(self, email, role, password=None, **extra_fields):
+    def create_user(self, email, role=Role.STUDENT, password=None, **extra_fields):
         """
         Creates and saves a User with the given email, role, and password.
         """
         if not email:
             raise ValueError('The Email field must be set')
+
         email = self.normalize_email(email)
-        user = self.model(email=email, role=role, **extra_fields)
+
+        if role == Role.STUDENT:
+            user = Student(email=email, role=role, **extra_fields)
+        else:
+            user = self.model(email=email, role=role, **extra_fields)
+
         user.set_password(password)
         user.save(using=self._db)
         return user

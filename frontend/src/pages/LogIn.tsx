@@ -5,6 +5,9 @@ import axios from "axios";
 import {setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
 import {useSetRecoilState} from "recoil";
 import {authAtom, userTypeAtom} from "../constants/atoms";
+import {GoogleLogin} from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
+import jwt_decode from "jwt-decode";
 
 export function LogIn() {
     const [error, setError] = useState<string>(' ')
@@ -14,7 +17,7 @@ export function LogIn() {
     const setUserType = useSetRecoilState(userTypeAtom);
     const navigate = useNavigate();
 
-    const handleLogin = (e:any) => {
+    const handleLogin = (e: any) => {
         e.preventDefault();
         const email = e.target['email'].value
         const password = e.target['password'].value
@@ -23,28 +26,66 @@ export function LogIn() {
                 grant_type: 'password',
                 username: email,
                 password: password,
-                client_id: 'j5KkQxr3sGdCvEFEFjQeEfKVniUyi00eMkhcUl1A',
-                client_secret: '2hf0VxG4w4p6XF1TwIe9LmPucCRqXFuzKTLnrzBLfiwAkEyhHl234BEm9pZyUYOfI5EhnE0mgZok6C4laJQ5BtKrGnzQZSPXfgMV1HkomQhLsI02tjvBaS3IxJCjJQrE',
+                client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
+                client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
             }
         )
             .then(res => {
                 //console.log(res);
-                if(res.status == 200){
+                if (res.status == 200) {
                     setAccessToken(res.data.access_token)
                     setRefreshToken(res.data.refresh_token)
-                    setAuth({ isAuthenticated: true });
-                    setUserType(res.data.role)
-                    localStorage.setItem('role', res.data.role)
+                    setAuth({isAuthenticated: true});
+                    // setUserType(res.data.role)
+                    // localStorage.setItem('role', res.data.role)
                     setAuthenticated(true)
                     navigate('/')
                 }
             }).catch(err => {
-                console.log(err)
-                setError('Invalid Credentials')
-                setMessage('Make sure the email and password are valid')
-                setShowAlert(true)
+            console.log(err)
+            setError('Invalid Credentials')
+            setMessage('Make sure the email and password are valid')
+            setShowAlert(true)
         })
     }
+
+    const login = useGoogleLogin({
+        onSuccess: tokenResponse => responseGoogle(tokenResponse),
+    });
+
+    const responseGoogle = (response: any) => {
+        console.log(response)
+        // var decoded = jwt_decode(response.credential);
+        // console.log(decoded)
+
+        axios.post('http://localhost:8000/auth/convert-token',
+            {
+                token: response.access_token,
+                backend: 'google-oauth2',
+                grant_type: 'convert_token',
+                client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
+                client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
+            }
+        )
+            .then(res => {
+                //console.log(res);
+                if (res.status == 200) {
+                    setAccessToken(res.data.access_token)
+                    setRefreshToken(res.data.refresh_token)
+                    setAuth({isAuthenticated: true});
+                    // setUserType(res.data.role)
+                    // localStorage.setItem('role', res.data.role)
+                    setAuthenticated(true)
+                    navigate('/')
+                }
+            }).catch(err => {
+            console.log(err)
+            setError('Invalid Credentials')
+            setMessage('Make sure the email and password are valid')
+            setShowAlert(true)
+        })
+
+    };
 
     return (
         <>
@@ -157,7 +198,14 @@ export function LogIn() {
                                     Sign in
                                 </button>
                             </div>
+
+                            <button
+                                className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                onClick={() => login()}>
+                                Sign in with Google 🚀{' '}
+                            </button>
                         </form>
+
 
                         <div className="mt-6">
                             <div className="relative hidden">
