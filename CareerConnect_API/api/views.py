@@ -7,7 +7,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from rest_framework.response import Response
 
 from .enums import Role, ApplicationStatus, NotificationColor
-from .functions import make_student_notif
 from .models import Job, ApplicationPackage, CurriculumVitae, CoverLetter, Application, \
     StudentNotifications
 from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
