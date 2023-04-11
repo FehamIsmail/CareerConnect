@@ -20,7 +20,7 @@ jobs:
 
 
 orbs:
-  sonarcloud: sonarsource/sonarcloud@1.2.0
+  sonarcloud: sonarsource/sonarcloud@1.1.0
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
