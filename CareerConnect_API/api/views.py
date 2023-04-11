@@ -14,6 +14,8 @@ from .permissions import IsOwnerOrReadOnly, IsOwnerOnly, IsStudentAndOwner
 from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     UserSerializer, JobSerializer, ApplicationPackageSerializer, CVSerializer, CLSerializer, \
     ApplicationSerializer, ApplicationSerializerForSelection, StudentNotificationsSerializer
+from .functions import make_student_notif, send_student_email
+
 
 
 class RegistrationView(CreateAPIView):
@@ -352,7 +354,7 @@ class JobSelectionView(RetrieveUpdateAPIView):
                     id=Application.objects.filter(id=candidate.id)[0].application_package_id)[0].student_profile
 
                 if new_status == ApplicationStatus.INTERVIEW:
-                    message = f"Congratulations {str(student_profile.user).split('@')[0]}, you have been selected for" \
+                    message = f"Congratulations {student_profile.user.first_name} {student_profile.user.last_name}, you have been selected for" \
                               f" an interview for the following position:\n\n" \
                               f"{job}\n\nThe employer will contact you over email to give you your interview details.\n" \
                               f"In the mean time, do not hesitate to go to your profile to look over the application you" \
@@ -361,29 +363,30 @@ class JobSelectionView(RetrieveUpdateAPIView):
                     color = NotificationColor.GREEN
 
                 elif new_status == ApplicationStatus.REJECTED:
-                    message = f"Dear {str(student_profile.user).split('@')[0]}, \nUnfortunately, your application for" \
+                    message = f"Dear {student_profile.user.first_name} {student_profile.user.last_name}, \nUnfortunately, your application for" \
                               f" the position:\n\n {job}\n\n was not selected to move to the next step. We wish you " \
                               f"the best in your job search and encourage you to apply again in the future.\n" \
-                              f" Best regards, \nCareerConnect"
+                              f" Best regards, \n- The CareerConnect team"
                     color = NotificationColor.RED
 
                 elif new_status == ApplicationStatus.PROCESSING:
-                    message = f"Dear {str(student_profile.user).split('@')[0]}, \nYour application for the " \
+                    message = f"Dear {student_profile.user.first_name} {student_profile.user.last_name}, \nYour application for the " \
                               f"position:\n\n {job}\n\n is being analyzed. You will have some more news as soon as" \
                               f" the employer updates your application status. Be sure to check once in a while!\n\n" \
-                              f"Best regards, \nCareerConnect"
+                              f"Best regards, \n- The CareerConnect team"
                     color = NotificationColor.BLUE
 
                 elif new_status == ApplicationStatus.OFFER:
-                    message = f"Congratulations {str(student_profile.user).split('@')[0]}, you have been selected" \
+                    message = f"Congratulations {student_profile.user.first_name} {student_profile.user.last_name}, you have been selected" \
                               f" for the following position:\n\n{job}\n\nThe employer will contact you over email " \
                               f"to give you more details about the position, important dates and your contract.\n" \
                               f"In the mean time, do not hesitate to go to your profile to look over the application " \
                               f"you submitted and familiarize better with the job description!\n\nOnce again," \
-                              f" congratulations\n- The CareerConnect team "
+                              f" congratulations\n- The CareerConnect team"
                     color = NotificationColor.GREEN
 
                 make_student_notif(student_profile, message, color)
+                # send_student_email(student_profile.user.email, f'{job} Update', message)
 
                 if application_serializer.is_valid():
                     application_serializer.save()
