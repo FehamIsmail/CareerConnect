@@ -14,4 +14,4 @@ def make_student_notif(student_profile, message, color):
         return Response(notif_serializer.errors)
 
 def send_student_email(mail,subject,message):
-    send_mail('New Updates From CareerConnect',message, 'careerconnectupdates@gmail.com', [mail],fail_silently=False)
+    send_mail(subject ,message, 'careerconnectupdates@gmail.com', [mail], fail_silently=False)
