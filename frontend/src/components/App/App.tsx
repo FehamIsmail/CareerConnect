@@ -10,8 +10,8 @@ import DocumentsPage from "../../pages/DocumentsPage";
 import {useWindowDimensions} from "../../scripts/utils";
 import JobForm from '../../pages/JobForm';
 import Candidate from '../../pages/Candidate';
-import CandidateView from '../../pages/CandidateView';
 import JobSelect from '../../pages/JobSelect';
+import JobEdit from '../../pages/JobEdit';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -27,8 +27,10 @@ const App = () => {
                 <Route path="job" element={<SideNav/>}>
                     <Route path="create" element={<JobForm />}/>
                     {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
-                    <Route path="JobSelect" element={<JobSelect />}/>
+                    <Route path="JobSelect" element={<JobSelect pathSegment='candidates' />}/>
                     <Route path="candidates/:jobID" element={<Candidate />}/>
+                    <Route path="JobEditSelect" element={<JobSelect pathSegment='edit' />}/>
+                    <Route path="edit/:jobID" element={<JobEdit />}/>
                 </Route>
                 <Route path="login" element={<LogIn/>}/>
                 <Route path="register" element={<Register/>}/>

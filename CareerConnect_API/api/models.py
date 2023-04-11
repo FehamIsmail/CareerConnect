@@ -25,14 +25,20 @@ class CustomQuerySet(models.QuerySet):
 
 # Base User model
 class UserManager(BaseUserManager):
-    def create_user(self, email, role, password=None, **extra_fields):
+    def create_user(self, email, role=Role.STUDENT, password=None, **extra_fields):
         """
         Creates and saves a User with the given email, role, and password.
         """
         if not email:
             raise ValueError('The Email field must be set')
+
         email = self.normalize_email(email)
-        user = self.model(email=email, role=role, **extra_fields)
+
+        if role == Role.STUDENT:
+            user = Student(email=email, role=role, **extra_fields)
+        else:
+            user = self.model(email=email, role=role, **extra_fields)
+
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -236,7 +242,7 @@ class Job(models.Model):
 class Application(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    status = models.CharField(max_length=200, choices=ApplicationStatus.choices, default=ApplicationStatus.APPLIED, null=True, blank=True, )
+    status = models.CharField(max_length=200, choices=ApplicationStatus.choices, default=ApplicationStatus.APPLIED, null=True, blank=True)
     updated_at = models.DateField(auto_now=True)
 
     application_package = models.ForeignKey(ApplicationPackage, on_delete=models.CASCADE)
