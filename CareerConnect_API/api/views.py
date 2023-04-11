@@ -333,7 +333,6 @@ class JobSelectionView(RetrieveUpdateAPIView):
     def post(self, request, *args, **kwargs):
 
         phase = kwargs['phase']
-        application_serializer = None
         job = self.get_object()
         all_candidates = job.application_set.all()
         selected_candidates_ids = request.data.get('selected_candidates', [])
