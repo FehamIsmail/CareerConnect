@@ -26,7 +26,7 @@ const Header = () => {
     const jobActions = [
         {   name: 'Job Postings',
             description: 'Browse job postings',
-            href: '#',
+            href: '/',
             icon: ClipboardDocumentIcon,
         },
         ...(role === 'STUDENT' && isAuthenticated ? [

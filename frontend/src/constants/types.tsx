@@ -2,6 +2,7 @@ export interface IJob {
     id: number;
     title: string;
     types: JobType[];
+    employer_profile?: any,
     company: string,
     short_description: string;
     description: string;
