@@ -12,8 +12,8 @@ export default function CandidateView(props: CandidateViewProps) {
   const {applicant, studentProfile, document} = props;
 
   return (
-    <div className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
-      <div className="overflow-hidden bg-white shadow sm:rounded-lg mt-4">
+    <div className="space-y-6 md:col-span-9 md:px-0 mr-0">
+      <div className="overflow-hidden bg-white mt-4">
         <div className="px-4 py-5 sm:px-6">
           <h3 className="text-base font-semibold leading-6 text-gray-900">
             Applicant Information
@@ -78,7 +78,7 @@ export default function CandidateView(props: CandidateViewProps) {
                         aria-hidden="true"
                       />
                       <span className="ml-2 w-0 flex-1 truncate">
-                        {document.file?.substring(document.file?.lastIndexOf("\\")+1)}
+                        Resume: {document.file?.split('/').pop()}
                       </span>
                     </div>
                     <div className="ml-4 flex-shrink-0">
@@ -98,7 +98,7 @@ export default function CandidateView(props: CandidateViewProps) {
                         aria-hidden="true"
                       />
                       <span className="ml-2 w-0 flex-1 truncate">
-                      {document.file2?.substring(document.file2?.lastIndexOf("\\")+1)}
+                      Cover Letter: {document.file2?.split('/').pop()}
                       </span>
                     </div>
                     <div className="ml-4 flex-shrink-0">

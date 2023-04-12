@@ -143,3 +143,16 @@ export function shortenFileName(fileName: string, maxLength?: number): string {
         return fileName;
     }
 }
+
+export function convertStatusToNumber(status: string){
+    switch(status){
+        case 'APPLIED':
+            return 1
+        case 'INTERVIEW':
+            return 2
+        case 'PROCESSING':
+            return 3
+        default:
+            return 0
+    }
+}

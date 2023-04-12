@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 type ExpandableDivProps = {
   candidate: React.ReactNode;
-  candidateDetial: React.ReactNode;
-  cb: VoidFunction;
+  candidateDetail: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  cb: () => void;
 };
 
 export default function ExpandableDiv(props: ExpandableDivProps) {
@@ -12,6 +12,11 @@ export default function ExpandableDiv(props: ExpandableDivProps) {
   const [height, setHeight] = useState<number | undefined>(
     open ? undefined : 0
   );
+  const candidateDetailProps = React.Children.only(
+      props.candidateDetail
+  ).props;
+
+  console.log(candidateDetailProps)
 
   const handleFilterOpening = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -52,11 +57,13 @@ export default function ExpandableDiv(props: ExpandableDivProps) {
   return (
     <div>
       <div className="flex items-center gap-x-[20px] pl-[25px]">
-        <div className="form-control">
+        <div className={`form-control`}>
           <input
             type="checkbox"
-            className="checkbox checkbox-primary"
+            className={`${(candidateDetailProps.applicant.status === 'REJECTED' || candidateDetailProps.applicant.status === 'OFFER')
+                        && 'bg-gray-200 border-gray-800'} checkbox checkbox-primary`}
             onChange={(e) => onChangeHandler(e)}
+            disabled={candidateDetailProps.applicant.status === 'REJECTED' || candidateDetailProps.applicant.status === 'OFFER'}
           />
         </div>
         <div className="w-full" onClick={(e) => handleFilterOpening(e)}>{props.candidate}</div>
@@ -68,7 +75,7 @@ export default function ExpandableDiv(props: ExpandableDivProps) {
         }
         style={{ height }}
       >
-        <div ref={ref}>{props.candidateDetial}</div>
+        <div ref={ref}>{props.candidateDetail}</div>
       </div>
     </div>
   );

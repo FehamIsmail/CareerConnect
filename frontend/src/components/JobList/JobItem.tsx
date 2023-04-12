@@ -72,7 +72,7 @@ const JobItem = (props: JobItemProps) => {
   };
 
   const JobItemBorder = () => {
-    if (showControls || previewed) {
+    if (showControls || !previewed) {
       return "hover:border-gray-300 border-transparent";
     }
     return "border-gray-400 drop-shadow-md";
@@ -96,7 +96,7 @@ const JobItem = (props: JobItemProps) => {
             />
             <div className="w-full flex flex-col ss:gap-1.5 ss:flex-row ss:items-center overflow-hidden ">
               <div className="job-title font-normal text-[#3F3F46] text-base sm:leading-5 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {job.company}
+                {job.company || job.employer_profile?.company || ''}
               </div>
               <div className="hidden ss:block relative top-[1px] job-location font-normal text-[#A1A1AA] text-xs">
                 •
@@ -116,13 +116,13 @@ const JobItem = (props: JobItemProps) => {
           <div className="job-description text-sm text-[#71717A]">
             {job.short_description}
           </div>
-          <div className="relative mt-2 items-center justify-end flex flex-row gap-2">
+          <div className="relative mt-2 items-center flex flex-row gap-2">
             {job.types &&
               job.types.map((type, index) => (
                 <JobLabel key={index} jobType={type} />
               ))}
             {showControls && (
-              <div>
+              <div className="ml-auto">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -171,7 +171,7 @@ const JobItem = (props: JobItemProps) => {
                 )}
               </div>
             )}
-            <HeartIcon className="h-4 ml-[10x]" />
+            {!showControls && (<HeartIcon className="h-4 ml-auto" />)}
           </div>
         </div>
         <JobDescription job={job} isFromJobItem={false} />

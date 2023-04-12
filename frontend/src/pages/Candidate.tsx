@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { ErrorList, getAccessToken } from "../scripts/utils";
+import {convertStatusToNumber, ErrorList, getAccessToken} from "../scripts/utils";
 import axios from "axios";
 import {
   CandidateType,
@@ -39,6 +39,7 @@ export default function Candidate() {
       .then((res) => {
         const createCandidates = (data: any) => {
           return data.map((candidate: any) => {
+            console.log(candidate.updated_at)
             return {
               id: candidate.id,
               name: `${candidate.application_package.user.first_name} ${candidate.application_package.user.last_name}`,
@@ -57,7 +58,7 @@ export default function Candidate() {
               id: candidate.application_package.id,
               file: candidate.application_package.curriculum_vitae
                 .curriculum_vitae,
-              file2: candidate.application_package.cover_letter.cover_letter,
+              file2: candidate.application_package.cover_letter?.cover_letter,
               title: "N/A",
               default: false,
               type: "APP_PKG",
@@ -105,7 +106,7 @@ export default function Candidate() {
     setMoveCandidateToNextState([...moveCandidateToNextState, applicant]);
   };
 
-  function onClickHandler(
+  function moveToNextPhaseHandler(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     e.stopPropagation();
@@ -116,12 +117,14 @@ export default function Candidate() {
         return;
     }
 
+
     const body = {
       "selected_candidates": moveCandidateToNextState.map((a) => a.id)
     };
+    const phase_number = convertStatusToNumber(moveCandidateToNextState[0].status)
 
     axios
-      .post(`http://localhost:8000/api/jobs/${jobID}/2/`, body, {headers})
+      .post(`http://localhost:8000/api/jobs/${jobID}/${phase_number}/`, body, {headers})
       .then((res) => {
         console.log(res);
         setMoveCandidateToNextState([]);
@@ -148,7 +151,7 @@ export default function Candidate() {
                 onChangeHandler(applicant);
               }}
               candidate={<Applicant applicant={applicant} />}
-              candidateDetial={
+              candidateDetail={
                 <CandidateView
                   applicant={applicant}
                   studentProfile={studentProfiles[i]}
@@ -162,7 +165,7 @@ export default function Candidate() {
       {moveCandidateToNextState.length > 0 && (
         <button
           className="float-right inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
-          onClick={(e) => onClickHandler(e)}
+          onClick={moveToNextPhaseHandler}
         >
           Move to Next Phase
         </button>
