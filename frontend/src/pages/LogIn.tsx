@@ -2,12 +2,12 @@ import React, {useState} from "react";
 import logo from "../assets/logo_nobg.svg";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
-import {getAccessToken, setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
+import {setAccessToken, setAuthenticated, setRefreshToken} from "../scripts/utils";
 import {useSetRecoilState} from "recoil";
 import {authAtom, userTypeAtom} from "../constants/atoms";
-import {GoogleLogin} from '@react-oauth/google';
 import { useGoogleLogin } from '@react-oauth/google';
-import jwt_decode from "jwt-decode";
+
+
 
 export function LogIn() {
     const [error, setError] = useState<string>(' ')
@@ -17,102 +17,68 @@ export function LogIn() {
     const setUserType = useSetRecoilState(userTypeAtom);
     const navigate = useNavigate();
 
+    const googleLogin = useGoogleLogin({
+        onSuccess: tokenResponse => loginWithGoogle(tokenResponse),
+    });
 
-    const handleLogin = (e: any) => {
-    e.preventDefault();
-    const email = e.target['email'].value
-    const password = e.target['password'].value
-    axios.post('http://localhost:8000/auth/token',
-        {
+    const defaultLogin = (e: any) => {
+        e.preventDefault();
+        const email = e.target['email'].value
+        const password = e.target['password'].value
+        const data = {
             grant_type: 'password',
             username: email,
             password: password,
-            client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
-            client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
+            client_id: process.env.REACT_APP_CLIENT_ID,
+            client_secret: process.env.REACT_APP_CLIENT_SECRET,
         }
-    )
-        .then(res => {
-            if (res.status == 200) {
-                setAccessToken(res.data.access_token)
-                setRefreshToken(res.data.refresh_token)
-                setAuth({ isAuthenticated: true });
-                setAuthenticated(true)
-
-                // Fetch user profile after successful login
-                return axios.get('http://localhost:8000/api/profile/', {
-                    headers: {
-                        Authorization: `Bearer ${res.data.access_token}`,
-                    },
-                });
-            }
-        })
-        .then((response: any) => {
-            const role = response.data.user.role
-            setUserType(role)
-            if (role === "STUDENT")
-                localStorage.setItem('role', 'STUDENT')
-            if (role === "EMPLOYER")
-                localStorage.setItem('role', 'EMPLOYER')
-
-            navigate('/');
-        })
-        .catch(err => {
-            console.log(err)
-            setError('Invalid Credentials')
-            setMessage('Make sure the email and password are valid')
-            setShowAlert(true)
-        });
+        requestLogin(data, 'auth/token')
     }
 
-    const login = useGoogleLogin({
-        onSuccess: tokenResponse => responseGoogle(tokenResponse),
-    });
-
-    const responseGoogle = (response: any) => {
+    const loginWithGoogle = (response: any) => {
         console.log(response)
-
-        axios.post('http://localhost:8000/auth/convert-token',
-            {
-                token: response.access_token,
-                backend: 'google-oauth2',
-                grant_type: 'convert_token',
-                client_id: '83C1yJqHFT8xr3YdrkHkMLdPuOPJVxJv7Pbifhop',
-                client_secret: 'dJcBHcMi7ghNfMIOy2FI8hORsmkzsSjQW07rh5lGVIW27JLJiRas5xUWwwnetvecadBKljSgE6OxfniE81JYFPj661D9IzKSbq4C4oEYbz5f8AV08i3Ichfe04iGfu9e',
-            }
-        )
-            .then(res => {
-            if (res.status == 200) {
-                setAccessToken(res.data.access_token)
-                setRefreshToken(res.data.refresh_token)
-                setAuth({ isAuthenticated: true });
-                setAuthenticated(true)
-
-                // Fetch user profile after successful login
-                return axios.get('http://localhost:8000/api/profile/', {
-                    headers: {
-                        Authorization: `Bearer ${res.data.access_token}`,
-                    },
-                });
-            }
-        })
-        .then((response: any) => {
-            const role = response.data.user.role
-            setUserType(role)
-            if (role === "STUDENT")
-                localStorage.setItem('role', 'STUDENT')
-            if (role === "EMPLOYER")
-                localStorage.setItem('role', 'EMPLOYER')
-
-            navigate('/');
-        })
-        .catch(err => {
-            console.log(err)
-            setError('Invalid Credentials')
-            setMessage('Make sure the email and password are valid')
-            setShowAlert(true)
-        });
-
+        const data = {
+            token: response.access_token,
+            backend: 'google-oauth2',
+            grant_type: 'convert_token',
+            client_id: process.env.REACT_APP_CLIENT_ID,
+            client_secret: process.env.REACT_APP_CLIENT_SECRET,
+        }
+        requestLogin(data, 'auth/convert-token')
     };
+
+    function requestLogin(data:any, endpoint:string){
+        axios.post(`http://localhost:8000/${endpoint}`, data)
+            .then(res => {
+                if (res.status == 200) {
+                    setAccessToken(res.data.access_token)
+                    setRefreshToken(res.data.refresh_token)
+                    setAuth({ isAuthenticated: true });
+                    setAuthenticated(true)
+                    // Fetch user profile after successful login
+                    return axios.get('http://localhost:8000/api/profile/', {
+                        headers: {
+                            Authorization: `Bearer ${res.data.access_token}`,
+                        },
+                    });
+                }
+            })
+            .then((response: any) => {
+                const role = response.data.user.role
+                setUserType(role)
+                if (role === "STUDENT")
+                    localStorage.setItem('role', 'STUDENT')
+                if (role === "EMPLOYER")
+                    localStorage.setItem('role', 'EMPLOYER')
+                navigate('/');
+            })
+            .catch(err => {
+                console.log(err)
+                setError('Invalid Credentials')
+                setMessage('Make sure the email and password are valid')
+                setShowAlert(true)
+            });
+    }
 
     return (
         <>
@@ -152,7 +118,7 @@ export function LogIn() {
                         </div>
                     </div>)}
                     <div className="mt-4 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                        <form onSubmit={handleLogin} className="space-y-6" action="#" method="POST">
+                        <form onSubmit={defaultLogin} className="space-y-6" action="#" method="POST">
                             <div>
                                 <label
                                     htmlFor="email"
@@ -206,7 +172,6 @@ export function LogIn() {
                                         Remember me
                                     </label>
                                 </div>
-
                                 <div className="text-sm">
                                     <a
                                         href="#"
@@ -216,7 +181,6 @@ export function LogIn() {
                                     </a>
                                 </div>
                             </div>
-
                             <div>
                                 <button
                                     type="submit"
@@ -225,12 +189,6 @@ export function LogIn() {
                                     Sign in
                                 </button>
                             </div>
-
-                            <button
-                                className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                onClick={() => login()}>
-                                Sign in with Google 🚀{' '}
-                            </button>
                         </form>
 
 
@@ -245,21 +203,20 @@ export function LogIn() {
                                   </span>
                                 </div>
                             </div>
-                            <div className="space-y-4 mt-2 text-sm text-gray-900 sm:flex sm:items-center sm:justify-center sm:space-y-0 sm:space-x-4">
-                                <p className="text-center sm:text-left">
-                                    Don't have an account?
-                                </p>
-                                <Link
-                                    className="inline-flex justify-center rounded-lg text-sm font-semibold py-2.5 px-4 text-slate-900 ring-1 ring-slate-900/10 hover:ring-slate-900/20"
-                                    to="../register"
-                                >
-                                  <span>
-                                    Register now <span aria-hidden="true">→</span>
-                                  </span>
-                                </Link>
-                            </div>
-
                             <div className="mt-6 grid grid-cols-3 gap-3">
+                                <div style={{cursor:"pointer"}}>
+                                    <div
+                                        onClick={() => googleLogin()}
+                                        className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                                    >
+                                        <span className="sr-only">Sign in with Google</span>
+                                        <img
+                                            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                                            alt="Google logo"
+                                            className="h-5 w-5"
+                                        />
+                                    </div>
+                                </div>
                                 <div>
                                     <a
                                         href="#"
@@ -280,24 +237,6 @@ export function LogIn() {
                                         </svg>
                                     </a>
                                 </div>
-
-                                <div>
-                                    <a
-                                        href="#"
-                                        className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
-                                    >
-                                        <span className="sr-only">Sign in with Twitter</span>
-                                        <svg
-                                            className="h-5 w-5"
-                                            aria-hidden="true"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />
-                                        </svg>
-                                    </a>
-                                </div>
-
                                 <div>
                                     <a
                                         href="#"
@@ -319,6 +258,21 @@ export function LogIn() {
                                     </a>
                                 </div>
                             </div>
+                            <div className="space-y-4 mt-4 text-sm text-gray-900 sm:flex sm:items-center sm:justify-center sm:space-y-0 sm:space-x-4">
+                                <p className="text-center sm:text-left">
+                                    Don't have an account?
+                                </p>
+                                <Link
+                                    className="inline-flex justify-center rounded-lg text-sm font-semibold py-2.5 px-4 text-slate-900 ring-1 ring-slate-900/10 hover:ring-slate-900/20"
+                                    to="../register"
+                                >
+                                  <span>
+                                    Register now <span aria-hidden="true">→</span>
+                                  </span>
+                                </Link>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
