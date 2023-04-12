@@ -28,6 +28,7 @@ export const ApplyBox = () => {
         ).then(res => {
             console.log(res)
             if(res.status === 201){
+                alert('Application successful')
                 window.location.reload()
                 setShowApplyPopup(false)
             }
