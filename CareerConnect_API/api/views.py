@@ -385,7 +385,7 @@ class JobSelectionView(RetrieveUpdateAPIView):
                     color = NotificationColor.GREEN
 
                 make_student_notif(student_profile, message, color)
-                send_student_email(student_profile.user.email, f'{job} Update', message)
+                # send_student_email(student_profile.user.email, f'{job} Update', message)
 
                 if application_serializer.is_valid():
                     application_serializer.save()
