@@ -20,6 +20,7 @@ const JobItem = (props: JobItemProps) => {
   const jobOnPreviewSetter = useSetRecoilState(jobOnPreviewIDAtom);
   const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
   const [previewed, setPreviewed] = useState<boolean>(false);
+  const [isFavourite, setIsFavourite]= useState<boolean>(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const jobItemRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
@@ -77,6 +78,11 @@ const JobItem = (props: JobItemProps) => {
     }
     return "border-gray-400 drop-shadow-md";
   };
+
+  function toggleFavourite(e: React.MouseEvent<SVGSVGElement, MouseEvent>): void {
+    e.stopPropagation();
+    setIsFavourite(!isFavourite);
+  }
 
   return (
     <>
@@ -171,7 +177,7 @@ const JobItem = (props: JobItemProps) => {
                 )}
               </div>
             )}
-            {!showControls && (<HeartIcon className="h-4 ml-auto" />)}
+            {!showControls && (<HeartIcon onClick={e => toggleFavourite(e)} className={ isFavourite?"h-4 ml-auto fill-red-700":"h-4 ml-auto"} />)}
           </div>
         </div>
         <JobDescription job={job} isFromJobItem={false} />
