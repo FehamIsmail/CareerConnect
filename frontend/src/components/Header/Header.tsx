@@ -32,7 +32,7 @@ const Header = () => {
         ...(role === 'STUDENT' && isAuthenticated ? [
                 {   name: 'Job Applications',
                     description: 'View your job applications',
-                    href: '/job/applications',
+                    href: '/user/applications',
                     icon: Square3Stack3DIcon,
                 }
             ]

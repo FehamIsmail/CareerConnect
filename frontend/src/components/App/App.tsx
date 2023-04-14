@@ -6,12 +6,12 @@ import {SideNav} from "../../pages/SideNav";
 import {LogIn} from "../../pages/LogIn";
 import {Register} from "../../pages/Register";
 import DocumentsPage from "../../pages/DocumentsPage";
-// import ApplicationsPage from "../../pages/Applications";
 import {useWindowDimensions} from "../../scripts/utils";
 import JobForm from '../../pages/JobForm';
 import Candidate from '../../pages/Candidate';
 import JobSelect from '../../pages/JobSelect';
 import JobEdit from '../../pages/JobEdit';
+import ApplicationsPage from '../../pages/ApplicationsPage';
 
 const App = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -23,10 +23,10 @@ const App = () => {
                 <Route path="user" element={<SideNav/>}>
                     <Route path="profile" element={<UserForm />}/>
                     <Route path="documents" element={<DocumentsPage />}/>
+                    <Route path="applications" element={<ApplicationsPage />}/>
                 </Route>
                 <Route path="job" element={<SideNav/>}>
                     <Route path="create" element={<JobForm />}/>
-                    {/*<Route path="applications" element={<ApplicationsPage />}/>*/}
                     <Route path="JobSelect" element={<JobSelect pathSegment='candidates' />}/>
                     <Route path="candidates/:jobID" element={<Candidate />}/>
                     <Route path="JobEditSelect" element={<JobSelect pathSegment='edit' />}/>
