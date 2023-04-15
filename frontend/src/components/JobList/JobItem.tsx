@@ -20,11 +20,23 @@ const JobItem = (props: JobItemProps) => {
   const jobOnPreviewSetter = useSetRecoilState(jobOnPreviewIDAtom);
   const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
   const [previewed, setPreviewed] = useState<boolean>(false);
-  const [isFavourite, setIsFavourite]= useState<boolean>(false);
+  const [isFavourite, setIsFavourite] = useState<boolean>(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const jobItemRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let favs: string | null = localStorage.getItem("favs");
+    let favsArray: number[] = [];
+
+    if (favs !== null) {
+      favsArray = JSON.parse(favs);
+    }
+
+    const idx = favsArray.indexOf(job.id);
+    setIsFavourite(idx >= 0);
+  }, []);
 
   useEffect(() => {
     //Changes the jobOnPreview
@@ -79,8 +91,28 @@ const JobItem = (props: JobItemProps) => {
     return "border-gray-400 drop-shadow-md";
   };
 
-  function toggleFavourite(e: React.MouseEvent<SVGSVGElement, MouseEvent>): void {
+  function toggleFavourite(
+    e: React.MouseEvent<SVGSVGElement, MouseEvent>,
+    id: number
+  ): void {
     e.stopPropagation();
+
+    let favs: string | null = localStorage.getItem("favs");
+    let favsArray: number[] = [];
+
+    if (favs !== null) {
+      favsArray = JSON.parse(favs);
+    }
+
+    const idx = favsArray.indexOf(id);
+
+    if (idx >= 0) {
+      favsArray.splice(idx, 1);
+    } else {
+      favsArray.push(id);
+    }
+
+    localStorage.setItem("favs", JSON.stringify(favsArray));
     setIsFavourite(!isFavourite);
   }
 
@@ -102,7 +134,7 @@ const JobItem = (props: JobItemProps) => {
             />
             <div className="w-full flex flex-col ss:gap-1.5 ss:flex-row ss:items-center overflow-hidden ">
               <div className="job-title font-normal text-[#3F3F46] text-base sm:leading-5 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {job.company || job.employer_profile?.company || ''}
+                {job.company || job.employer_profile?.company || ""}
               </div>
               <div className="hidden ss:block relative top-[1px] job-location font-normal text-[#A1A1AA] text-xs">
                 •
@@ -177,7 +209,14 @@ const JobItem = (props: JobItemProps) => {
                 )}
               </div>
             )}
-            {!showControls && (<HeartIcon onClick={e => toggleFavourite(e)} className={ isFavourite?"h-4 ml-auto fill-red-700":"h-4 ml-auto"} />)}
+            {!showControls && (
+              <HeartIcon
+                onClick={(e) => toggleFavourite(e, job.id)}
+                className={
+                  isFavourite ? "h-4 ml-auto fill-red-700" : "h-4 ml-auto"
+                }
+              />
+            )}
           </div>
         </div>
         <JobDescription job={job} isFromJobItem={false} />
