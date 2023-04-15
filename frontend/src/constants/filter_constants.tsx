@@ -4,7 +4,7 @@ export const filterRadioOptions:Option[] = [
     {id: 0, name: "All Offers"},
     {id: 1, name: "Most Relevant"},
     {id: 2, name: "Recommended"},
-    {id: 3, name: "Most Recent"},
+    {id: 4, name: "Favourite Jobs"}
 ]
 
 export const sortByOptions: Option[] = [
