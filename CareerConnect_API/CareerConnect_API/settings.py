@@ -88,17 +88,34 @@ AUTHENTICATION_BACKENDS = [
     # 'social_core.backends.facebook.FacebookAppOAuth2',
     # 'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+
     'drf_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+# Keys
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '72616245809-t112onl2fg6ds0tso4fmoeqrer7pfjnn.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 
+SOCIAL_AUTH_FACEBOOK_KEY = '1628327201021031'
+SOCIAL_AUTH_FACEBOOK_SECRET = '2491a09772e3188d4b7c0e72da76d857'
+
+SOCIAL_AUTH_GITHUB_KEY = '13dc470a1b66e85f483e'
+SOCIAL_AUTH_GITHUB_SECRET = 'b3702b5c50d2a5bbeab8e07755455c6bb6643d72'
+
+# Scopes
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -130,8 +147,9 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ['http://localhost:3000',]
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000',]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 ALLOWED_HOSTS = ['*']
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'CareerConnect_API.urls'
 

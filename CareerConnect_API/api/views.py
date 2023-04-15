@@ -1,3 +1,5 @@
+import json
+from urllib.parse import parse_qs
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.exceptions import server_error
@@ -15,6 +17,31 @@ from .serializers import StudentProfileSerializer, EmployerProfileSerializer, \
     ApplicationSerializer, ApplicationSerializerForSelection, StudentNotificationsSerializer
 from .functions import make_student_notif, send_student_email
 
+import requests
+from django.http import JsonResponse
+from django.conf import settings
+
+
+def github_oauth_proxy(request):
+    client_id = settings.SOCIAL_AUTH_GITHUB_KEY
+    client_secret = settings.SOCIAL_AUTH_GITHUB_SECRET
+    code = request.GET.get('code')
+
+    payload = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': code,
+    }
+
+    response = requests.post('https://github.com/login/oauth/access_token', data=payload)
+    query_string = response.text
+    parsed_data = parse_qs(query_string)
+    access_token = parsed_data.get('access_token', [None])[0]
+
+    if response.status_code == 200:
+        return JsonResponse({'access_token': access_token}, safe=False)
+    else:
+        return JsonResponse({'error': 'Failed to get access token'}, status=response.status_code)
 
 
 class RegistrationView(CreateAPIView):
