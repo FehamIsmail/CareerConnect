@@ -97,8 +97,6 @@ class UserProfileView(RetrieveUpdateAPIView):
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated]
 
-    # parser_classes = [MultiPartParser, FormParser] TODO: Isma3il why? :(
-
     def get(self, request, *args, **kwargs):
 
         user = request.user
