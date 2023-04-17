@@ -6,7 +6,7 @@ from .models import User, Role, StudentProfile, EmployerProfile, CurriculumVitae
 from .serializers import UserSerializer, StudentProfileSerializer, EmployerProfileSerializer
 from oauth2_provider.models import Application, AccessToken
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class RegistrationViewTestCase(APITestCase):
@@ -477,7 +477,6 @@ class ApplicationPackageDetailViewTest(APITestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token.token}')
         response = self.client.put(url, {'title': 'Updated Package', 'default': True, })
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Updated Package')
         self.assertEqual(response.data['default'], True)
