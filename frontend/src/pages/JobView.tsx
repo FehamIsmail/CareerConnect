@@ -1,67 +1,82 @@
 import React from "react";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
-import { CandidateType, Document, StudentProfile } from "../constants/types";
+import {Document, IJob } from "../constants/types";
 
 type CandidateViewProps = {
-  applicant: CandidateType,
-  studentProfile: StudentProfile,
+  job: IJob,
   document: Document
 }
 
-export default function CandidateView(props: CandidateViewProps) {
-  const {applicant, studentProfile, document} = props;
+export default function JobsView(props: CandidateViewProps) {
+  const {job, document} = props;
+
+    function createAddress(job: IJob): string {
+        let address = `${job.street_address}, ${job.city ? job.city : ""}, ${job.province_territory ? job.province_territory : ""}
+        ${job.postal_code ? job.postal_code : ""} 
+        `;
+
+        if (address === "") {
+            return "Not Provided"
+        }
+
+        return address;
+    }
 
   return (
     <div className="space-y-6 md:col-span-9 md:px-0 mr-0">
       <div className="overflow-hidden bg-white mt-4">
         <div className="px-4 py-5 sm:px-6">
           <h3 className="text-base font-semibold leading-6 text-gray-900">
-            Applicant Information
+            Job Information
           </h3>
           <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            Personal details and application.
+            Job and company details.
           </p>
         </div>
         <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+              <dt className="text-sm font-medium text-gray-500">Job Description</dt>
+              <dd className="mt-1 text-sm text-gray-900">{job.description ? job.description : "No Description Provided" }</dd>
+            </div>
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">Full name</dt>
-              <dd className="mt-1 text-sm text-gray-900">{applicant.name}</dd>
+              <dt className="text-sm font-medium text-gray-500">Contact Email</dt>
+              <dd className="mt-1 text-sm text-gray-900">{job.contact_email ? job.contact_email : "Not Provided" }</dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">
-                Current experience
+                Contact Phone
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">{studentProfile.institution ? studentProfile.institution : "Not provided"}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{job.contact_phone ? job.contact_phone : "Not Provided" }</dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">
-                Email address
+                Address
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {applicant.email}
+                {createAddress(job)}
               </dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">
-                Phone number
+                Salary
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">{studentProfile.phone_number ? studentProfile.phone_number : "Not provided"}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{job.salary ? job.salary : "Not provided"}</dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">
-                Field of study
+                Website
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {studentProfile.field_of_study ? studentProfile.field_of_study : "Not provided"}
+                {job.website_url ? job.website_url : "Not provided"}
               </dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">
-                Education level
+                Industry
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {studentProfile.education_level ? studentProfile.education_level : "Not provided"}
+                {job.industry ? job.industry : "Not provided"}
               </dd>
             </div>
             <div className="sm:col-span-2">

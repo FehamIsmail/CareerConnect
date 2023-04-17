@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 
 type ExpandableDivProps = {
-    candidate: React.ReactNode,
-    candidateDetial: React.ReactNode
-}
+  candidate: React.ReactNode;
+  candidateDetail: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  cb?: () => void;
+};
 
 export default function ExpandableDiv(props: ExpandableDivProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -11,8 +12,16 @@ export default function ExpandableDiv(props: ExpandableDivProps) {
   const [height, setHeight] = useState<number | undefined>(
     open ? undefined : 0
   );
+  const candidateDetailProps = React.Children.only(
+      props.candidateDetail
+  ).props;
 
-  const handleFilterOpening = () => {
+  console.log(candidateDetailProps)
+
+  const handleFilterOpening = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     setOpen(!open);
   };
 
@@ -40,18 +49,34 @@ export default function ExpandableDiv(props: ExpandableDivProps) {
     }
   }, [open]);
 
+  const onChangeHandler = (e: React.FormEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    if (props.cb) props.cb();
+  };
+
   return (
     <div>
-      <div>
-        <div onClick={handleFilterOpening}>
-          {props.candidate}
-        </div>
+      <div className={props.cb ? "flex items-center gap-x-[20px] pl-[25px]" : "flex items-center gap-x-[20px]"}>
+        {props.cb && <div className={`form-control`}>
+          <input
+            type="checkbox"
+            className={`${(candidateDetailProps.applicant.status === 'REJECTED' || candidateDetailProps.applicant.status === 'OFFER')
+                        && 'bg-gray-200 border-gray-800'} checkbox checkbox-primary`}
+            onChange={(e) => onChangeHandler(e)}
+            disabled={candidateDetailProps.applicant.status === 'REJECTED' || candidateDetailProps.applicant.status === 'OFFER'}
+          />
+        </div>}
+        <div className="w-full" onClick={(e) => handleFilterOpening(e)}>{props.candidate}</div>
       </div>
-      <div className={"transition-height duration-200 ease-in-out " + (!open ? "hidden" : "")} style={{ height }}>
-        <div ref={ref}>
-          {props.candidateDetial}
-        </div>
+      <div
+        className={
+          "transition-height duration-200 ease-in-out " +
+          (!open ? "hidden" : "")
+        }
+        style={{ height }}
+      >
+        <div ref={ref}>{props.candidateDetail}</div>
       </div>
     </div>
   );
-};
+}

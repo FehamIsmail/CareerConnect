@@ -87,7 +87,6 @@ export function SideNav() {
     if (navType === "job") navToUpdate = jobNavigation;
     if (!navToUpdate || !currentSegment) return;
     const updatedNavigation = navToUpdate.map((item) => {
-      console.log(item.href.endsWith(currentSegment));
       return {
         ...item,
         current: item.href.endsWith(currentSegment),

@@ -16,5 +16,6 @@ def make_student_notif(student_profile, message, color):
     else:
         return Response(notif_serializer.errors)
 
-def send_student_email(mail,subject,message):
-    send_mail(subject ,message, os.environ.get('EMAIL_HOST_USER'), [mail], fail_silently=False)
+
+def send_student_email(mail, subject, message):
+    send_mail(subject, message, os.environ.get('EMAIL_HOST_USER'), [mail], fail_silently=False)

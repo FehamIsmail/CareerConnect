@@ -1,4 +1,10 @@
-import { CheckCircleIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import {  CheckCircleIcon,
+          ChevronRightIcon,
+          DocumentCheckIcon,
+          ClockIcon,
+          ChatBubbleLeftEllipsisIcon,
+          XMarkIcon,
+} from "@heroicons/react/24/outline";
 import EnvelopeIcon from "@heroicons/react/24/outline/EnvelopeIcon";
 import React from "react";
 import { CandidateType } from "../../constants/types";
@@ -18,10 +24,10 @@ export const Applicant = (props: ApplicantProps) => {
           <div className="flex min-w-0 flex-1 items-center">
             <div className="flex-shrink-0">
               <img
-                className="h-12 w-12 rounded-full"
+                className="h-12 w-12 object-cover rounded-full"
                 src={
                   applicant.profile_picture
-                    ? applicant.profile_picture
+                    ? 'http://localhost:8000' + applicant.profile_picture
                     : DefaultProfileImage
                 }
                 alt=""
@@ -57,10 +63,24 @@ export const Applicant = (props: ApplicantProps) => {
                     </time>
                   </p>
                   <p className="mt-2 flex items-center text-sm text-gray-500">
-                    <CheckCircleIcon
-                      className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400"
-                      aria-hidden="true"
-                    />
+                    {(() => {
+                      const styling = "mr-1.5 h-5 w-5 flex-shrink-0 "
+                      console.log(applicant.status)
+                      switch (applicant.status) {
+                        case 'APPLIED':
+                          return <DocumentCheckIcon className={styling + 'text-green-700'} />
+                        case 'INTERVIEW':
+                          return <ChatBubbleLeftEllipsisIcon className={styling + 'text-amber-300'} />
+                        case 'PROCESSING':
+                          return <ClockIcon className={styling + 'text-amber-500'} />
+                        case 'OFFER':
+                          return <CheckCircleIcon className={styling + 'text-green-600'} />
+                        case 'REJECTED':
+                          return <XMarkIcon className={styling + 'text-red-400'} />
+                        default:
+                          return <></>
+                      }
+                    })()}
                     {applicant.status}
                   </p>
                 </div>

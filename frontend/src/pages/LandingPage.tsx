@@ -4,7 +4,7 @@ import Search from "../components/SearchBar/Search";
 import JobFilterSorting from "../components/JobFilterSorting/JobFilterSorting";
 import JobList from "../components/JobList/JobList";
 import JobDescription from "../components/JobDescription/JobDescription";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {authAtom, filteredJobListSelector, jobListAtom, showApplyPopupState} from "../constants/atoms";
 import axios from "axios";
@@ -16,12 +16,7 @@ export const LandingPage = () => {
     const jobListSetter = useSetRecoilState(jobListAtom)
     const {isAuthenticated} = useRecoilValue(authAtom)
     const filteredJobList = useRecoilValue(filteredJobListSelector)
-    const [showPopup, setShowPopup] = useState(false);
     const showApplyPopup = useRecoilValue(showApplyPopupState)
-
-    const toggleShowApplyPopup = () => {
-        setShowPopup(!showPopup);
-    };
 
     useEffect(() => {
         const headers:any = { 'Content-Type': 'application/json' };
@@ -40,7 +35,8 @@ export const LandingPage = () => {
             const updatedJobs = res.data.map((job:any) => {
                 return {
                     ...job,
-                    types: job.types?.split(',').map((type:string) => JobType[type.trim() as keyof typeof JobType])
+                    types: job.types?.split(',').map((type:string) => JobType[type.trim() as keyof typeof JobType]),
+                    company: job.employer_profile.company
                 };
             });
             jobListSetter(() => updatedJobs)
