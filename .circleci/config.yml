@@ -14,7 +14,8 @@ jobs:
     steps:
       - checkout
 
-      - sonarcloud/scan
+      - sonarcloud/scan:
+          sonar_token_variable_name: sonarToken 
           # name: SonarCloud Scan
           # organization: fehamismail
           # token:
@@ -40,10 +41,7 @@ jobs:
       # -run:
       #     name: Run Frontend_tests
 
-      
-
 workflows:
   build_and_scan:
     jobs:
-      - build:
-          context: sonarCloud
+      - build
