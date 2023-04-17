@@ -7,7 +7,6 @@ jobs:
   build:
     docker:
       - image: python:3.8
-      # - image: 'node:16.14.0'
 
     working_directory: ~/repo
 
@@ -15,17 +14,6 @@ jobs:
       - checkout
 
       - sonarcloud/scan
-          # sonar_token_variable_name: SONAR_TOKEN
-          # sonar.organization: 
-          # name: SonarCloud Scan
-          # organization: fehamismail
-          # token:
-          #   secure: 86756f04d02f76a418fab4ba8c68a34ade142692
-          # projectKey: FehamIsmail_-hiza_tech-soen341project2023-
-          # projectName: -hiza_tech-soen341project2023-
-          # projectVersion: 1.0.0
-          # sources: .
-          # exclusions: '**/migrations/**'
 
       - run: 
           name: Install requirements
@@ -38,7 +26,7 @@ jobs:
           command: |
             cd CareerConnect_API/
             python manage.py test
-      
+            
       # -run:
       #     name: Run Frontend_tests
 
