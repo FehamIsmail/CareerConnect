@@ -1,3 +1,93 @@
-from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from .models import User, Role
 
-# Create your tests here.
+# class RegistrationViewTestCase(APITestCase):
+#     url = reverse('register')
+#
+#     def test_register_student(self):
+#         data = {
+#             'email': 'test.student@example.com',
+#             'first_name': 'Test',
+#             'last_name': 'Student',
+#             'role': Role.STUDENT,
+#             'password': 'password123',
+#             'confirm_password': 'password123',
+#             'institution': 'Concordia University'
+#         }
+#         response = self.client.post(self.url, data, format='json')
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertEqual(User.objects.count(), 1)
+#         self.assertEqual(User.objects.first().email, 'test.student@example.com')
+#         self.assertEqual(User.objects.first().role, Role.STUDENT)
+#         self.assertEqual(User.objects.first().student_profile.institution, 'Concordia University')
+#
+#     def test_register_employer(self):
+#         data = {
+#             'email': 'test.employer@example.com',
+#             'first_name': 'Test',
+#             'last_name': 'Employer',
+#             'role': Role.EMPLOYER,
+#             'password': 'password123',
+#             'confirm_password': 'password123',
+#             'company_name': 'Hiza Tech'
+#         }
+#         response = self.client.post(self.url, data, format='json')
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertEqual(User.objects.count(), 1)
+#         self.assertEqual(User.objects.first().email, 'test.employer@example.com')
+#         self.assertEqual(User.objects.first().role, Role.EMPLOYER)
+#         self.assertEqual(User.objects.first().employer_profile.company, 'Hiza Tech')
+
+
+
+
+class RegistrationViewTestCase(APITestCase):
+    def test_register_student(self):
+        url = reverse('register')
+        data = {
+            "email": "test@test.com",
+            "first_name": "Test",
+            "last_name": "User",
+            "role": Role.STUDENT,
+            "password": "testpassword",
+            "confirm_password": "testpassword",
+            "institution": "Concordia University"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(email=data['email'])
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.role, Role.STUDENT)
+        self.assertTrue(user.check_password(data['password']))
+
+        student_profile = user.student_profile
+        self.assertIsNotNone(student_profile)
+        self.assertEqual(student_profile.institution, data['institution'])
+
+    def test_register_employer(self):
+        url = reverse('register')
+        data = {
+            "email": "employer@test.com",
+            "first_name": "employer",
+            "last_name": "employer",
+            "role": Role.EMPLOYER,
+            "password": "testpassword",
+            "confirm_password": "testpassword",
+            "company_name": "Genetec"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(email=data['email'])
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.role, Role.EMPLOYER)
+        self.assertTrue(user.check_password(data['password']))
+
+        student_profile = user.employer_profile
+        self.assertIsNotNone(student_profile)
+        self.assertEqual(student_profile.company, data['company_name'])
