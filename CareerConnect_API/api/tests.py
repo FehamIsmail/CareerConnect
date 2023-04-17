@@ -1,8 +1,10 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import User, Role, StudentProfile, EmployerProfile
+from .models import User, Role, StudentProfile, EmployerProfile, CurriculumVitae
 from .serializers import UserSerializer, StudentProfileSerializer, EmployerProfileSerializer
+
 
 class RegistrationViewTestCase(APITestCase):
     def test_register_student(self):
@@ -57,7 +59,8 @@ class RegistrationViewTestCase(APITestCase):
 class StudentProfileViewTestCase(APITestCase):
     def setUp(self):
         # user creation
-        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword', role=Role.STUDENT)
+        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword',
+                                             role=Role.STUDENT)
 
         # get the student's profile
         self.student_profile = StudentProfile.objects.get(user=self.user)
@@ -89,7 +92,7 @@ class StudentProfileViewTestCase(APITestCase):
             'field_of_study': 'Philosophy'
         }
         # check the response is good
-        response = self.client.put(self.put_url, data=updated_data,format='json')
+        response = self.client.put(self.put_url, data=updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # verify update has been done correctly
         self.user.refresh_from_db()
@@ -101,17 +104,14 @@ class StudentProfileViewTestCase(APITestCase):
 class EmployerProfileViewTestCase(APITestCase):
     def setUp(self):
         # user creation
-        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword', role=Role.EMPLOYER)
-
-        # get the student's profile
-        # self.employer_profile = EmployerProfile.objects.get(user=self.user)
+        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword',
+                                             role=Role.EMPLOYER)
 
         try:
             self.employer_profile = EmployerProfile.objects.get(user=self.user)
         except EmployerProfile.DoesNotExist:
             self.employer_profile = EmployerProfile.objects.create(user=self.user, company='Desjardins')
 
-        # Set up URLs for the view
         self.get_url = reverse('user-profile')
         self.put_url = reverse('user-profile')
 
@@ -138,10 +138,67 @@ class EmployerProfileViewTestCase(APITestCase):
             'company': 'Bombardier'
         }
         # check the response is good
-        response = self.client.put(self.put_url, data=updated_data,format='json')
+        response = self.client.put(self.put_url, data=updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # verify update has been done correctly
         self.user.refresh_from_db()
         self.employer_profile.refresh_from_db()
         self.assertEqual(self.user.email, updated_data['email'])
         self.assertEqual(self.employer_profile.company, updated_data['company'])
+
+
+class CurriculumVitaeListViewTestCase(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword',
+                                             role=Role.STUDENT)
+        # get the student's profile
+        self.student_profile = StudentProfile.objects.get(user=self.user)
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse('cv-list')
+
+    def test_create_cv(self):
+        cv_file1 = SimpleUploadedFile("cv.pdf", b"test cv", content_type="application/pdf")
+        cv_info1 = {
+            'curriculum_vitae': cv_file1,
+            'title': "TEST CV"
+        }
+
+        response = self.client.post(self.url, data=cv_info1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual((CurriculumVitae.objects.count()), 1)
+
+        # check the two cvs are saved correctly
+        cv1 = CurriculumVitae.objects.last()
+
+        self.assertEqual(cv1.title, cv_info1['title'])
+        self.assertEqual(cv1.student_profile, self.student_profile)
+
+    def test_list_cv(self):
+        # create 2 cvs to be able to test the list function
+        CurriculumVitae.objects.create(
+            student_profile=self.student_profile,
+            title='CV 1',
+            default=True
+        )
+        CurriculumVitae.objects.create(
+            student_profile=self.student_profile,
+            title='CV 2',
+            default=False
+        )
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        self.assertEqual(response.data[0]['title'], 'CV 1')
+        self.assertEqual(response.data[0]['default'], True)
+
+        self.assertEqual(response.data[1]['title'], 'CV 2')
+        self.assertEqual(response.data[1]['default'], False)
+
+        # check that the student profile is not displayed
+        self.assertNotIn('student_profile', response.data[0])
+        self.assertIn('curriculum_vitae', response.data[0])
