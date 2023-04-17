@@ -1,47 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import User, Role
-
-# class RegistrationViewTestCase(APITestCase):
-#     url = reverse('register')
-#
-#     def test_register_student(self):
-#         data = {
-#             'email': 'test.student@example.com',
-#             'first_name': 'Test',
-#             'last_name': 'Student',
-#             'role': Role.STUDENT,
-#             'password': 'password123',
-#             'confirm_password': 'password123',
-#             'institution': 'Concordia University'
-#         }
-#         response = self.client.post(self.url, data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(User.objects.count(), 1)
-#         self.assertEqual(User.objects.first().email, 'test.student@example.com')
-#         self.assertEqual(User.objects.first().role, Role.STUDENT)
-#         self.assertEqual(User.objects.first().student_profile.institution, 'Concordia University')
-#
-#     def test_register_employer(self):
-#         data = {
-#             'email': 'test.employer@example.com',
-#             'first_name': 'Test',
-#             'last_name': 'Employer',
-#             'role': Role.EMPLOYER,
-#             'password': 'password123',
-#             'confirm_password': 'password123',
-#             'company_name': 'Hiza Tech'
-#         }
-#         response = self.client.post(self.url, data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(User.objects.count(), 1)
-#         self.assertEqual(User.objects.first().email, 'test.employer@example.com')
-#         self.assertEqual(User.objects.first().role, Role.EMPLOYER)
-#         self.assertEqual(User.objects.first().employer_profile.company, 'Hiza Tech')
-
-
-
+from .models import User, Role, StudentProfile, EmployerProfile
+from .serializers import UserSerializer, StudentProfileSerializer, EmployerProfileSerializer
 
 class RegistrationViewTestCase(APITestCase):
     def test_register_student(self):
@@ -91,3 +52,96 @@ class RegistrationViewTestCase(APITestCase):
         student_profile = user.employer_profile
         self.assertIsNotNone(student_profile)
         self.assertEqual(student_profile.company, data['company_name'])
+
+
+class StudentProfileViewTestCase(APITestCase):
+    def setUp(self):
+        # user creation
+        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword', role=Role.STUDENT)
+
+        # get the student's profile
+        self.student_profile = StudentProfile.objects.get(user=self.user)
+
+        # Set up URLs for the view
+        self.get_url = reverse('user-profile')
+        self.put_url = reverse('user-profile')
+
+    def test_get_user_profile(self):
+        # login student
+        self.client.force_authenticate(user=self.user)
+        # get request to check response code
+        response = self.client.get(self.get_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check that the response data contains the user and profile data
+        expected_data = {
+            'user': UserSerializer(self.user).data,
+            'profile': StudentProfileSerializer(self.student_profile).data
+        }
+        self.assertEqual(response.data, expected_data)
+
+    def test_update_user_profile(self):
+        # Log in the user to authenticate the request
+        self.client.force_authenticate(user=self.user)
+
+        # Make a PUT request to the view to update the user and profile data
+        updated_data = {
+            'email': 'newemail@example.com',
+            'field_of_study': 'Philosophy'
+        }
+        # check the response is good
+        response = self.client.put(self.put_url, data=updated_data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # verify update has been done correctly
+        self.user.refresh_from_db()
+        self.student_profile.refresh_from_db()
+        self.assertEqual(self.user.email, updated_data['email'])
+        self.assertEqual(self.student_profile.field_of_study, updated_data['field_of_study'])
+
+
+class EmployerProfileViewTestCase(APITestCase):
+    def setUp(self):
+        # user creation
+        self.user = User.objects.create_user(email='userprofile@example.com', password='testpassword', role=Role.EMPLOYER)
+
+        # get the student's profile
+        # self.employer_profile = EmployerProfile.objects.get(user=self.user)
+
+        try:
+            self.employer_profile = EmployerProfile.objects.get(user=self.user)
+        except EmployerProfile.DoesNotExist:
+            self.employer_profile = EmployerProfile.objects.create(user=self.user, company='Desjardins')
+
+        # Set up URLs for the view
+        self.get_url = reverse('user-profile')
+        self.put_url = reverse('user-profile')
+
+    def test_get_user_profile(self):
+        # login student
+        self.client.force_authenticate(user=self.user)
+        # get request to check response code
+        response = self.client.get(self.get_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check that the response data contains the user and profile data
+        expected_data = {
+            'user': UserSerializer(self.user).data,
+            'profile': EmployerProfileSerializer(self.employer_profile).data
+        }
+        self.assertEqual(response.data, expected_data)
+
+    def test_update_user_profile(self):
+        # Log in the user to authenticate the request
+        self.client.force_authenticate(user=self.user)
+
+        # Make a PUT request to the view to update the user and profile data
+        updated_data = {
+            'email': 'newemail@example.com',
+            'company': 'Bombardier'
+        }
+        # check the response is good
+        response = self.client.put(self.put_url, data=updated_data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # verify update has been done correctly
+        self.user.refresh_from_db()
+        self.employer_profile.refresh_from_db()
+        self.assertEqual(self.user.email, updated_data['email'])
+        self.assertEqual(self.employer_profile.company, updated_data['company'])
