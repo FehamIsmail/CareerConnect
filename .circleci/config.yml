@@ -30,7 +30,7 @@
 version: 2.1
 
 orbs:
-  sonarcloud: sonarsource/sonarcloud@1.1.1
+  # sonarcloud: sonarsource/sonarcloud@1.1.1
 
 jobs:
   build:
@@ -45,17 +45,22 @@ jobs:
       - run: pip install -r requirements.txt
 
       - run:
-          name: Run tests
-          command: python CareerConnect_API/api/tests.py
+          name: Run backend_tests
+          command: |
+            cd CareerConnect_API/
+            python manage.py test
+      
+      # -run:
+      #     name: Run Frontend_tests
 
-      - sonarcloud/scan:
-          name: SonarCloud Scan
-          organization: <your-organization>
-          token:
-            secure: <your-sonarcloud-token>
-          projectKey: <your-project-key>
-          projectName: <your-project-name>
-          projectVersion: <your-project-version>
-          sources: .
-          exclusions: '**/migrations/**'
+      # - sonarcloud/scan:
+      #     name: SonarCloud Scan
+      #     organization: Ismail Feham
+      #     token:
+      #       secure: 86756f04d02f76a418fab4ba8c68a34ade142692
+      #     projectKey: FehamIsmail_-hiza_tech-soen341project2023-
+      #     projectName: -hiza_tech-soen341project2023-
+      #     projectVersion: 1
+      #     sources: .
+      #     exclusions: '**/migrations/**'
 
