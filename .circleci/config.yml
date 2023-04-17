@@ -14,8 +14,8 @@ jobs:
     steps:
       - checkout
 
-      - sonarcloud/scan:
-          sonar_token_variable_name: SONAR_TOKEN 
+      - sonarcloud/scan
+          # sonar_token_variable_name: SONAR_TOKEN
           # sonar.organization: 
           # name: SonarCloud Scan
           # organization: fehamismail
