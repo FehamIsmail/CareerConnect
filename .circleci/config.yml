@@ -42,7 +42,11 @@ jobs:
     steps:
       - checkout
 
-      - run: pip install -r requirements.txt
+      - run: 
+          name: Install requirements
+          command: |
+            cd CareerConnect_API 
+            pip install -r requirements.txt
 
       - run:
           name: Run backend_tests
