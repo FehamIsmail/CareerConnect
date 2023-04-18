@@ -1,7 +1,7 @@
 version: 2.1
 
-orbs:
-  sonarcloud: sonarsource/sonarcloud@1.1.1
+#orbs:
+#  sonarcloud: sonarsource/sonarcloud@1.1.1
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
 
-      - sonarcloud/scan
+      #- sonarcloud/scan
 
       - run: 
           name: Install requirements
@@ -33,5 +33,5 @@ jobs:
 workflows:
   build_and_scan:
     jobs:
-      - build:
-          context: sonarCloud
+      - build #:
+          #context: sonarCloud
