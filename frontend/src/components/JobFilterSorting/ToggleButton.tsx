@@ -2,14 +2,17 @@ import React, {useEffect, useState} from 'react'
 import {Switch} from '@headlessui/react'
 import {FilterProps} from "../../constants/types";
 import {filterSortingAtom} from "../../constants/atoms";
-import {useSetRecoilState} from "recoil";
+import {useRecoilValue, useSetRecoilState} from "recoil";
 
 export function ToggleButton(props: FilterProps) {
     const {placeholder, options} = props
     const [enabled, setEnabled] = useState(false)
     const setFilterSorting = useSetRecoilState(filterSortingAtom);
+    const filter = useRecoilValue(filterSortingAtom)
 
     const handleFilterChange = (value: boolean) => {
+
+        console.log(value)
         setFilterSorting((prevFilterSorting) => ({
             ...prevFilterSorting,
             [options[0]?.name]: value,
@@ -17,6 +20,7 @@ export function ToggleButton(props: FilterProps) {
     };
 
     useEffect(() => {
+        console.log(filter)
         handleFilterChange(enabled)
     }, [enabled]);
 

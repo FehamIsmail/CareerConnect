@@ -3,7 +3,6 @@ import {IJob, DefaultJobPic} from "../../constants/types";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {jobOnPreview, jobOnPreviewIDAtom, showApplyPopupState, userTypeAtom} from "../../constants/atoms";
 import {getJobTypesString, simplifyURL, useWindowDimensions} from "../../scripts/utils";
-import {HeartIcon} from "@heroicons/react/24/outline";
 import {thinScrollBarStyle} from "../../constants/styles";
 
 
@@ -68,7 +67,6 @@ const JobDescription = (props: JobDescriptionProps) => {
                                     {jobOnFocus.title}
                                 </div>
                             </div>
-                            <HeartIcon className="relative h-6 top-[2px]"/>
                         </div>
                         <div className={`flex flex-col gap-[2px] text-top h-fit ${width < 1060 ? '' : 'mt-2'} `}>
                             {jobOnFocus.website_url && (<p className="text-[#085FF7] font-medium text-md"><a className='block h-full w-fit'

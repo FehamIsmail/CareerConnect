@@ -49,7 +49,7 @@ module.exports = {
         ],
       },
       animation: {
-        'type': 'typing 3s steps(40, end) infinite alternate forwards, blink 0.7s step-end infinite'
+        'type': 'typing 3s steps(40, end) infinite alternate forwards, blink 0.7s step-end infinite',
       },
       keyframes: {
         'typing': {
