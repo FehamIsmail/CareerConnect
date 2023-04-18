@@ -12,6 +12,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["cypress", "cypress-file-upload"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
