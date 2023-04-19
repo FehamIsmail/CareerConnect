@@ -32,10 +32,11 @@ class ApplicationPackageDetailViewTest(APITestCase):
             cover_letter=self.cl
 
         )
+        self.token=f'Bearer {self.access_token.token}'
 
     def test_get_package_detail(self):
         url = reverse('package-detail', kwargs={'pk': self.package.pk})
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -44,7 +45,7 @@ class ApplicationPackageDetailViewTest(APITestCase):
     def test_update_package_detail(self):
         url = reverse('package-detail', kwargs={'pk': self.package.pk})
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.put(url, {'title': 'Updated Package', 'default': True, })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Updated Package')

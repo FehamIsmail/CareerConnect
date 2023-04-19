@@ -37,6 +37,7 @@ class CoverLetterDetailViewTest(APITestCase):
             application=self.application,
             expires=timezone.now() + timedelta(days=1)
         )
+        self.token = f"Bearer {self.access_token.token}"
 
     def test_update_cl(self):
         url = reverse('cl-detail', kwargs={'pk': self.cl.id})
@@ -44,7 +45,7 @@ class CoverLetterDetailViewTest(APITestCase):
             'title': 'Updated Title',
             'default': False
         }
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.put(url, data=updated_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.cl.refresh_from_db()
@@ -53,17 +54,16 @@ class CoverLetterDetailViewTest(APITestCase):
 
     def test_delete_cl(self):
         url = reverse('cl-detail', kwargs={'pk': self.cl.id})
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(CoverLetter.objects.filter(id=self.cl.id).exists())
 
     def test_get_cl(self):
         url = reverse('cl-detail', kwargs={'pk': self.cl.id})
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], CoverLetter.objects.first().title)
         self.assertEqual(response.data['default'], CoverLetter.objects.first().default)
         self.assertEqual(response.data['id'], str(CoverLetter.objects.first().id))
-

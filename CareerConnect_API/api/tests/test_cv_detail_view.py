@@ -37,6 +37,7 @@ class CurriculumVitaeDetailViewTest(APITestCase):
             application=self.application,
             expires=timezone.now() + timedelta(days=1)
         )
+        self.token='Bearer ' + self.access_token.token
 
     def test_update_cv(self):
         url = reverse('cv-detail', kwargs={'pk': self.cv.id})
@@ -44,7 +45,7 @@ class CurriculumVitaeDetailViewTest(APITestCase):
             'title': 'Updated Title',
             'default': False
         }
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.put(url, data=updated_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.cv.refresh_from_db()
@@ -53,14 +54,14 @@ class CurriculumVitaeDetailViewTest(APITestCase):
 
     def test_delete_cv(self):
         url = reverse('cv-detail', kwargs={'pk': self.cv.id})
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(CurriculumVitae.objects.filter(id=self.cv.id).exists())
 
     def test_get_cv(self):
         url = reverse('cv-detail', kwargs={'pk': self.cv.id})
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], CurriculumVitae.objects.first().title)
