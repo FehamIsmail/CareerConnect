@@ -1,4 +1,3 @@
-import React from 'react'
 import Header from '../../src/components/Header/Header'
 import {withProviders} from "../../src/scripts/utils";
 

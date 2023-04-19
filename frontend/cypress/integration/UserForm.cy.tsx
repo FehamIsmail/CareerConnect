@@ -1,4 +1,3 @@
-import React from 'react'
 import UserForm from '../../src/pages/UserForm'
 import { mount } from "cypress/react18";
 import {withProviders} from "../../src/scripts/utils";

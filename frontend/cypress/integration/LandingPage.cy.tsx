@@ -1,4 +1,3 @@
-import React from 'react'
 import { LandingPage } from '../../src/pages/LandingPage'
 import {withProviders} from "../../src/scripts/utils";
 

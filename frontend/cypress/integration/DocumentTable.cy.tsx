@@ -1,7 +1,5 @@
 import { mount, } from "cypress/react18";
-import React from 'react'
 import DocumentTable, { DocumentTableProps } from '../../src/components/Documents/DocumentTable';
-import {shortenFileName} from "../../src/scripts/utils";
 
 
 describe('DocumentTable', () => {

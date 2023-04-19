@@ -1,4 +1,3 @@
-import React from 'react';
 import { mount } from "cypress/react18";
 import { Status } from '../../src/components/StatusBar/Status';
 

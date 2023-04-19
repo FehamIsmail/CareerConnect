@@ -1,4 +1,3 @@
-import React from 'react'
 import JobEdit from '../../src/pages/JobEdit'
 import {withProviders} from "../../src/scripts/utils";
 

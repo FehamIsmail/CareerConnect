@@ -1,4 +1,3 @@
-import React from 'react'
 import ApplicationsPage from '../../src/pages/ApplicationsPage'
 import {withProviders} from "../../src/scripts/utils";
 

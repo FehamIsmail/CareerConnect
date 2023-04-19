@@ -1,4 +1,3 @@
-import React from 'react'
 import App from '../../src/components/App/App'
 import {mount} from "cypress/react18";
 

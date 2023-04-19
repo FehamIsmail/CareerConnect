@@ -1,5 +1,3 @@
-// @ts-ignore
-import React from 'react'
 import { mount } from "cypress/react18";
 import { DocumentForm } from '../../src/components/Documents/DocumentForm'
 import 'cypress-file-upload';

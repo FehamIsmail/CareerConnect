@@ -1,4 +1,3 @@
-import React from 'react'
 import JobForm from '../../src/pages/JobForm'
 import {withProviders} from "../../src/scripts/utils";
 

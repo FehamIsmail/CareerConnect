@@ -1,4 +1,3 @@
-import React from 'react'
 import JobsAppliedTo from '../../src/pages/JobsAppliedTo'
 import {withProviders} from "../../src/scripts/utils";
 

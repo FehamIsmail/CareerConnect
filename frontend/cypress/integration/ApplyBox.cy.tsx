@@ -1,4 +1,3 @@
-import React from 'react'
 import { ApplyBox } from '../../src/components/ApplyBox/ApplyBox'
 import {withProviders} from "../../src/scripts/utils";
 
