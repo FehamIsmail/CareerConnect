@@ -50,4 +50,3 @@ class EmployerProfileViewTestCase(APITestCase):
         self.employer_profile.refresh_from_db()
         self.assertEqual(self.user.email, updated_data['email'])
         self.assertEqual(self.employer_profile.company, updated_data['company'])
-
