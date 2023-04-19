@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IJob, DefaultJobPic } from "../../constants/types";
 import { HeartIcon } from "@heroicons/react/24/outline";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { jobOnPreviewIDAtom } from "../../constants/atoms";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {favoriteJobsAtom, jobOnPreviewIDAtom} from "../../constants/atoms";
 import JobDescription from "../JobDescription/JobDescription";
 import JobLabel from "./JobLabel";
 import { getAccessToken, useWindowDimensions } from "../../scripts/utils";
@@ -21,10 +21,15 @@ const JobItem = (props: JobItemProps) => {
   const jobOnPreviewId = useRecoilValue(jobOnPreviewIDAtom);
   const [previewed, setPreviewed] = useState<boolean>(false);
   const [isFavourite, setIsFavourite] = useState<boolean>(false);
+  const [favoriteJobs, setFavoriteJobs] = useRecoilState(favoriteJobsAtom)
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const jobItemRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem('favs', JSON.stringify(favoriteJobs));
+  }, [favoriteJobs]);
 
   useEffect(() => {
     let favs: string | null = localStorage.getItem("favs");
@@ -114,6 +119,7 @@ const JobItem = (props: JobItemProps) => {
 
     localStorage.setItem("favs", JSON.stringify(favsArray));
     setIsFavourite(!isFavourite);
+    setFavoriteJobs(favsArray)
   }
 
   return (
@@ -213,7 +219,7 @@ const JobItem = (props: JobItemProps) => {
               <HeartIcon
                 onClick={(e) => toggleFavourite(e, job.id)}
                 className={
-                  isFavourite ? "h-4 ml-auto fill-red-700" : "h-4 ml-auto"
+                  isFavourite ? "h-4 ml-auto fill-red-500" : "h-4 ml-auto"
                 }
               />
             )}

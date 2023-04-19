@@ -883,10 +883,6 @@ select {
   top: 25px;
 }
 
-.top-\[2px\] {
-  top: 2px;
-}
-
 .-z-10 {
   z-index: -10;
 }
@@ -1780,8 +1776,8 @@ select {
   fill: currentColor;
 }
 
-.fill-red-700 {
-  fill: #b91c1c;
+.fill-red-500 {
+  fill: #ef4444;
 }
 
 .object-cover {
@@ -2384,6 +2380,12 @@ select {
 
 .transition-\[max-height\] {
   transition-property: max-height;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
