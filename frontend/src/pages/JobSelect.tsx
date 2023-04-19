@@ -46,7 +46,7 @@ export default function JobSelect(props:JobSelectProps) {
   }, []);
   return (
     <div className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
-      <div className="overflow-x-hidden bg-white shadow sm:rounded-md mt-4">
+      <div className="overflow-y-visible bg-white shadow sm:rounded-md mt-4">
         <JobList cb={jobId => navigate(`/job/${props.pathSegment}/${jobId}`)} showControls />
       </div>
     </div>
