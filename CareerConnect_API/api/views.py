@@ -111,7 +111,6 @@ class UserProfileView(RetrieveUpdateAPIView):
 
 
 class CurriculumVitaeListView(ListCreateAPIView):
-    # authentication_classes = [JWTAuthentication]
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = CVSerializer
@@ -125,11 +124,7 @@ class CurriculumVitaeListView(ListCreateAPIView):
         serializer.save(student_profile=self.request.user.student_profile)
 
 
-
 class CurriculumVitaeDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    The permission "IsOwnerOrReadOnly" is self-explanatory:
-    """
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = CurriculumVitae.objects.all()
@@ -178,12 +173,7 @@ class ApplicationPackageListView(ListCreateAPIView):
         return ApplicationPackage.objects.filter(student_profile=user.student_profile)
 
 
-
 class ApplicationPackageDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    The permission "IsOwnerOrReadOnly" is self-explanatory:
-    """
-    # authentication_classes = [JWTAuthentication]
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = ApplicationPackage.objects.all()
@@ -213,13 +203,11 @@ class JobListView(ListCreateAPIView):
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    The permission "IsOwnerOrReadOnly" is self-explanatory:
-    """
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     queryset = Job.objects.all()
     serializer_class = JobSerializer
+
 
 class JobSelectionView(RetrieveUpdateAPIView):
     authentication_classes = [OAuth2Authentication]
@@ -355,7 +343,6 @@ class JobSelectionView(RetrieveUpdateAPIView):
 
 
 class JobApplicationView(ListCreateAPIView):
-    # authentication_classes = [JWTAuthentication]
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly, IsStudentAndOwner]
     queryset = Application.objects.all()
@@ -367,18 +354,14 @@ class JobApplicationView(ListCreateAPIView):
 
 
 class JobApplicationDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    The permission "IsOwnerOrReadOnly" is self-explanatory:
-    """
-    # authentication_classes = [JWTAuthentication]
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsStudentAndOwner]
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
+
 class JobApplicantsView(ListCreateAPIView):
     serializer_class = ApplicationPackageSerializer
-    # authentication_classes = [JWTAuthentication]
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 

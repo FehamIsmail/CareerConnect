@@ -296,7 +296,6 @@ class ApplicationPackageSerializerForSelection(serializers.ModelSerializer):
 class ApplicationSerializerForSelection(serializers.ModelSerializer):
     application_package = ApplicationPackageSerializerForSelection(read_only=True)
 
-    # good for isma
     class Meta:
         model = Application
         exclude = ['job']
