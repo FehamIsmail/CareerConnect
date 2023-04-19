@@ -11,7 +11,6 @@ root.render(
         <BrowserRouter>
             <RecoilRoot>
                 <GoogleOAuthProvider clientId="72616245809-t112onl2fg6ds0tso4fmoeqrer7pfjnn.apps.googleusercontent.com"><App/></GoogleOAuthProvider>;
-
             </RecoilRoot>
         </BrowserRouter>
     </React.StrictMode>
