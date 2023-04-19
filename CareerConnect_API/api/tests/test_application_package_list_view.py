@@ -8,7 +8,6 @@ from ..models import User, Role, StudentProfile, CurriculumVitae, CoverLetter, A
 class ApplicationPackageListViewTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(email="test@test.com", password='testpassword', role=Role.STUDENT)
-        # self.student_profile = StudentProfile.objects.create(username='testuser', email='testuser@example.com')
         self.student_profile = StudentProfile.objects.get(user=self.user)
         self.cv = CurriculumVitae.objects.create(student_profile=self.student_profile)
         self.cl = CoverLetter.objects.create(student_profile=self.student_profile)

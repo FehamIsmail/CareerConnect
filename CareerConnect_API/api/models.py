@@ -101,8 +101,6 @@ class EmployerProfile(models.Model):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     # Profile Info
-    # user.first_name
-    # user.last_name
     company = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
@@ -114,11 +112,6 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     profile_picture = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
-    # Profile Info
-    # user.first_name
-    # user.last_name
-    # headline = models.TextField(null=True, blank=True)  # 1 sentence under name
-    # bio = models.TextField(null=True, blank=True)  # describing text
 
     # Academic Info
     institution = models.CharField(max_length=100, null=True, blank=True)
@@ -127,8 +120,6 @@ class StudentProfile(models.Model):
 
     # Contact Information
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    # show_number = models.BooleanField(default=False)
-    # contact_email = models.EmailField(null=True, blank=True)
 
     # Location
     country = models.CharField(max_length=50, null=True, blank=True)
@@ -215,17 +206,7 @@ class Job(models.Model):
     contact_phone = models.CharField(max_length=20, null=True, blank=True)
     website_url = models.URLField(max_length=100, null=True, blank=True)
     company_logo = models.ImageField(upload_to=upload_to, blank=True, null=True)
-    """
-    This method and is_active are used for Celery to update the 'is_active' field of jobs based on the expiration date.
-    They will stay commented out until the proper hosting is set up to run Celery tasks.
-    """
 
-    # is_active = models.BooleanField(default=True)
-    # def update_active_status(self):
-    #     if self.expire_at is not None and self.expire_at.__gt__(self.created_at):
-    #         self.is_active = False
-    #         self.save()
-    #     return self.is_active
     def is_job_active(self):
         if self.deadline is not None and self.deadline.__gt__(self.created_at):
             return False
