@@ -1,5 +1,4 @@
 export interface IJob {
-    map(arg0: (job: IJob) => JSX.Element): unknown;
     id: number;
     title: string;
     types: JobType[];

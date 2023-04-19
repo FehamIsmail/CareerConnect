@@ -132,6 +132,8 @@ export function simplifyURL(url:string) {
 }
 
 export function shortenFileName(fileName: string, maxLength?: number): string {
+    if(!fileName)
+        return ''
     if(!maxLength)
         maxLength = 30
     if (fileName.length > maxLength) {

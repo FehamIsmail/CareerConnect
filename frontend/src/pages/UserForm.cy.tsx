@@ -1,11 +1,11 @@
 import React from 'react'
-import CandidateView from './CandidateView'
+import UserForm from './UserForm'
+import { mount } from "cypress/react18";
 import {withProviders} from "../scripts/utils";
 
-describe('<CandidateView />', () => {
+describe('<UserForm />', () => {
   it('renders', () => {
     // see: https://on.cypress.io/mounting-react
-    // @ts-ignore
-    cy.mount(withProviders(<CandidateView />))
+    mount(withProviders(<UserForm />))
   })
 })

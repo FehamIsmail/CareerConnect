@@ -141,7 +141,7 @@ export default function Candidate() {
   }
 
   return (
-    <div className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
+    <div id={'candidate-page'} className="space-y-6 sm:px-6 md:col-span-9 md:px-0 mr-0 md:mr-4 mb-4">
       <div className="overflow-hidden bg-white shadow sm:rounded-md mt-4">
         <ul role="list" className="divide-y divide-gray-200">
           {applicants.map((applicant, i) => (
