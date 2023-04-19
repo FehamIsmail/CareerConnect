@@ -201,8 +201,6 @@ class ApplicationPackageSerializer(serializers.ModelSerializer):
     cv_id = serializers.UUIDField(write_only=True, required=True)
     cl_id = serializers.UUIDField(write_only=True, required=False)
 
-    # application_status = ApplicationStatusSerializer(source='applicationstatus_set', read_only=True, many=True)
-
     class Meta:
         model = ApplicationPackage
         exclude = ['student_profile']
@@ -247,17 +245,11 @@ class ApplicationPackageSerializer(serializers.ModelSerializer):
 # ======================= Jobs Serializer ======================= #
 
 class JobSerializer(serializers.ModelSerializer):
-    employer_profile = EmployerProfileSerializer(read_only=True, fields=('company', ))
+    employer_profile = EmployerProfileSerializer(read_only=True, fields=('company',))
 
     class Meta:
         model = Job
         exclude = ['application_packages']
-
-
-# class JobSerializerForStudent(serializers.ModelSerializer):
-#     class Meta:
-#         model = Job
-#         exclude = ['employer_profile', 'application_packages']
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
@@ -265,7 +257,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
     application_package = ApplicationPackageSerializer(read_only=True)
     package_id = serializers.UUIDField(write_only=True, required=True)
 
-    # good for isma
     class Meta:
         model = Application
         fields = '__all__'

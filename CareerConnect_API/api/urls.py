@@ -1,20 +1,16 @@
 from django.urls import include, path
 
 from . import views
-# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegistrationView, UserProfileView, JobListView, JobDetailView, JobApplicationView, \
     ApplicationPackageListView, ApplicationPackageDetailView, CurriculumVitaeListView, CurriculumVitaeDetailView, \
-    CoverLetterListView, CoverLetterDetailView, JobApplicantsView, JobSelectionView, JobApplicationDetailView, NotificationsListView
+    CoverLetterListView, CoverLetterDetailView, JobSelectionView, JobApplicationDetailView, \
+    NotificationsListView
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('github_oauth/', views.github_oauth_proxy, name='github_oauth_proxy'),
-    # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', RegistrationView.as_view(), name='register'),
-    # path('login/', LoginView.as_view(), name='login'),
-    # path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
 
     path('jobs/', JobListView.as_view(), name='jobs-list'),
@@ -35,7 +31,6 @@ urlpatterns = [
     path('application/', JobApplicationView.as_view(), name="application-list"),
     path('application/<uuid:pk>/', JobApplicationDetailView.as_view(), name="application-detail"),
 
-    path('profile/notifications/', NotificationsListView.as_view() , name="notifications-list")
-    # path('jobs/<uuid:pk>/select-candidates', SelectCandidatesView.asView(), name="select-candidates")
+    path('profile/notifications/', NotificationsListView.as_view(), name="notifications-list")
 
 ]
