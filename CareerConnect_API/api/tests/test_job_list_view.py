@@ -9,8 +9,6 @@ class JobListViewTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(email='employer@employer.com', password='test123', role=Role.EMPLOYER)
         self.employer_profile = EmployerProfile.objects.create(user=self.user, company='genetec')
-        # self.job = Job.objects.create(employer_profile=self.employer_profile, title="Test job posting",
-        #                               short_description="short description of the job")
         self.url = reverse('jobs-list')
 
     def test_list_jobs(self):
