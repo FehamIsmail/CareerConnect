@@ -1,6 +1,6 @@
 import {mount} from "cypress/react18";
-import { SideNav } from './SideNav';
-import {withProviders} from "../scripts/utils";
+import { SideNav } from '../../src/pages/SideNav';
+import {withProviders} from "../../src/scripts/utils";
 
 describe('SideNav', () => {
   it('renders all links', () => {

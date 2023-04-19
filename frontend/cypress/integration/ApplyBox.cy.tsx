@@ -1,6 +1,6 @@
 import React from 'react'
-import { ApplyBox } from './ApplyBox'
-import {withProviders} from "../../scripts/utils";
+import { ApplyBox } from '../../src/components/ApplyBox/ApplyBox'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<ApplyBox />', () => {
   it('renders', () => {

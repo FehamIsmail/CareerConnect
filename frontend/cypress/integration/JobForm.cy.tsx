@@ -1,6 +1,6 @@
 import React from 'react'
-import JobForm from './JobForm'
-import {withProviders} from "../scripts/utils";
+import JobForm from '../../src/pages/JobForm'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<JobForm />', () => {
   it('renders', () => {

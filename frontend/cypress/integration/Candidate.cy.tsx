@@ -1,6 +1,6 @@
 import React from 'react'
-import Candidate from './Candidate'
-import {withProviders} from "../scripts/utils";
+import Candidate from '../../src/pages/Candidate'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<Candidate />', () => {
   it('renders', () => {

@@ -1,7 +1,7 @@
 import React from 'react'
-import UserForm from './UserForm'
+import UserForm from '../../src/pages/UserForm'
 import { mount } from "cypress/react18";
-import {withProviders} from "../scripts/utils";
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<UserForm />', () => {
   it('renders', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Applicant } from './Applicant';
+import { Applicant } from '../../src/components/Candidate/Applicant';
 import {mount} from "cypress/react18";
 
 describe('Applicant', () => {

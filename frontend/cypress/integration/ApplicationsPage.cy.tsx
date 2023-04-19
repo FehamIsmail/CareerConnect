@@ -1,6 +1,6 @@
 import React from 'react'
-import ApplicationsPage from './ApplicationsPage'
-import {withProviders} from "../scripts/utils";
+import ApplicationsPage from '../../src/pages/ApplicationsPage'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<ApplicationsPage />', () => {
   it('renders', () => {

@@ -1,6 +1,6 @@
 import React from 'react'
-import JobsAppliedTo from './JobsAppliedTo'
-import {withProviders} from "../scripts/utils";
+import JobsAppliedTo from '../../src/pages/JobsAppliedTo'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<JobsAppliedTo />', () => {
   it('renders', () => {

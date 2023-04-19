@@ -1,6 +1,6 @@
 import React from 'react'
-import { LandingPage } from './LandingPage'
-import {withProviders} from "../scripts/utils";
+import { LandingPage } from '../../src/pages/LandingPage'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<LandingPage />', () => {
   it('renders', () => {

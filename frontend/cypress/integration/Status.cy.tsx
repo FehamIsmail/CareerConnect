@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from "cypress/react18";
-import { Status } from './Status';
+import { Status } from '../../src/components/StatusBar/Status';
 
 describe('Status Component', () => {
   it('renders success status', () => {

@@ -1,8 +1,8 @@
 import React from 'react'
-import App from './App'
+import App from '../../src/components/App/App'
 import {mount} from "cypress/react18";
 
-import {withProviders} from "../../scripts/utils";
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<App />', () => {
   it('renders', () => {

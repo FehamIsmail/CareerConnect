@@ -1,6 +1,6 @@
 import React from 'react'
-import JobEdit from './JobEdit'
-import {withProviders} from "../scripts/utils";
+import JobEdit from '../../src/pages/JobEdit'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<JobEdit />', () => {
   it('renders', () => {

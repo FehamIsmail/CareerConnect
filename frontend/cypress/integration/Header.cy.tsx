@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from './Header'
-import {withProviders} from "../../scripts/utils";
+import Header from '../../src/components/Header/Header'
+import {withProviders} from "../../src/scripts/utils";
 
 describe('<Header />', () => {
   it('renders', () => {
