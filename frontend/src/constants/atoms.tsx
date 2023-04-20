@@ -4,7 +4,9 @@ import {IJob, JobType} from "./types";
 const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 let role: 'STUDENT' | 'EMPLOYER' | null = localStorage.getItem('role') as 'STUDENT' | 'EMPLOYER' | null
 const favoriteJobsString = localStorage.getItem('favs') || ''
-const localFavoriteJobs = JSON.parse(favoriteJobsString) as []
+let localFavoriteJobs = []
+if(favoriteJobsString !== '')
+    localFavoriteJobs = JSON.parse(favoriteJobsString)
 
 export const jobOnPreviewIDAtom = atom<number>({
     key: 'jobOnPreviewID',

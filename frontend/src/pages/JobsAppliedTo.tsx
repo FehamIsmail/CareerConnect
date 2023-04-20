@@ -23,7 +23,7 @@ export default function JobsAppliedTo(props: JobsAppliedToPropsType) {
   const {job, status, updated_at} = props;
 
   return (
-    <li key={job.id}>
+    <li key={job?.id}>
     <div className="block hover:bg-gray-50">
       <div className="flex items-center px-4 py-4 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center">
@@ -31,9 +31,9 @@ export default function JobsAppliedTo(props: JobsAppliedToPropsType) {
             <img
               className="h-12 w-12 object-cover rounded-full"
               src={
-                job.company_logo
-                  ? job.company_logo
-                  : DefaultProfileImage
+                job && job.company_logo
+                ? job.company_logo
+                : DefaultProfileImage
               }
               alt=""
             />
@@ -41,14 +41,14 @@ export default function JobsAppliedTo(props: JobsAppliedToPropsType) {
           <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2 md:gap-4">
             <div>
               <p className="truncate text-sm font-medium text-indigo-600">
-                {job.title}
+              {job && job.title ? job.title : "No Title Found"}
               </p>
               <p className="mt-2 flex items-center text-sm text-gray-500">
                 <BriefcaseIcon
                   className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                   aria-hidden="true"
                 />
-                <span className="truncate">{job.employer_profile.company}</span>
+                <span className="truncate">{job && job.employer_profile.company ? job.employer_profile: "Unknown Company"}</span>
               </p>
             </div>
             <div className="flex">
@@ -56,11 +56,9 @@ export default function JobsAppliedTo(props: JobsAppliedToPropsType) {
                 <p className="text-sm text-gray-900">
                   Applied on{" "}
                   <time
-                    dateTime={updated_at
-                      .toISOString()
-                      .slice(0, 10)}
+                    dateTime={updated_at?.toISOString()?.slice(0, 10)}
                   >
-                    {updated_at.toLocaleDateString("en-US", {
+                    {updated_at?.toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",

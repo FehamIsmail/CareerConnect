@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {JobType} from "../constants/types";
+import { RecoilRoot } from 'recoil';
+import {MemoryRouter} from 'react-router-dom';
 
 export const classNames = (...classes: (string)[]) => {
     return classes.filter(Boolean).join(' ')
@@ -130,6 +132,8 @@ export function simplifyURL(url:string) {
 }
 
 export function shortenFileName(fileName: string, maxLength?: number): string {
+    if(!fileName)
+        return ''
     if(!maxLength)
         maxLength = 30
     if (fileName.length > maxLength) {
@@ -155,4 +159,14 @@ export function convertStatusToNumber(status: string){
         default:
             return 0
     }
+}
+
+export function withProviders(Component: React.ReactNode) {
+    return (
+        <RecoilRoot>
+            <MemoryRouter>
+                {Component}
+            </MemoryRouter>
+        </RecoilRoot>
+    );
 }

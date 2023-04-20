@@ -6,7 +6,7 @@ import {createArrayFromStrings, getAccessToken, shortenFileName} from "../../scr
 import {getEndpoint} from "../../scripts/DocumentUtils";
 
 
-interface DocumentTableProps {
+export interface DocumentTableProps {
     documentList: Document[] | any[]
     editDocument: (doc: Document) => any;
     setStatus: React.Dispatch<React.SetStateAction<StatusType>>
