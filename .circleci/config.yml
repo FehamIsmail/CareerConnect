@@ -8,14 +8,12 @@ jobs:
   build:
     docker:
       - image: python:3.8
-      - image: circleci/node:14
+      - image: circleci/node:16
 
     working_directory: ~/repo
 
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y nodejs
 
       #- sonarcloud/scan
 
