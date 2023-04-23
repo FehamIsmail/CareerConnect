@@ -33,6 +33,7 @@ jobs:
           name: Install frontend requirements
           command: |
             cd frontend
+            sudo npm i -g npm@16
             npm install
 
       - run: 
