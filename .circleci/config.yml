@@ -2,21 +2,18 @@ version: 2.1
 
 orbs:
   cypress: cypress-io/cypress@3
+  node: circleci/node@5.0.2
 #  sonarcloud: sonarsource/sonarcloud@1.1.1
 
 jobs:
-  build:
+  test_backend:
     docker:
       - image: python:3.8
-      - image: node:16.3.0 # Use the official Node.js Docker image
 
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      #- sonarcloud/scan
-
       - run: 
           name: Install backend requirements
           command: |
@@ -29,23 +26,34 @@ jobs:
             cd CareerConnect_API/
             python manage.py test
 
-      - run: 
-          name: Install frontend requirements
-          command: |
-            cd frontend
-            npm install
+  test_frontend:
+    executor: node/default
 
-      - run: 
-          name: Run frontend_tests
-          command: |
-            cd CareerConnect_API/
-            npm run test
+    working_directory: ~/repo/frontend
+
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn run test
+          name: Run tests
+      # - run: 
+      #     name: Install frontend requirements
+      #     command: |
+      #       cd frontend
+      #       npm install
+
+      # - run: 
+      #     name: Run frontend_tests
+      #     command: |
+      #       cd CareerConnect_API/
+      #       npm run test
             
-      # -run:
-      #     name: Run Frontend_tests
 
 workflows:
   build_and_scan:
     jobs:
-      - build #:
+      - test_backend #:
           #context: sonarCloud
+      - test_frontend #:
