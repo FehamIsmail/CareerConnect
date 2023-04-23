@@ -35,11 +35,7 @@ jobs:
       - run:
           name: Install Xvfb
           command: |
-            sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y xvfb
-      - run:
-          name: Install libnss3
-          command: |
-            sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y libnss3
+            sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
       - node/install-packages:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
