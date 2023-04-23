@@ -17,7 +17,7 @@ jobs:
       #- sonarcloud/scan
 
       - run: 
-          name: Install requirements
+          name: Install backend requirements
           command: |
             cd CareerConnect_API 
             pip install -r requirements.txt
@@ -27,16 +27,23 @@ jobs:
           command: |
             cd CareerConnect_API/
             python manage.py test
+
+      - run: 
+          name: Install frontend requirements
+          command: |
+            cd frontend
+            npm install
+
+      - run: 
+          name: Run frontend_tests
+          command: |
+            cd CareerConnect_API/
+              npm run test
             
       # -run:
       #     name: Run Frontend_tests
 
 workflows:
-  use-my-orb:
-    jobs:
-      - cypress/run:
-          install-command: cd frontend/ && npm install
-          cypress-command: npx cypress run --component
   build_and_scan:
     jobs:
       - build #:
