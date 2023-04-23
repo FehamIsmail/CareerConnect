@@ -8,7 +8,7 @@ jobs:
   build:
     docker:
       - image: python:3.8
-      # - image: circleci/node:16
+      - image: node:16.3.0 # Use the official Node.js Docker image
 
     working_directory: ~/repo
 
@@ -33,8 +33,6 @@ jobs:
           name: Install frontend requirements
           command: |
             cd frontend
-            apt-get install sudo
-            sudo npm i -g npm@16
             npm install
 
       - run: 
