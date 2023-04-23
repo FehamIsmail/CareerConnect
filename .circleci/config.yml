@@ -33,7 +33,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          app-dir: ~/project/frontend
+          app-dir: ~/repo/frontend
           pkg-manager: yarn
       - run:
           command: yarn test
