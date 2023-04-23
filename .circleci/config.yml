@@ -36,7 +36,7 @@ jobs:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
       - run:
-          command: cd frontend && yarn run test
+          command: cd frontend && apt-get install && yarn run test
           name: Run tests
 
 workflows:
