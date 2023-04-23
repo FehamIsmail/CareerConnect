@@ -32,11 +32,10 @@ jobs:
     working_directory: ~/repo/frontend
 
     steps:
-      - checkout:
-          app_dir: ~/project/frontend
-      
+      - checkout
       - node/install-packages:
           pkg-manager: yarn
+          app_dir: ~/repo/frontend
       - run:
           command: yarn run test
           name: Run tests
