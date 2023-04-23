@@ -26,31 +26,31 @@ jobs:
             cd CareerConnect_API/
             python manage.py test
 
-  # test_frontend:
-  #   executor: node/default
-  #   working_directory: ~/repo
+  test_frontend:
+    executor: node/default
+    working_directory: ~/repo
 
-  #   steps:
-  #     - checkout
-  #     - node/install-packages:
-  #         app-dir: ~/repo/frontend
-  #         pkg-manager: yarn
-  #     - run: 
-  #         command: apt-get install xvfb
-  #         name: Installing xvfb dependency
-  #     - run:
-  #         command: cd frontend && yarn run test
-  #         name: Run tests
+    steps:
+      - checkout
+      - node/install-packages:
+          app-dir: ~/repo/frontend
+          pkg-manager: yarn
+      - run: 
+          command: apt-get install xvfb
+          name: Installing xvfb dependency
+      - run:
+          command: cd frontend && yarn run test
+          name: Run tests
 
 workflows:
-  cypress-orb:
-    jobs:
+  # cypress-orb:
+  #   jobs:
   #   working_directory: ~/repo
-      - cypress/run:
-          cypress-command: cd frontend && npx cypress run --component
+  #     - cypress/run:
+  #         cypress-command: cd frontend && npx cypress run --component
   build_and_scan:
     jobs:
       - test_backend #:
           #context: sonarCloud
-      # - test_frontend #:
+      - test_frontend #:
         
