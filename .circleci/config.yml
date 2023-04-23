@@ -8,11 +8,14 @@ jobs:
   build:
     docker:
       - image: python:3.8
+      - image: circleci/node:14
 
     working_directory: ~/repo
 
     steps:
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y nodejs
 
       #- sonarcloud/scan
 
@@ -38,7 +41,7 @@ jobs:
           name: Run frontend_tests
           command: |
             cd CareerConnect_API/
-              npm run test
+            npm run test
             
       # -run:
       #     name: Run Frontend_tests
