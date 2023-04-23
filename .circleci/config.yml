@@ -35,10 +35,7 @@ jobs:
       - run:
           name: Install Xvfb
           command: |
-            sudo killall -9 apt-get || true && sudo apt-get update && sudo apt-get install -f -y xvfb
-      - run: 
-          command: apt-get install xvfb
-          name: Installing xvfb dependency
+            apt-get update && apt-get install -y git && apt-get install -y xvfb
       - node/install-packages:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
