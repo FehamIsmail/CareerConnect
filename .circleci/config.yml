@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Install Xvfb
           command: |
-            apt-get update && apt-get install -y git && apt-get install -y xvfb
+            sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y xvfb
       - node/install-packages:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
