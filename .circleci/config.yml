@@ -30,11 +30,11 @@ jobs:
     executor: node/default
 
     working_directory: ~/repo/frontend
+    app-dir: ~/repo/frontend
 
     steps:
       - checkout
-      - node/install-packages:
-          app-dir: ~/repo/frontend
+      - node/install-packages
       - run:
           command: npm run test
       # - run: 
