@@ -36,7 +36,6 @@ jobs:
           name: Install Xvfb
           command: |
             sudo apt-get update
-            ps -e | grep -e apt -e adept | grep -v grep
             rm /var/lib/dpkg/lock 
             sudo apt-get install -y xvfb
       - run: 
