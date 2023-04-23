@@ -29,13 +29,14 @@ jobs:
   test_frontend:
     executor: node/default
 
-    working_directory: ~/repo/
+    working_directory: ~/repo/frontend
+    app_dir: ~/project/frontend
 
     steps:
       - checkout
-      - run:
-          name: Change to frontend directory
-          command: cd frontend
+      # - run:
+      #     name: Change to frontend directory
+      #     command: cd frontend
       - node/install-packages:
           pkg-manager: yarn
       - run:
