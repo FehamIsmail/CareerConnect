@@ -28,27 +28,16 @@ jobs:
 
   test_frontend:
     executor: node/default
-
     working_directory: ~/repo/frontend
-    app-dir: ~/repo/frontend
 
     steps:
       - checkout
-      - node/install-packages
+      - node/install-packages:
+          app-dir: ~/project/frontend
+          pkg-manager: yarn
       - run:
-          command: npm run test
-      # - run: 
-      #     name: Install frontend requirements
-      #     command: |
-      #       cd frontend
-      #       npm install
-
-      # - run: 
-      #     name: Run frontend_tests
-      #     command: |
-      #       cd CareerConnect_API/
-      #       npm run test
-            
+          command: yarn test
+          name: Run tests
 
 workflows:
   build_and_scan:
