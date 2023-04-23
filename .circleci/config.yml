@@ -36,7 +36,7 @@ jobs:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
       - run:
-          command: yarn test
+          command: yarn run test
           name: Run tests
 
 workflows:
