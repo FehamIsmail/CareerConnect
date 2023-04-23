@@ -34,11 +34,9 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: yarn
-          app_dir: ~/repo/frontend
+          app-dir: ~/repo/frontend
       - run:
-          command: yarn run test
-          name: Run tests
+          command: npm run test
       # - run: 
       #     name: Install frontend requirements
       #     command: |
