@@ -35,7 +35,8 @@
     "tsc": "tsc",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+    "test": "cypress run --component --record false",
+    "cypress": "cypress run --headless --browser chrome",
     "eject": "react-scripts eject",
     "e2e": "cypress open"
   },
