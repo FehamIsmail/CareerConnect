@@ -35,8 +35,11 @@ jobs:
       - node/install-packages:
           app-dir: ~/repo/frontend
           pkg-manager: yarn
+      - run: 
+          command: apt-get install xvfb
+          name: Installing xvfb dependency
       - run:
-          command: cd frontend && apt-get install xvfb && yarn run test
+          command: cd frontend && yarn run test
           name: Run tests
 
 workflows:
