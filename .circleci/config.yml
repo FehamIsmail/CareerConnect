@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Install Xvfb
           command: |
-            sudo apt-get update && sudo apt-get install -y xvfb
+            sudo killall -9 apt-get || true && \ sudo apt-get update && \ sudo apt-get install -f -y xvfb
       - run: 
           command: apt-get install xvfb
           name: Installing xvfb dependency
