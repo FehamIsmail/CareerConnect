@@ -28,7 +28,7 @@ jobs:
 
   test_frontend:
     executor: node/default
-    working_directory: ~/repo/frontend
+    working_directory: ~/repo
 
     steps:
       - checkout
