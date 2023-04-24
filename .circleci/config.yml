@@ -1,11 +1,58 @@
+# version: 2.1
+
+# orbs:
+# #  sonarcloud: sonarsource/sonarcloud@1.1.1
+#   cypress: cypress-io/cypress@3.1.1
+
+# jobs:
+#   build:
+#     docker:
+#       - image: python:3.8
+
+#     working_directory: ~/repo
+
+#     steps:
+#       - checkout
+
+#       #- sonarcloud/scan
+
+#       - run: 
+#           name: Install requirements
+#           command: |
+#             cd CareerConnect_API 
+#             pip install -r requirements.txt
+
+#       - run:
+#           name: Run backend_tests
+#           command: |
+#             cd CareerConnect_API/
+#             python manage.py test
+            
+#       # -run:
+#       #     name: Run Frontend_tests
+
+# workflows:
+#   build_and_scan:
+#     jobs:
+#       - build #:
+#           #context: sonarCloud
+#   use-my-orb:
+#     jobs:
+#       - cypress/run:
+#           cypress-cache-key: custom-cypress-cache-v1-{{ arch }}-{{ checksum "package.json" }}
+#           cypress-cache-path: ~/.cache/custom-dir/Cypress
+#           cypress-command: npx cypress run --component
+#           node-cache-version: v2
+
 version: 2.1
 
 orbs:
+  cypress: cypress-io/cypress@3
+  node: circleci/node@5.0.2
 #  sonarcloud: sonarsource/sonarcloud@1.1.1
-  cypress: cypress-io/cypress@3.1.1
 
 jobs:
-  build:
+  test_backend:
     docker:
       - image: python:3.8
 
@@ -13,11 +60,8 @@ jobs:
 
     steps:
       - checkout
-
-      #- sonarcloud/scan
-
       - run: 
-          name: Install requirements
+          name: Install backend requirements
           command: |
             cd CareerConnect_API 
             pip install -r requirements.txt
@@ -27,19 +71,33 @@ jobs:
           command: |
             cd CareerConnect_API/
             python manage.py test
-            
-      # -run:
-      #     name: Run Frontend_tests
+
+  test_frontend:
+    executor: node/default
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Install Xvfb
+          command: |
+            sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      - node/install-packages:
+          app-dir: ~/repo/frontend
+          pkg-manager: yarn
+      - run:
+          command: cd frontend && yarn run test
+          name: Run tests
 
 workflows:
+  # cypress-orb:
+  #   jobs:
+  #   working_directory: ~/repo
+  #     - cypress/run:
+  #         cypress-command: cd frontend && npx cypress run --component
   build_and_scan:
     jobs:
-      - build #:
+      - test_backend #:
           #context: sonarCloud
-  use-my-orb:
-    jobs:
-      - cypress/run:
-          cypress-cache-key: custom-cypress-cache-v1-{{ arch }}-{{ checksum "package.json" }}
-          cypress-cache-path: ~/.cache/custom-dir/Cypress
-          cypress-command: npx cypress run --component
-          node-cache-version: v2
+      - test_frontend #:
+        
