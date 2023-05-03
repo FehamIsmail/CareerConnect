@@ -10,7 +10,7 @@ This project will provide a career services platform where students (job seekers
 <li>Admin - managing all user profiles and postings
 <h2>Issues tracking</h2>
 
-<a href="https://docs.google.com/spreadsheets/d/1OpqNBRHSaydjWkSW3TTRSmgD_jWX_LWbxrSmAXZ2onI/edit?usp=sharing">Access Sheet Here</a> to have access to everything about the issues and user stories worked on
+<a href="https://docs.google.com/spreadsheets/d/1OpqNBRHSaydjWkSW3TTRSmgD_jWX_LWbxrSmAXZ2onI/edit?usp=sharing">Access Sheet Here</a> to have access the issues and user stories worked on (some tasks were not linked to issues and hence were not included)
   
  <h2>Additional Features:</h2>
   <ol>
