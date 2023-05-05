@@ -1,49 +1,3 @@
-# version: 2.1
-
-# orbs:
-# #  sonarcloud: sonarsource/sonarcloud@1.1.1
-#   cypress: cypress-io/cypress@3.1.1
-
-# jobs:
-#   build:
-#     docker:
-#       - image: python:3.8
-
-#     working_directory: ~/repo
-
-#     steps:
-#       - checkout
-
-#       #- sonarcloud/scan
-
-#       - run: 
-#           name: Install requirements
-#           command: |
-#             cd CareerConnect_API 
-#             pip install -r requirements.txt
-
-#       - run:
-#           name: Run backend_tests
-#           command: |
-#             cd CareerConnect_API/
-#             python manage.py test
-            
-#       # -run:
-#       #     name: Run Frontend_tests
-
-# workflows:
-#   build_and_scan:
-#     jobs:
-#       - build #:
-#           #context: sonarCloud
-#   use-my-orb:
-#     jobs:
-#       - cypress/run:
-#           cypress-cache-key: custom-cypress-cache-v1-{{ arch }}-{{ checksum "package.json" }}
-#           cypress-cache-path: ~/.cache/custom-dir/Cypress
-#           cypress-command: npx cypress run --component
-#           node-cache-version: v2
-
 version: 2.1
 
 orbs:
@@ -57,6 +11,9 @@ jobs:
       - image: python:3.8
 
     working_directory: ~/repo
+
+    environment:
+      SECRET_KEY: $SECRET_KEY
 
     steps:
       - checkout
@@ -90,14 +47,8 @@ jobs:
           name: Run tests
 
 workflows:
-  # cypress-orb:
-  #   jobs:
-  #   working_directory: ~/repo
-  #     - cypress/run:
-  #         cypress-command: cd frontend && npx cypress run --component
   build_and_scan:
     jobs:
-      - test_backend #:
-          #context: sonarCloud
-      - test_frontend #:
+      - test_backend
+      - test_frontend
         
