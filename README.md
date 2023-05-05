@@ -39,7 +39,7 @@ This platform is designed for students who are looking for jobs or internships, 
 <h2>Setup</h2>
 To run the project locally, follow these steps:
 
-1. Clone the repository: git clone https://github.com/FehamIsmail/-hiza_tech-soen341project2023-.git
+1. Clone the repository: git clone https://github.com/FehamIsmail/CareerConnect.git
 
 2. Run the following commands: 
 ```
