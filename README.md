@@ -48,6 +48,7 @@ source env/bin/activate
 
 cd CareerConnect_API
 pip install -r requirements.txt
+python manage.py migrate
 python manage.py runserver
 
 cd ../frontend
