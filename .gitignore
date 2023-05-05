@@ -2,6 +2,7 @@
 # PyCharm folder
 .idea
 venv
+env
 CareerConnect_API/db.sqlite3
 CareerConnect_API/.env
 frontend/.env
