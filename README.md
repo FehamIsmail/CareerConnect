@@ -47,7 +47,7 @@ python -m venv env
 source env/bin/activate
 
 cd CareerConnect_API
-pip install requirements.txt
+pip install -r requirements.txt
 python manage.py runserver
 
 cd ../frontend
