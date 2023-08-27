@@ -14,6 +14,33 @@ This platform is designed for students who are looking for jobs or internships, 
 <li>Filtering options facilitate search experience.</li>
 <li>Students receive an email when the status of an application changes from one state to another.</li>
 
+<h2>Screenshots</h2>
+<li>Register a student account</li>
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/2ffee3b0-f501-4d38-9a0e-162934a7caea)
+
+<li>Upload documents (Student)</li>
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/e2800213-6068-4912-a797-944eafb3b893)
+
+<li>Create job posting (Employer)</li>
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/62a21875-b290-4ebe-9e04-c3311b9e4e94)
+
+<li>Employer selects candidates</li>
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/eedcffac-6c7b-4763-a280-a2e04a22dad7)
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/998a8360-1559-4282-9417-2317eaa51f03)
+
+<li>Candidate receives an email</li>
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/5bcb3a77-15bd-4d79-a021-3ebfed401d92)
+
+
+
+
+<li></li>
+
+
+
+
+
+
 
 <h2>Contributors</h2>
 
