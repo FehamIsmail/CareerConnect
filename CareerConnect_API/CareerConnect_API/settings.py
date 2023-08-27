@@ -1,30 +1,20 @@
 import os
-from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r)h)-xlvcj=byc-f1q@y)!@gu!k+fb6rk$!mntot7$fz$qvb9v'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -44,14 +34,14 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Keys
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '72616245809-t112onl2fg6ds0tso4fmoeqrer7pfjnn.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
-SOCIAL_AUTH_FACEBOOK_KEY = '1628327201021031'
-SOCIAL_AUTH_FACEBOOK_SECRET = '2491a09772e3188d4b7c0e72da76d857'
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
 
-SOCIAL_AUTH_GITHUB_KEY = '13dc470a1b66e85f483e'
-SOCIAL_AUTH_GITHUB_SECRET = 'b3702b5c50d2a5bbeab8e07755455c6bb6643d72'
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')
 
 # Scopes
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [

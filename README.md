@@ -14,6 +14,43 @@ This platform is designed for students who are looking for jobs or internships, 
 <li>Filtering options facilitate search experience.</li>
 <li>Students receive an email when the status of an application changes from one state to another.</li>
 
+<h2>Screenshots</h2>
+<details>
+ <summary>Click to view</summary>
+ <ol>
+<li>Register a student account</li>
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/2ffee3b0-f501-4d38-9a0e-162934a7caea)
+
+
+<li>Upload documents (Student)</li>
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/e2800213-6068-4912-a797-944eafb3b893)
+
+
+<li>Create job posting (Employer)</li>
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/62a21875-b290-4ebe-9e04-c3311b9e4e94)
+
+<li>Employer selects candidates</li>
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/eedcffac-6c7b-4763-a280-a2e04a22dad7)
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/998a8360-1559-4282-9417-2317eaa51f03)
+
+<li>Candidate receives an email</li>
+
+![image](https://github.com/FehamIsmail/CareerConnect/assets/98190195/5bcb3a77-15bd-4d79-a021-3ebfed401d92)
+
+</ol>
+
+</details>
+
+
+
+
+
+
 
 <h2>Contributors</h2>
 
@@ -39,7 +76,7 @@ This platform is designed for students who are looking for jobs or internships, 
 <h2>Setup</h2>
 To run the project locally, follow these steps:
 
-1. Clone the repository: git clone https://github.com/FehamIsmail/-hiza_tech-soen341project2023-.git
+1. Clone the repository: git clone https://github.com/FehamIsmail/CareerConnect.git
 
 2. Run the following commands: 
 ```
@@ -64,8 +101,11 @@ Unit tests have been written for this platform and are automatically ran in the 
 More details about the project can be found in the Wiki page of the repo. Meeting minutes, diagrams and user stories are present there.
 
 <h2>User Stories</h2>
+<details>
+<summary>Click to view user stories</summary>
 
 ![image](https://user-images.githubusercontent.com/98190195/228119686-b21bb0be-dcbd-4123-bd54-58fa8f56e7c5.png)
 ![image](https://user-images.githubusercontent.com/98190195/228119843-96433fe7-c1fd-4276-a818-30a2cc80f367.png)
 ![image](https://user-images.githubusercontent.com/98190195/232182409-b86c8564-384e-4349-beea-324674099f92.png)
+</details>
 
